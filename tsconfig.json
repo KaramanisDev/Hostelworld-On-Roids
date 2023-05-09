@@ -1,0 +1,25 @@
+{
+  "compilerOptions": {
+    "target": "es6",
+    "module": "commonjs",
+    "lib": ["esnext", "dom", "dom.iterable"],
+    "typeRoots": [ "node_modules/@types" ],
+    "rootDir": "src",
+    "outDir": "dist",
+    "strict": true,
+    "allowJs": true,
+    "sourceMap": true,
+    "checkJs": true,
+    "noEmit": true,
+    "noEmitOnError": true,
+    "skipLibCheck": false,
+    "noImplicitAny": true,
+    "esModuleInterop": true,
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "forceConsistentCasingInFileNames": true
+  },
+  "include": ["src"],
+  "exclude": ["dist", "node_modules"]
+}
