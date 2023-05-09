@@ -3,6 +3,7 @@
     "target": "es6",
     "module": "commonjs",
     "lib": ["esnext", "dom", "dom.iterable"],
+    "types": ["chrome"],
     "typeRoots": [ "node_modules/@types" ],
     "rootDir": "src",
     "outDir": "dist",
