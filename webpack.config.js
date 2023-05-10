@@ -49,7 +49,8 @@ module.exports = {
       new TerserPlugin({
         extractComments: false
       })
-    ]
+    ],
+    usedExports: true
   },
   plugins: [
     new CleanWebpackPlugin({
