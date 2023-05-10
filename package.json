@@ -6,11 +6,13 @@
     "node": "^20.1.0"
   },
   "scripts": {
-    "build": "webpack --config webpack.config.js"
+    "build": "webpack --config webpack.config.js",
+    "commitlint": "node scripts/commitlint.js"
   },
   "devDependencies": {
     "@babel/core": "^7.21.8",
     "@babel/preset-env": "^7.21.5",
+    "@commitlint/cli": "^17.6.3",
     "@types/chrome": "^0.0.235",
     "babel-loader": "^9.1.2",
     "clean-webpack-plugin": "^4.0.0",
