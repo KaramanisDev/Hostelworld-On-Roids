@@ -6,7 +6,9 @@
     "node": "^20.1.0"
   },
   "scripts": {
-    "build": "webpack --config webpack.config.js",
+    "watch": "yarn dev --watch",
+    "prod": "webpack --config webpack.config.js --mode=production",
+    "dev": "webpack --config webpack.config.js --mode=development",
     "commitlint": "node scripts/commitlint.js"
   },
   "devDependencies": {
