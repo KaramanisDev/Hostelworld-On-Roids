@@ -15,11 +15,14 @@ module.exports = {
     content: path.resolve(__dirname, '.', 'src/entries', 'content.ts')
   },
   output: {
-    path: path.join(__dirname, './dist'),
-    filename: '[name].js'
+    filename: '[name].js',
+    path: path.join(__dirname, './dist')
   },
   resolve: {
     extensions: ['.ts', '.js']
+  },
+  cache: {
+    type: 'filesystem'
   },
   module: {
     rules: [
@@ -45,8 +48,8 @@ module.exports = {
     minimizer: [
       new TerserPlugin({
         extractComments: false
-      }),
-    ],
+      })
+    ]
   },
   plugins: [
     new CleanWebpackPlugin({
@@ -57,6 +60,6 @@ module.exports = {
     }),
     new CopyPlugin({
       patterns: [{ from: '.', to: '.', context: 'src/assets' }]
-    }),
-  ],
+    })
+  ]
 }
