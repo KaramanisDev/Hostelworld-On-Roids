@@ -8,9 +8,15 @@
   ],
   "content_scripts": [
     {
-      "matches": ["https://*.hostelworld.com/*"],
-      "run_at": "document_end",
-      "js": ["content.js"]
+      "js": ["content.js"],
+      "run_at": "document_start",
+      "matches": ["https://*.hostelworld.com/*"]
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": ["roids.js"],
+      "matches": ["https://*.hostelworld.com/*"]
     }
   ]
 }

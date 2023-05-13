@@ -12,6 +12,7 @@ module.exports = {
     topLevelAwait: true
   },
   entry: {
+    roids: path.resolve(__dirname, '.', 'src/entries', 'app.ts'),
     content: path.resolve(__dirname, '.', 'src/entries', 'content.ts')
   },
   output: {
