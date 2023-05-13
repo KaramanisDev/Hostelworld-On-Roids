@@ -15,7 +15,7 @@
     "@babel/core": "^7.21.8",
     "@babel/preset-env": "^7.21.5",
     "@commitlint/cli": "^17.6.3",
-    "@types/chrome": "^0.0.235",
+    "@types/webextension-polyfill": "^0.10.0",
     "babel-loader": "^9.1.2",
     "clean-webpack-plugin": "^4.0.0",
     "copy-webpack-plugin": "^11.0.0",
@@ -23,6 +23,7 @@
     "terser-webpack-plugin": "^5.3.8",
     "ts-loader": "^9.4.2",
     "typescript": "^5.0.4",
+    "webextension-polyfill": "^0.10.0",
     "webpack": "^5.82.0",
     "webpack-cli": "^5.0.2"
   }
