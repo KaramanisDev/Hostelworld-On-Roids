@@ -3,7 +3,7 @@
     "target": "es2017",
     "module": "esnext",
     "lib": ["esnext", "dom", "dom.iterable"],
-    "types": ["webextension-polyfill"],
+    "types": ["webpack-env", "webextension-polyfill"],
     "typeRoots": ["node_modules/@types"],
     "rootDir": "src",
     "outDir": "dist",
@@ -20,6 +20,7 @@
     "isolatedModules": true,
     "resolveJsonModule": true,
     "moduleResolution": "node",
+    "experimentalDecorators": true,
     "forceConsistentCasingInFileNames": true
   },
   "include": ["src"],
