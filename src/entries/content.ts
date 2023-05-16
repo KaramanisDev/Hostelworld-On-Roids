@@ -1,3 +1,3 @@
-import { ContentOrchestrator } from '../app/Orchestrators/ContentOrchestrator'
+import { ContentInitializer } from '../app/Core/ContentInitializer'
 
-await ContentOrchestrator.loadRoids()
+await ContentInitializer.init()
