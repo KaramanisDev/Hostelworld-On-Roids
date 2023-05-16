@@ -4,7 +4,7 @@ import { XHRRequestInterceptor } from '../Utils/XHRRequestInterceptor'
 type RequireContext = __WebpackModuleApi.RequireContext
 
 export class AppInitializer {
-  static init (): void {
+  public static init (): void {
     this.loadListeners()
 
     XHRRequestInterceptor.init()
@@ -12,7 +12,7 @@ export class AppInitializer {
     return EventBus.emit('app:inited')
   }
 
-  static loadListeners (): void {
+  private static loadListeners (): void {
     const context: RequireContext = require.context(
       '../Listeners',
       true,

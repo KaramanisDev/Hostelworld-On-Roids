@@ -2,7 +2,7 @@ import { ScriptLoader } from '../Utils/ScriptLoader'
 import { BrowserRuntime } from '../Utils/BrowserRuntime'
 
 export class ContentInitializer {
-  static async init(): Promise<void> {
+  public static async init(): Promise<void> {
     /*
      Why? you wonder?
      Well in order to have access to the window attributes to be able to do things like intercepting XHR requests etc...
