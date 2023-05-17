@@ -4,7 +4,7 @@
     "module": "esnext",
     "lib": ["esnext", "dom", "dom.iterable"],
     "types": ["webpack-env", "webextension-polyfill"],
-    "typeRoots": ["node_modules/@types"],
+    "typeRoots": ["node_modules/@types", "src/app"],
     "rootDir": "src",
     "outDir": "dist",
     "strict": true,
