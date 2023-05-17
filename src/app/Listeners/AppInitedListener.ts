@@ -7,15 +7,12 @@ import { HosterworldAdapter } from '../Services/HosterworldAdapter'
 @Subscribe('app:inited')
 export class AppInitedListener extends AbstractListener {
   public handle (): Promise<void> | void {
-    XHRRequestInterceptor.addResponseDecorator(
-      'https://prod.apigee.hostelworld.com/legacy-hwapi-service/2.2/cities',
-      this.intercept
-    )
-
-    this.emit('hosterlworld:search:properties:intercepted')
+    XHRRequestInterceptor
+      .intercept('https://prod.apigee.hostelworld.com/legacy-hwapi-service/2.2/cities')
+      .withResponse(this.adaptSearchResponse)
   }
 
-  private intercept (_: string, response: string): string {
+  private adaptSearchResponse (response: string): string {
     const adapted: HostelWorldSearchResponse = HosterworldAdapter.adaptSearch(
       JSON.parse(response)
     )
