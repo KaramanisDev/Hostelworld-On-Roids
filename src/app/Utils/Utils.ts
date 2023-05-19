@@ -27,3 +27,11 @@ export async function waitForProperty (rootProperty: Object, pathToWait: string,
   await delay(100)
   return waitForProperty(rootProperty, pathToWait, maxTimeout - 100)
 }
+
+export function objectPick(object: Object, keys: string[]): Object {
+  return Object.fromEntries(
+    Object
+      .entries(object)
+      .filter(([key]) => keys.includes(key))
+  )
+}

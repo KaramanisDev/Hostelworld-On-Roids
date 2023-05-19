@@ -1,58 +1,65 @@
-import { InterceptedRequest } from './InterceptedRequest'
+import { RequestModifier } from './RequestModifier'
+import type { InterceptionStage } from './RequestModifier'
 import { CustomXMLHttpRequest } from './CustomXMLHttpRequest'
-import { hash } from '../Utils'
 
 type UrlMatcher = RegExp | URL | string
 type StatusMatcher = RegExp | number
 
-type InterceptionPattern = {
-  method: string
+type RequestQuery = {
   url: UrlMatcher
-  status: StatusMatcher
+  method?: string
+  status?: StatusMatcher
 }
 
-type Interceptors = {
-  [key: string]: InterceptedRequest
+type Interception = {
+  query: RequestQuery,
+  modifier: RequestModifier
 }
 
 export class XHRRequestInterceptor {
-  private static interceptors: Interceptors = {}
-  private static patterns: InterceptionPattern[] = []
+  private static interceptions: Interception[] = []
 
   public static init (): void {
-    CustomXMLHttpRequest.setCustomLoadEndCallback(
-      this.interceptOnceLoaded.bind(this)
+    CustomXMLHttpRequest.setInterceptCallback(
+      this.interceptOn.bind(this)
     )
 
     window.XMLHttpRequest = CustomXMLHttpRequest
   }
 
-  public static intercept (url: UrlMatcher, method: string = 'GET', status: StatusMatcher = 200): InterceptedRequest {
-    const key: string = hash(`${method}_${url}_${status}`)
+  public static intercept (query: RequestQuery): RequestModifier {
+    const modifier: RequestModifier = new RequestModifier()
 
-    const toBeIntercepted: InterceptedRequest = new InterceptedRequest()
+    this.interceptions.push({ query, modifier })
 
-    this.interceptors[key] = toBeIntercepted
-    this.patterns.push({ url, method, status})
-
-    return toBeIntercepted
+    return modifier
   }
 
-  private static interceptOnceLoaded (request: CustomXMLHttpRequest): void {
-    const { responseURL, method: requestMethod, status: responseStatus } = request
+  private static interceptOn (request: CustomXMLHttpRequest, stage: InterceptionStage): void {
+    const interceptions: Interception[] = this.matchedInterceptionsFor(request)
 
-    const matchingPatterns: InterceptionPattern[] = this.patterns.filter(pattern => {
-      const { url, method, status } = pattern
+    for (const { modifier } of interceptions) {
+      modifier.applyTo(request, stage)
+    }
+  }
 
-      return method === requestMethod
-      && status instanceof RegExp ? status.test(responseStatus.toString()) : responseStatus === status
-      && url instanceof RegExp ? url.test(responseURL) : responseURL.toString().includes(url.toString())
+  private static matchedInterceptionsFor (request: CustomXMLHttpRequest): Interception[] {
+    const { status: responseStatus, url: requestURL, method: requestMethod } = request
+
+    return this.interceptions.filter(({ query }) => {
+      const { url, method, status } = query
+
+      const isMethodMatching: boolean = method
+        ? method === requestMethod
+        : true
+      const isStatusMatching: boolean = status
+        ? status instanceof RegExp ? status.test(responseStatus.toString()) : responseStatus === status
+        : true
+      const isUrlMatching: boolean = url
+        ? url instanceof RegExp ? url.test(requestURL.toString()) : requestURL.includes(url.toString())
+        : true
+
+      return isMethodMatching && isStatusMatching && isUrlMatching
     })
-
-    for (const pattern of matchingPatterns) {
-      const { url, method, status } = pattern
-      const key: string = hash(`${method}_${url}_${status}`)
-
-      this.interceptors[key]?.applyInterceptions(request)
-    }}
+  }
 }

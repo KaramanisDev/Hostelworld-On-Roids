@@ -15,13 +15,13 @@ export class AppInitedListener extends AbstractListener {
 
   private applyRequestInterceptors (): void {
     XHRRequestInterceptor
-      .intercept('https://prod.apigee.hostelworld.com/legacy-hwapi-service/2.2/cities')
+      .intercept({ url: 'https://prod.apigee.hostelworld.com/legacy-hwapi-service/2.2/cities' })
       .withResponse(this.adaptSearchResponse)
 
     XHRRequestInterceptor
-      .intercept('https://prod.apigee.hostelworld.com/socialcues-service/api/v1/cities', 'GET', /^(?!200$)\d+$/)
-      .withResponse(JSON.stringify({ nationalities: [], profileImages: { all: [], soloPax: [] } }))
-      .withStatus(200)
+      .intercept({ url: 'https://prod.apigee.hostelworld.com/socialcues-service/api/v1/cities'})
+      .shouldNotFail(JSON.stringify({ nationalities: [], profileImages: { all: [], soloPax: [] } }))
+      .withTimeout(90 * 1000)
   }
 
   private adaptSearchResponse (response: string): string {
