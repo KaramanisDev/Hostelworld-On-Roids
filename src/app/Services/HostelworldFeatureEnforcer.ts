@@ -20,49 +20,39 @@ type VuexStore = {
 export class HostelworldFeatureEnforcer {
   private static store: VuexStore
 
-  public static async enableSearchCitySocialCues (): Promise<typeof this> {
-    const store: VuexStore = await this.nuxtJsStoreInstance()
+  public static async enableSearchCitySocialCues (): Promise<void> {
+    const store: VuexStore = await this.hostelworldStore()
 
     store.state.search.citySocialCues = true
-    this.hookAtStoreCommit(store, 'search/setCitySocialCuesExperiment', true)
-
-    return this
+    this.onStoreCommitOverwriteWith(store, 'search/setCitySocialCuesExperiment', true)
   }
 
-  public static async enableSearchPropertySocialCues (): Promise<typeof this> {
-    const store: VuexStore = await this.nuxtJsStoreInstance()
+  public static async enableSearchPropertySocialCues (): Promise<void> {
+    const store: VuexStore = await this.hostelworldStore()
 
     store.state.search.socialCuesEnabled = true
-    this.hookAtStoreCommit(store, 'search/setSocialCuesEnabled', true)
-
-    return this
+    this.onStoreCommitOverwriteWith(store, 'search/setSocialCuesEnabled', true)
   }
 
-  public static async enableSearchUnavailableProperties (): Promise<typeof this> {
-    const store: VuexStore = await this.nuxtJsStoreInstance()
+  public static async enableSearchUnavailableProperties (): Promise<void> {
+    const store: VuexStore = await this.hostelworldStore()
 
     store.state.search.searchNoAvailabilityCardsEnabled = true
-    this.hookAtStoreCommit(store, 'search/setUnavailabilityExclusion', {
-      searchNoAvailabilityCards: true
-    })
-
-    return this
+    this.onStoreCommitOverwriteWith(store, 'search/setUnavailabilityExclusion', { searchNoAvailabilityCards: true })
   }
 
-  public static async enableViewPropertySocialCues (): Promise<typeof this> {
-    const store: VuexStore = await this.nuxtJsStoreInstance()
+  public static async enableViewPropertySocialCues (): Promise<void> {
+    const store: VuexStore = await this.hostelworldStore()
 
     store.state.property.socialCuesEnabled = true
-    this.hookAtStoreCommit(store, 'property/setSocialCuesEnabled', true)
-
-    return this
+    this.onStoreCommitOverwriteWith(store, 'property/setSocialCuesEnabled', true)
   }
 
-  private static async nuxtJsStoreInstance (): Promise<VuexStore> {
+  private static async hostelworldStore (): Promise<VuexStore> {
     return <VuexStore>await waitForProperty(window, '$nuxt.$store', 15000)
   }
 
-  private static hookAtStoreCommit (store: VuexStore, onType: string, newPayload: unknown): void {
+  private static onStoreCommitOverwriteWith (store: VuexStore, onType: string, newPayload: unknown): void {
     const originalCommit: VuexStoreCommit = store.commit
 
     store.commit = function (type: string, payload: unknown): void {
