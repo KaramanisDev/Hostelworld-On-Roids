@@ -1,5 +1,5 @@
 import { EventBus } from './EventBus'
-import { XHRRequestInterceptor } from '../Utils/XHRRequestInterceptor'
+import { XHRRequestInterceptor } from 'Utils/XHRRequestInterceptor'
 
 type RequireContext = __WebpackModuleApi.RequireContext
 

@@ -1,5 +1,5 @@
-import { ScriptLoader } from '../Utils/ScriptLoader'
-import { BrowserRuntime } from '../Utils/BrowserRuntime'
+import { ScriptLoader } from 'Utils/ScriptLoader'
+import { BrowserRuntime } from 'Utils/BrowserRuntime'
 
 export class ContentInitializer {
   public static async init(): Promise<void> {

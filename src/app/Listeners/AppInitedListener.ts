@@ -1,9 +1,9 @@
 import { AbstractListener } from './AbstractListener'
-import { Subscribe } from '../Core/EventBus'
-import { XHRRequestInterceptor } from '../Utils/XHRRequestInterceptor'
-import { HostelWorldSearchResponse } from '../Types/HostelworlSearchResponse'
-import { HosterworldAdapter } from '../Services/HosterworldAdapter'
-import { HostelworldFeatureEnforcer } from '../Services/HostelworldFeatureEnforcer'
+import { Subscribe } from 'Core/EventBus'
+import { XHRRequestInterceptor } from 'Utils/XHRRequestInterceptor'
+import type { HostelWorldSearchResponse } from 'Types/HostelworlSearchResponse'
+import { HosterworldAdapter } from 'Services/HosterworldAdapter'
+import { HostelworldFeatureEnforcer } from 'Services/HostelworldFeatureEnforcer'
 
 @Subscribe('app:inited')
 export class AppInitedListener extends AbstractListener {

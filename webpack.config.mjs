@@ -2,6 +2,7 @@
 
 import url from 'url'
 import path from 'path'
+import * as fs from 'fs'
 import CopyPlugin from 'copy-webpack-plugin'
 import TerserPlugin from 'terser-webpack-plugin'
 import { CleanWebpackPlugin } from 'clean-webpack-plugin'
@@ -10,6 +11,17 @@ const __dirname = path.dirname(url.fileURLToPath(import.meta.url))
 
 function basePath (relative) {
   return path.resolve(__dirname, relative)
+}
+
+function aliases () {
+  const aliases = {}
+  const appDirectory = basePath( 'src/app')
+
+  fs.readdirSync(appDirectory).forEach((directory) => {
+    aliases[directory] = basePath(`src/app/${directory}`)
+  })
+
+  return aliases
 }
 
 export default {
@@ -27,6 +39,7 @@ export default {
     path: basePath('dist')
   },
   resolve: {
+    alias: aliases(),
     extensions: ['.ts', '.js']
   },
   cache: {

@@ -1,4 +1,4 @@
-import { waitForProperty } from '../Utils'
+import { waitForProperty } from 'Utils'
 
 type VuexStoreCommit = (type: string, payload: unknown) => void
 type HostelworldState = {

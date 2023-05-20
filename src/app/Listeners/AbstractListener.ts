@@ -1,5 +1,5 @@
 import type { ListenerInterface } from './ListenerInterface'
-import { EventBus } from '../Core/EventBus'
+import { EventBus } from 'Core/EventBus'
 
 export abstract class AbstractListener implements ListenerInterface {
   public abstract handle (...args: [unknown]): Promise<void> | void

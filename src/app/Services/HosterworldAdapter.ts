@@ -1,4 +1,4 @@
-import { HostelWorldSearchResponse } from '../Types/HostelworlSearchResponse'
+import { HostelWorldSearchResponse } from 'Types/HostelworlSearchResponse'
 
 export class HosterworldAdapter {
   public static adaptSearch (response: HostelWorldSearchResponse): HostelWorldSearchResponse {

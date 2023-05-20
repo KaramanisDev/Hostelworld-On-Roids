@@ -1,4 +1,4 @@
-import type { ListenerInterface } from '../Listeners/ListenerInterface'
+import type { ListenerInterface } from 'Listeners/ListenerInterface'
 
 export class EventBus {
   private static listeners: { [event: string]: Function[] } = {}
