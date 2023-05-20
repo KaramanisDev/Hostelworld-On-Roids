@@ -7,9 +7,9 @@
   },
   "scripts": {
     "watch": "yarn dev --watch",
-    "prod": "webpack --config webpack.config.js --mode=production",
-    "dev": "webpack --config webpack.config.js --mode=development",
-    "commitlint": "node scripts/commitlint.js"
+    "prod": "webpack --config webpack.config.mjs --mode=production",
+    "dev": "webpack --config webpack.config.mjs --mode=development",
+    "commitlint": "node scripts/commitlint.mjs"
   },
   "devDependencies": {
     "@babel/core": "^7.21.8",

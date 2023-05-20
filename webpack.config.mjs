@@ -1,23 +1,30 @@
 'use strict'
 
-const path = require('path')
-const CopyPlugin = require('copy-webpack-plugin')
-const TerserPlugin = require('terser-webpack-plugin');
-const { CleanWebpackPlugin } = require('clean-webpack-plugin')
+import url from 'url'
+import path from 'path'
+import CopyPlugin from 'copy-webpack-plugin'
+import TerserPlugin from 'terser-webpack-plugin'
+import { CleanWebpackPlugin } from 'clean-webpack-plugin'
 
-module.exports = {
+const __dirname = path.dirname(url.fileURLToPath(import.meta.url))
+
+function basePath (relative) {
+  return path.resolve(__dirname, relative)
+}
+
+export default {
   mode: 'development',
   devtool: 'source-map',
   experiments: {
     topLevelAwait: true
   },
   entry: {
-    roids: path.resolve(__dirname, '.', 'src/entries', 'app.ts'),
-    content: path.resolve(__dirname, '.', 'src/entries', 'content.ts')
+    roids: basePath('src/entries/app.ts'),
+    content: basePath('src/entries/content.ts'),
   },
   output: {
     filename: '[name].js',
-    path: path.join(__dirname, './dist')
+    path: basePath('dist')
   },
   resolve: {
     extensions: ['.ts', '.js']
@@ -47,18 +54,14 @@ module.exports = {
   },
   optimization: {
     minimize: true,
-    minimizer: [
-      new TerserPlugin({
-        extractComments: false
-      })
-    ],
-    usedExports: true
+    usedExports: true,
+    minimizer: [new TerserPlugin({ extractComments: false })]
   },
   plugins: [
     new CleanWebpackPlugin({
       cleanOnceBeforeBuildPatterns: [
-        path.join(process.cwd(), 'dist/**/*'),
-        `!${path.join(process.cwd(), 'dist/.keep')}`,
+        basePath('dist/**/*'),
+        `!${basePath('dist/.keep')}`,
       ]
     }),
     new CopyPlugin({
