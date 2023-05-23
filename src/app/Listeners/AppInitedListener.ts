@@ -1,7 +1,7 @@
 import { AbstractListener } from './AbstractListener'
 import { Subscribe } from 'Core/EventBus'
 import { HosterworldDataAdapter } from 'Services/HosterworldDataAdapter'
-import { HostelworldFeatureEnforcer } from 'Services/HostelworldFeatureToggler'
+import { HostelworldFeatureToggler } from 'Services/HostelworldFeatureToggler'
 import { HostelworldNetworkInterceptor } from 'Services/HostelworldNetworkInterceptor'
 
 @Subscribe('app:inited')
@@ -20,9 +20,9 @@ export class AppInitedListener extends AbstractListener {
   }
 
   private async enforceFeaturesOnHostelworld (): Promise<void> {
-    await HostelworldFeatureEnforcer.enableViewPropertySocialCues()
-    await HostelworldFeatureEnforcer.enableSearchCitySocialCues()
-    await HostelworldFeatureEnforcer.enableSearchPropertySocialCues()
-    await HostelworldFeatureEnforcer.enableSearchUnavailableProperties()
+    await HostelworldFeatureToggler.enableViewPropertySocialCues()
+    await HostelworldFeatureToggler.enableSearchCitySocialCues()
+    await HostelworldFeatureToggler.enableSearchPropertySocialCues()
+    await HostelworldFeatureToggler.enableSearchUnavailableProperties()
   }
 }

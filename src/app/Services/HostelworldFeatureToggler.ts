@@ -1,7 +1,6 @@
 import { waitForProperty } from 'Utils'
 
-type VuexStoreCommit = (type: string, payload: unknown) => void
-type HostelworldState = {
+export type HostelworldState = {
   property: {
     socialCuesEnabled: boolean
   }
@@ -12,14 +11,15 @@ type HostelworldState = {
     searchNoAvailabilityCardsEnabled: boolean
   }
 }
-type VuexStore = {
+
+export type VuexStore = {
   commit: VuexStoreCommit,
   state: HostelworldState
 }
 
-export class HostelworldFeatureEnforcer {
-  private static store: VuexStore
+type VuexStoreCommit = (type: string, payload: unknown) => void
 
+export class HostelworldFeatureToggler {
   public static async enableSearchCitySocialCues (): Promise<void> {
     const store: VuexStore = await this.hostelworldStore()
 
