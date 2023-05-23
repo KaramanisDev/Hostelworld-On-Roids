@@ -1,5 +1,5 @@
 import { ScriptLoader } from 'Utils/ScriptLoader'
-import { BrowserRuntime } from 'Utils/BrowserRuntime'
+import { ExtensionRuntime } from 'Utils/ExtensionRuntime'
 
 export class ContentInitializer {
   public static async init(): Promise<void> {
@@ -11,7 +11,7 @@ export class ContentInitializer {
      Additional benefits it offers is that we won't have to reload the extension in the browser on every build.
     */
     return ScriptLoader.inject(
-      BrowserRuntime.assetUrl('roids.js')
+      ExtensionRuntime.assetUrl('roids.js')
     )
   }
 }
