@@ -28,6 +28,19 @@ export async function waitForProperty<T = unknown> (rootProperty: Object, pathTo
   return waitForProperty(rootProperty, pathToWait, maxTimeout - 100)
 }
 
+export async function waitForElement (selector: string, maxTimeout: number = 5000): Promise<HTMLElement> {
+  const element: HTMLElement | null = document.querySelector(selector)
+
+  if (element) return element
+
+  if (maxTimeout <= 0) {
+    throw new Error(`Element that matches ${selector} was not found within the specified time.`)
+  }
+
+  await delay(100)
+  return waitForElement(selector, maxTimeout - 100)
+}
+
 export function objectPick (object: Object, keys: string[]): Object {
   return Object.fromEntries(
     Object
@@ -51,19 +64,6 @@ export function objectsAreEqual (object1: Record<string, any>, object2: Record<s
   return true
 }
 
-export async function waitForElement (selector: string, maxTimeout: number = 5000): Promise<HTMLElement> {
-  const element: HTMLElement | null = document.querySelector(selector)
-
-  if (element) return element
-
-  if (maxTimeout <= 0) {
-    throw new Error(`Element that matches ${selector} was not found within the specified time.`)
-  }
-
-  await delay(100)
-  return waitForElement(selector, maxTimeout - 100)
-}
-
 export function randomNumber (min: number, max: number): number {
   return Math.floor(Math.random() * (max - min + 1) + min)
 }
@@ -74,4 +74,33 @@ export function toPercent (value: number, max: number): number {
   return Number(
     (value / max * 100).toFixed(2)
   )
+}
+
+export function dateFormat (date: Date, format: string = 'yyyy-mm-dd'): string {
+  const replacements: Record<string, string | number> = {
+    yyyy: date.getFullYear(),
+    mm: String(date.getMonth() + 1).padStart(2, '0'),
+    dd: String(date.getDate()).padStart(2, '0'),
+    YY: String(date.getFullYear()).slice(-2),
+    M: date.getMonth() + 1,
+    D: date.getDate()
+  }
+
+  return format.replace(/yyyy|mm|dd|YY|M|D/g, match => String(replacements[match]))
+}
+
+export function dateAddDays (date: Date, days: number): Date {
+  const newDate = new Date(date)
+
+  newDate.setDate(newDate.getDate() + days)
+
+  return newDate
+}
+
+export async function promiseFallback<T = unknown> (promise: Promise<any>, fallback?: T): Promise<T | undefined> {
+  try {
+    return await promise
+  } catch {
+    return fallback
+  }
 }
