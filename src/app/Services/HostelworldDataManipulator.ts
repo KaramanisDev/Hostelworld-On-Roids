@@ -1,4 +1,4 @@
-import { delay, waitForElement, waitForProperty } from 'Utils'
+import { delay, promiseFallback, waitForElement, waitForProperty } from 'Utils'
 import type { Property as AvailableProperty } from 'Types/HostelworldSearchProperties'
 import type { Property as UnavailableProperty } from 'Types/HostelworldSearchUnavailableProperties'
 
@@ -24,7 +24,8 @@ type VueSearchComponent = {
 export class HostelworldDataManipulator {
   public static async showMaxPropertiesInSearch (): Promise<void> {
     const showAllPropertiesInSearch: () => Promise<void> = async (): Promise<void> => {
-      const component: VuePropertyListComponent = await this.propertyListComponent()
+      const component: VuePropertyListComponent | undefined = await promiseFallback(this.propertyListComponent())
+      if (!component) return
 
       const maxPossiblePropertiesFromRequest: number = 1100
       Object.defineProperty(component, 'propertiesPerPage', {
@@ -39,7 +40,8 @@ export class HostelworldDataManipulator {
 
   public static async hideSellingOutFastLabel (): Promise<void> {
     const hideSellingOutLabel: () => Promise<void> = async (): Promise<void> => {
-      const component: VuePropertyListComponent = await this.propertyListComponent()
+      const component: VuePropertyListComponent | undefined = await promiseFallback(this.propertyListComponent())
+      if (!component) return
 
       const isSellingOutFast: boolean = false
       Object.defineProperty(component, 'isSellingOutFast', {
@@ -54,7 +56,8 @@ export class HostelworldDataManipulator {
 
   public static async hideFeaturedProperties (): Promise<void> {
     const hideFeaturedProperties: () => Promise<void> = async (): Promise<void> => {
-      const component: VuePropertyListComponent = await this.propertyListComponent()
+      const component: VuePropertyListComponent | undefined = await promiseFallback(this.propertyListComponent())
+      if (!component) return
 
       const displayFeaturedProperties: boolean = false
       Object.defineProperty(component, 'displayFeaturedProperties', {
@@ -70,9 +73,14 @@ export class HostelworldDataManipulator {
   public static async showMaxUnavailablePropertiesAndSocialCues (): Promise<void> {
     const showMaxUnavailablePropertiesAndSocialCues: () => Promise<void> = async (): Promise<void> => {
       await delay(2000)
-      await waitForElement('.property-card .property', 60 * 1000)
 
-      const component: VueSearchComponent = await this.searchComponent()
+      const propertyCard: HTMLDivElement | undefined = await promiseFallback(
+        waitForElement('.property-card .property', 60 * 1000)
+      )
+      if (!propertyCard) return
+
+      const component: VueSearchComponent | undefined = await promiseFallback(this.searchComponent())
+      if (!component) return
 
       await component.getUnavailableProperties([])
 
