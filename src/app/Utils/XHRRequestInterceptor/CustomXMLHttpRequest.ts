@@ -1,11 +1,13 @@
 type BackingProperties = {
   -readonly [K in keyof CustomXMLHttpRequest]?: unknown
 }
+
 export class CustomXMLHttpRequest extends XMLHttpRequest {
   public url: string = ''
   public method: string = ''
   public backing: BackingProperties = {}
   private static interceptCallback?: Function
+
   constructor () {
     super()
     CustomXMLHttpRequest.interceptCallback?.(this, 'construct')
@@ -20,8 +22,8 @@ export class CustomXMLHttpRequest extends XMLHttpRequest {
     CustomXMLHttpRequest.interceptCallback?.(this, 'open')
 
     return async === undefined
-      ? super.open(method, url)
-      : super.open(method, url, async, username, password)
+      ? super.open(this.method, this.url)
+      : super.open(this.method, this.url, async, username, password)
   }
 
   public static setInterceptCallback (callback: Function): void {

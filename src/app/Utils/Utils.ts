@@ -28,10 +28,25 @@ export async function waitForProperty (rootProperty: Object, pathToWait: string,
   return waitForProperty(rootProperty, pathToWait, maxTimeout - 100)
 }
 
-export function objectPick(object: Object, keys: string[]): Object {
+export function objectPick (object: Object, keys: string[]): Object {
   return Object.fromEntries(
     Object
       .entries(object)
       .filter(([key]) => keys.includes(key))
   )
+}
+
+export function objectsAreEqual (object1: Record<string, any>, object2: Record<string, any>): boolean {
+  const object1Keys: string[] = Object.keys(object1)
+  const object2Keys: string[] = Object.keys(object2)
+
+  if (object1Keys.length !== object2Keys.length) return false
+
+  for (const key of object1Keys) {
+    if (object2Keys.includes(key) && object1[key] === object2[key]) continue
+
+    return false
+  }
+
+  return true
 }

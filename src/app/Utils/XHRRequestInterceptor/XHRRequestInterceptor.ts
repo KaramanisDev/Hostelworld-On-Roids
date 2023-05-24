@@ -1,5 +1,6 @@
-import { RequestModifier } from './RequestModifier'
 import type { InterceptionStage } from './RequestModifier'
+import { objectsAreEqual } from 'Utils'
+import { RequestModifier } from './RequestModifier'
 import { CustomXMLHttpRequest } from './CustomXMLHttpRequest'
 
 type UrlMatcher = RegExp | URL | string
@@ -13,7 +14,7 @@ type RequestQuery = {
 
 type Interception = {
   query: RequestQuery,
-  modifier: RequestModifier
+  modifiers: RequestModifier[]
 }
 
 export class XHRRequestInterceptor {
@@ -29,8 +30,15 @@ export class XHRRequestInterceptor {
 
   public static intercept (query: RequestQuery): RequestModifier {
     const modifier: RequestModifier = new RequestModifier()
+    const interception: Interception | undefined = this.interceptions.find(
+      interception => objectsAreEqual(interception.query, query)
+    )
 
-    this.interceptions.push({ query, modifier })
+    if (interception) {
+      interception.modifiers.push(modifier)
+    } else {
+      this.interceptions.push({ query, modifiers: [modifier] })
+    }
 
     return modifier
   }
@@ -38,8 +46,10 @@ export class XHRRequestInterceptor {
   private static interceptOn (request: CustomXMLHttpRequest, stage: InterceptionStage): void {
     const interceptions: Interception[] = this.matchedInterceptionsFor(request)
 
-    for (const { modifier } of interceptions) {
-      modifier.applyTo(request, stage)
+    for (const { modifiers } of interceptions) {
+      for (const modifier of modifiers) {
+        modifier.applyTo(request, stage)
+      }
     }
   }
 
@@ -53,10 +63,10 @@ export class XHRRequestInterceptor {
         ? method === requestMethod
         : true
       const isStatusMatching: boolean = status
-        ? status instanceof RegExp ? status.test(responseStatus.toString()) : responseStatus === status
+        ? status instanceof RegExp ? status.test(String(responseStatus)) : responseStatus === status
         : true
       const isUrlMatching: boolean = url
-        ? url instanceof RegExp ? url.test(requestURL.toString()) : requestURL.includes(url.toString())
+        ? url instanceof RegExp ? url.test(String(requestURL)) : requestURL.includes(String(url))
         : true
 
       return isMethodMatching && isStatusMatching && isUrlMatching

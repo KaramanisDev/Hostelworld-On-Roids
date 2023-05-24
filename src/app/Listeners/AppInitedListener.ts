@@ -1,9 +1,8 @@
 import { AbstractListener } from './AbstractListener'
 import { Subscribe } from 'Core/EventBus'
-import { XHRRequestInterceptor } from 'Utils/XHRRequestInterceptor'
-import type { HostelWorldSearchResponse } from 'Types/HostelworlSearchResponse'
-import { HosterworldAdapter } from 'Services/HosterworldAdapter'
-import { HostelworldFeatureEnforcer } from 'Services/HostelworldFeatureEnforcer'
+import { HosterworldDataAdapter } from 'Services/HosterworldDataAdapter'
+import { HostelworldFeatureEnforcer } from 'Services/HostelworldFeatureToggler'
+import { HostelworldNetworkInterceptor } from 'Services/HostelworldNetworkInterceptor'
 
 @Subscribe('app:inited')
 export class AppInitedListener extends AbstractListener {
@@ -14,22 +13,10 @@ export class AppInitedListener extends AbstractListener {
   }
 
   private applyRequestInterceptors (): void {
-    XHRRequestInterceptor
-      .intercept({ url: 'https://prod.apigee.hostelworld.com/legacy-hwapi-service/2.2/cities' })
-      .withResponse(this.adaptSearchResponse)
-
-    XHRRequestInterceptor
-      .intercept({ url: 'https://prod.apigee.hostelworld.com/socialcues-service/api/v1/cities'})
-      .shouldNotFail(JSON.stringify({ nationalities: [], profileImages: { all: [], soloPax: [] } }))
-      .withTimeout(90 * 1000)
-  }
-
-  private adaptSearchResponse (response: string): string {
-    const adapted: HostelWorldSearchResponse = HosterworldAdapter.adaptSearch(
-      JSON.parse(response)
-    )
-
-    return JSON.stringify(adapted)
+    HostelworldNetworkInterceptor
+      .guardAgainstFailingCitySocialCues()
+      .increaseSearchUnavailablePropertiesPerPage()
+      .onSearchProperties(HosterworldDataAdapter.adaptSearch)
   }
 
   private async enforceFeaturesOnHostelworld (): Promise<void> {

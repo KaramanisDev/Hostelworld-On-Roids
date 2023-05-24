@@ -1,10 +1,10 @@
 import type { CustomXMLHttpRequest } from './CustomXMLHttpRequest'
+import type { Callback } from 'Types/General'
 import { objectPick } from '../'
 
-type Callback<T> = (value: T) => T
 type Modifier = (request: CustomXMLHttpRequest) => void
 
-type ModifierName = 'withTimeout' | 'withResponse' | 'shouldNotFailOpen' | 'shouldNotFailLoadEnd'
+type ModifierName = 'withUrl' | 'withTimeout' | 'withResponse' | 'shouldNotFailOpen' | 'shouldNotFailLoadEnd'
 type Stages = {
   open: ModifierName[]
   loadend: ModifierName[]
@@ -21,8 +21,21 @@ export type InterceptionStage = keyof Stages
 export class RequestModifier {
   private modifiers: Modifiers = {}
   private stages: Stages = {
-    open: ['withTimeout', 'shouldNotFailOpen'],
+    open: ['withUrl', 'withTimeout', 'shouldNotFailOpen'],
     loadend: ['withResponse', 'shouldNotFailLoadEnd']
+  }
+
+  public withUrl (urlOrCallback: string | Callback<string>): this {
+    this.modifiers.withUrl = (request: CustomXMLHttpRequest): void => {
+      const url: string = request.url
+      const newUrl: string = typeof urlOrCallback === 'function'
+        ? urlOrCallback(url)
+        : urlOrCallback
+
+      this.onPropertyEnforce(request, 'url', newUrl)
+    }
+
+    return this
   }
 
   public withResponse (responseOrCallback: string | Callback<string>): this {
@@ -56,7 +69,7 @@ export class RequestModifier {
     }
 
     this.modifiers.shouldNotFailLoadEnd = (request: CustomXMLHttpRequest): void => {
-      if(request.status === 200) return
+      if (request.status === 200) return
 
       this.onPropertyEnforce(request, 'status', 200)
       respondWithIfFailed && this.onPropertyEnforce(request, 'responseText', respondWithIfFailed)
@@ -66,8 +79,7 @@ export class RequestModifier {
   }
 
   public applyTo (request: CustomXMLHttpRequest, stage: InterceptionStage): void {
-    const modifiers: Modifier[] =
-      Object.values(
+    const modifiers: Modifier[] = Object.values(
         objectPick(this.modifiers, this.stages[stage] || [])
       )
 
