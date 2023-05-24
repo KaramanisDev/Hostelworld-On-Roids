@@ -145,6 +145,14 @@ type Promotion = {
   stack: boolean
   name: string
   discount: number
+  campaign?: PromotionCampaign
+}
+
+type PromotionCampaign = {
+  id: string
+  name: string
+  start: string
+  end: string
 }
 
 type PromotionType = 'LOS' | 'CUSTOM'
