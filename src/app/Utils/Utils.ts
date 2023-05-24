@@ -14,7 +14,7 @@ export function hash (input: string): string {
   return new Uint32Array([hash])[0].toString(36)
 }
 
-export async function waitForProperty (rootProperty: Object, pathToWait: string, maxTimeout: number = 5000): Promise<unknown> {
+export async function waitForProperty <T = unknown>(rootProperty: Object, pathToWait: string, maxTimeout: number = 5000): Promise<T> {
   const path: string[] = pathToWait.split('.')
   const currentObj = path.reduce((obj: any, prop: string) => obj && obj[prop], rootProperty)
 
@@ -49,4 +49,17 @@ export function objectsAreEqual (object1: Record<string, any>, object2: Record<s
   }
 
   return true
+}
+
+export async function waitForElement (selector: string, maxTimeout: number = 5000): Promise<HTMLElement> {
+  const element: HTMLElement | null = document.querySelector(selector)
+
+  if (element) return element
+
+  if (maxTimeout <= 0) {
+    throw new Error(`Element that matches ${selector} was not found within the specified time.`)
+  }
+
+  await delay(100)
+  return waitForElement(selector, maxTimeout - 100)
 }

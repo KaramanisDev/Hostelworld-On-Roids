@@ -1,6 +1,6 @@
 import { waitForProperty } from 'Utils'
 
-export type HostelworldState = {
+type HostelworldState = {
   property: {
     socialCuesEnabled: boolean
   }
@@ -12,7 +12,7 @@ export type HostelworldState = {
   }
 }
 
-export type VuexStore = {
+type VuexStore = {
   commit: VuexStoreCommit,
   state: HostelworldState
 }
@@ -49,7 +49,7 @@ export class HostelworldFeatureToggler {
   }
 
   private static async hostelworldStore (): Promise<VuexStore> {
-    return <VuexStore>await waitForProperty(window, '$nuxt.$store', 15000)
+    return await waitForProperty(window, '$nuxt.$store', 60 * 1000)
   }
 
   private static onStoreCommitOverwriteWith (store: VuexStore, onType: string, newPayload: unknown): void {
