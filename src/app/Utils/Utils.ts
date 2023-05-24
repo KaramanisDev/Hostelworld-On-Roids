@@ -14,7 +14,7 @@ export function hash (input: string): string {
   return new Uint32Array([hash])[0].toString(36)
 }
 
-export async function waitForProperty <T = unknown>(rootProperty: Object, pathToWait: string, maxTimeout: number = 5000): Promise<T> {
+export async function waitForProperty<T = unknown> (rootProperty: Object, pathToWait: string, maxTimeout: number = 5000): Promise<T> {
   const path: string[] = pathToWait.split('.')
   const currentObj = path.reduce((obj: any, prop: string) => obj && obj[prop], rootProperty)
 
@@ -62,4 +62,16 @@ export async function waitForElement (selector: string, maxTimeout: number = 500
 
   await delay(100)
   return waitForElement(selector, maxTimeout - 100)
+}
+
+export function randomNumber (min: number, max: number): number {
+  return Math.floor(Math.random() * (max - min + 1) + min)
+}
+
+export function toPercent (value: number, max: number): number {
+  if (!max) return 0
+
+  return Number(
+    (value / max * 100).toFixed(2)
+  )
 }

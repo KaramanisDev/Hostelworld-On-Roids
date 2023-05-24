@@ -4,16 +4,18 @@ import { CacheStorage } from './CacheStorage'
 import { hash } from './Utils'
 
 export class HttpClient {
-  private static readonly cacheTimeInMs: number = 24 * 60 * 60 * 1000
-  private static readonly storage: CacheStorage<string> = new CacheStorage('http')
+  private static readonly defaultCacheTimeInMinutes: number = 24 * 60
+  private static readonly storage: CacheStorage<string> = new CacheStorage('http-client')
 
-  public static async getJson (url: string): Promise<Object> {
-    const response: KyResponse = await KyClient.get(url, this.options())
+  public static async getJson<T = Record<string, unknown>>(url: string, cacheInMinutes?: number): Promise<T> {
+    const response: KyResponse = await KyClient.get(url, this.options(cacheInMinutes))
 
     return response.json()
   }
 
-  private static options (): Options {
+  private static options (cacheInMinutes?: number): Options {
+    if(!cacheInMinutes) return {}
+
     return {
       hooks: {
         beforeRequest: [
@@ -21,7 +23,7 @@ export class HttpClient {
         ],
         afterResponse: [
           (request: Request, _: NormalizedOptions, response: Response): Promise<void> =>
-            this.afterResponseHook(request, response)
+            this.afterResponseHook(request, response, cacheInMinutes)
         ]
       }
     }
@@ -36,14 +38,16 @@ export class HttpClient {
     return new Response(cachedContent)
   }
 
-  private static async afterResponseHook (request: Request, response: Response): Promise<void> {
+  private static async afterResponseHook (request: Request, response: Response, cacheInMinutes?: number): Promise<void> {
     const cacheKey: string = this.cacheKey(request)
 
-    const isInCacheAndNotExpired: boolean = await this.storage.hasNotExpired(cacheKey)
-    if (isInCacheAndNotExpired) return
+    const hasNotExpired: boolean = await this.storage.hasNotExpired(cacheKey)
+    if (hasNotExpired) return
 
     const content: string = await response.text()
-    await this.storage.put(cacheKey, content, this.cacheTimeInMs)
+    const cacheTimeInMs: number = (cacheInMinutes ?? this.defaultCacheTimeInMinutes) * 60 * 1000
+
+    return this.storage.put(cacheKey, content, cacheTimeInMs)
   }
 
   private static cacheKey (request: Request): string {
