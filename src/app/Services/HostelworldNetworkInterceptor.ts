@@ -11,12 +11,23 @@ export class HostelworldNetworkInterceptor {
   private static searchUnavailablePropertiesRegex: RegExp =
     /^https:\/\/prod\.apigee\.hostelworld\.com\/legacy-hwapi-service\/2\.2\/cities\/.+\/properties\/no-availabilities/
 
-  public static onSearchProperties (callback: Callback<HostelworldSearch>): typeof this {
+  public static onSearchProperties (UrlCallback: Callback<URL>, responseCallback: Callback<HostelworldSearch>): typeof this {
+    const parseUrlWithCallback: Callback<string> = (url: string): string => {
+      const parsed: URL = new URL(url)
+      UrlCallback(parsed)
+
+      return parsed.toString()
+    }
+
     const parseResponseWithCallback: Callback<string> = (response: string): string => {
       const parsed: HostelworldSearch = JSON.parse(response)
 
-      return JSON.stringify(callback(parsed))
+      return JSON.stringify(responseCallback(parsed))
     }
+
+    XHRRequestInterceptor
+      .intercept({ url: this.searchPropertiesUrl })
+      .withUrl(parseUrlWithCallback)
 
     XHRRequestInterceptor
       .intercept({ url: this.searchPropertiesUrl, status: 200 })
