@@ -1,3 +1,4 @@
+import type { HostelworldSearch } from 'Services/HosterworldDataAdapter'
 import { Search } from 'DTOs/Search'
 import { Subscribe } from 'Core/EventBus'
 import { AbstractListener } from './AbstractListener'
@@ -23,7 +24,7 @@ export class AppInitedListener extends AbstractListener {
       .increaseSearchUnavailablePropertiesPerPage()
       .onSearchProperties(
         this.persistLatestSearch.bind(this),
-        HosterworldDataAdapter.adaptSearch
+        this.onSearchProperties.bind(this)
       )
   }
 
@@ -33,6 +34,14 @@ export class AppInitedListener extends AbstractListener {
     )
 
     return url
+  }
+
+  private onSearchProperties (search: HostelworldSearch): HostelworldSearch {
+    const adapted: HostelworldSearch = HosterworldDataAdapter.adaptSearch(search)
+
+    this.emit('properties:intercepted', adapted)
+
+    return adapted
   }
 
   private async toggleHostelworldFeatures (): Promise<void> {

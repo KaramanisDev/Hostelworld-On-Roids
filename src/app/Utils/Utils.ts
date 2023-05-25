@@ -104,3 +104,13 @@ export async function promiseFallback<T = unknown> (promise: Promise<any>, fallb
     return fallback
   }
 }
+
+export async function promisesFulfillSequentially (promiseFactories: (() => Promise<void>)[]): Promise<unknown[]> {
+  const outputs: unknown[] = []
+
+  for (const factory of promiseFactories) {
+    outputs.push(await factory())
+  }
+
+  return outputs
+}
