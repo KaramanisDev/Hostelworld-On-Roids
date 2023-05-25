@@ -1,18 +1,25 @@
 import { EventBus } from './EventBus'
+import { Session } from 'DTOs/Session'
 import { XHRRequestInterceptor } from 'Utils/XHRRequestInterceptor'
 
 type RequireContext = __WebpackModuleApi.RequireContext
 
 export class AppInitializer {
   public static init (): void {
-    this.loadListeners()
+    this.initEventBusWithListeners()
 
     XHRRequestInterceptor.init()
 
     return EventBus.emit('app:inited')
   }
 
-  private static loadListeners (): void {
+  private static initEventBusWithListeners (): void {
+    EventBus.initWith({ session: new Session() })
+
+    this.subscribeListeners()
+  }
+
+  private static subscribeListeners (): void {
     const context: RequireContext = require.context(
       '../Listeners',
       true,
