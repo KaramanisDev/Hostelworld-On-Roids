@@ -1,8 +1,6 @@
-'use strict'
+import { execSync } from 'node:child_process'
 
-import { execSync } from 'child_process'
-
-const currentBranch = execSync('git symbolic-ref --short HEAD', { encoding: 'utf-8' }).trim()
+const currentBranch = execSync('git symbolic-ref --short HEAD', { encoding: 'utf8' }).trim()
 const remoteBranch = `origin/${currentBranch}`
 
 const command = `npx commitlint --from="${remoteBranch}" --to=HEAD`

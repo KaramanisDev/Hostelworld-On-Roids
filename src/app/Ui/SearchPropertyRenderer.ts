@@ -12,8 +12,8 @@ export class SearchPropertyRenderer {
   public static async render (property: Property): Promise<void> {
     await waitForElement('.property-card .property')
 
-    const propertyCards: HTMLCollectionOf<Element> = document.getElementsByClassName('property-card')
-    const propertyCard: Element | undefined = Array.from(propertyCards).find(
+    const propertyCards: NodeListOf<Element> = document.querySelectorAll('.property-card')
+    const propertyCard: Element | undefined = [...propertyCards].find(
       card =>
         card.innerHTML.includes(property.getId()) &&
         card.innerHTML.includes(this.htmlEncode(property.getName()))
@@ -23,17 +23,17 @@ export class SearchPropertyRenderer {
 
     const metrics: HTMLDivElement = this.elementWith('metrics-grid')
 
-    metrics.appendChild(
+    metrics.append(
       this.reviewMetrics(property.getReviewMetrics())
     )
-    metrics.appendChild(
+    metrics.append(
       this.availabilityMetrics(property.getAvailabilityMetrics())
     )
 
     const existingMetrics: HTMLDivElement | null = propertyCard.querySelector('.metrics-grid')
     if (existingMetrics) existingMetrics.remove()
 
-    propertyCard.appendChild(metrics)
+    propertyCard.append(metrics)
   }
 
   private static reviewMetrics (metrics: ReviewMetrics): HTMLDivElement {
@@ -73,21 +73,21 @@ export class SearchPropertyRenderer {
 
   private static metricsRow (title: string, items: MetricItem[]): HTMLDivElement {
     const rowElement: HTMLDivElement = this.elementWith('row')
-    rowElement.appendChild(
+    rowElement.append(
       this.elementWith('title', `<span>${title}</span><span>→</span>`)
     )
 
     for (const { label, value } of items) {
       const item: HTMLDivElement = this.elementWith('item')
 
-      item.appendChild(
+      item.append(
         this.elementWith('label', label)
       )
-      item.appendChild(
+      item.append(
         this.elementWith('value', value)
       )
 
-      rowElement.appendChild(item)
+      rowElement.append(item)
     }
 
     return rowElement

@@ -22,9 +22,10 @@ export class ReviewAnalyzer {
     metrics.solo = Math.round(metrics.total * ((reviewStatistics?.soloPercentage ?? 0) / 100))
 
     const leftOverPages: number = pagination.numberOfPages - 1
+    // eslint-disable-next-line unicorn/prefer-spread
     const restOfPagesReviews: Review[] = Array.from(await Promise.all(
       Array
-        .from({ length: leftOverPages }, (_, i) => i + 2)
+        .from({ length: leftOverPages }, (_, index) => index + 2)
         .map(async page => {
           await delay(randomNumber(3, 12) * 100)
           const { reviews } = await this.request(property, page)
@@ -46,8 +47,8 @@ export class ReviewAnalyzer {
 
   private static async request (property: string, page: number): Promise<HostelworldPropertyReviews> {
     const endpoint: string = this.endpoint
-      .replace('{page}', String(page))
-      .replace('{property}', property)
+      .replaceAll('{page}', String(page))
+      .replaceAll('{property}', property)
 
     const cacheTimeInDays: number = [1, 2].includes(page) ? 1 : 3
 
@@ -60,7 +61,7 @@ export class ReviewAnalyzer {
   private static requestFallback (): HostelworldPropertyReviews {
     return {
       reviews: [],
-      pagination: { totalNumberOfItems: 0, numberOfPages: 1, prev: null, next: '' },
+      pagination: { totalNumberOfItems: 0, numberOfPages: 1, next: '' },
       reviewStatistics: {
         positiveCount: 0,
         negativeCount: 0,

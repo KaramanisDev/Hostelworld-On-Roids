@@ -1,5 +1,5 @@
 // eslint-disable-next-line @typescript-eslint/no-empty-function
-export function emptyFunction () {
+export function emptyFunction (): void {
 // method intentionally left blank
 }
 
@@ -10,8 +10,8 @@ export function delay (timeoutInMs: number): Promise<void> {
 export function hash (input: string): string {
   let hash: number = 0
 
-  for (let i = 0; i < input.length; i++) {
-    const char = input.charCodeAt(i)
+  for (let index = 0; index < input.length; index++) {
+    const char: number = <number>input.codePointAt(index)
     hash = (hash << 5) - hash + char
     hash &= hash
   }
@@ -97,7 +97,7 @@ export function dateFormat (date: Date, format: string = 'yyyy-mm-dd'): string {
     D: date.getDate()
   }
 
-  return format.replace(/yyyy|mm|dd|YY|M|D/g, match => String(replacements[match]))
+  return format.replaceAll(/yyyy|mm|dd|YY|M|D/g, match => String(replacements[match]))
 }
 
 export function dateAddDays (date: Date, days: number): Date {

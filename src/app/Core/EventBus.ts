@@ -21,23 +21,27 @@ export class EventBus {
   }
 
   public static listen (events: string, callback: Function): void {
-    events
-      .split(' ')
-      .forEach(event =>
-        (this.listeners[event] = this.listeners[event] || []).push(callback)
-      )
+    const splitEvents: string[] = events.split(' ')
+
+    for (const event of splitEvents) {
+      (this.listeners[event] = this.listeners[event] || []).push(callback)
+    }
   }
 
   public static emit (events: string, ...args: unknown[]): void {
-    events
-      .split(' ')
-      .forEach(event => this.execute(this.listeners[event] || [], args))
+    const splitEvents: string[] = events.split(' ')
+
+    for (const event of splitEvents) {
+      this.execute(this.listeners[event] || [], args)
+    }
   }
 
   private static execute (listeners: Function[], args: unknown[]): void {
     if (!listeners) return
 
-    listeners.forEach(async listener => await listener.call(this, ...args))
+    for (const listener of listeners) {
+      listener.call(this, ...args)
+    }
   }
 }
 

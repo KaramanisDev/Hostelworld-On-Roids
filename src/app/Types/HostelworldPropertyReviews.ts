@@ -50,7 +50,7 @@ type ReviewStatistics = {
 }
 
 type Pagination = {
-  prev: null
+  prev?: null
   next: string
   numberOfPages: number
   totalNumberOfItems: number

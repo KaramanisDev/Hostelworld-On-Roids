@@ -67,9 +67,9 @@ export class AvailabilityAnalyzer {
     )
 
     const endpoint: string = this.endpoint
-      .replace('{from}', dateFormat(from))
-      .replace('{nights}', String(nights))
-      .replace('{property}', property)
+      .replaceAll('{from}', dateFormat(from))
+      .replaceAll('{nights}', String(nights))
+      .replaceAll('{property}', property)
 
     return await promiseFallback(
       HttpClient.getJson(endpoint, cacheInMinutes),
