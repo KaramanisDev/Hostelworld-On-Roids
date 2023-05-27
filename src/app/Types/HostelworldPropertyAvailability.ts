@@ -1,22 +1,3 @@
-export type HostelworldPropertyAvailability = {
-  id: string
-  cancellationPolicies: FreeCancellation[]
-  depositPercentage: number
-  rooms: Rooms
-  specialEventConditions: null
-  freeCancellation: FreeCancellation
-  lowestPricePerNight: LowestAverageDormPricePerNight
-  lowestPrivatePricePerNight: LowestAverageDormPricePerNight
-  lowestDormPricePerNight: LowestAverageDormPricePerNight
-  lowestAveragePricePerNight: LowestAverageDormPricePerNight
-  lowestAverageDormPricePerNight: LowestAverageDormPricePerNight
-  lowestAveragePrivatePricePerNight: LowestAverageDormPricePerNight
-  freeCancellationAvailable: boolean
-  freeCancellationAvailableUntil: Date
-  promotions: Promotion[]
-  stayRuleViolations: any[]
-}
-
 type FreeCancellation = {
   label: string
   description: string
@@ -33,40 +14,6 @@ type Promotion = {
   stack: boolean
   name: string
   discount: number
-}
-
-type Rooms = {
-  dorms: Dorm[]
-  privates: Dorm[]
-}
-
-type Dorm = {
-  id: number
-  token: string
-  name: string
-  description: string
-  labelDescription: string
-  capacity: string
-  ensuite: string
-  basicType: BasicType
-  extendedType: string
-  grade: Grade
-  bathroomFacilities: any[]
-  mealPlan: string
-  view: string
-  bedTypes: any[]
-  facilities: any[]
-  images: Image[]
-  totalBedsAvailable: number
-  totalRoomsAvailable: number | null
-  numberOfGuestsPerRoom: number | null
-  ratePlans: RatePlan[]
-  averagePricePerNight: AveragePricePerNight[]
-  lowestPricePerNight: LowestAverageDormPricePerNight
-  stp: LowestAverageDormPricePerNight | null
-  conditions: any[]
-  totalPrice: AveragePricePerNight[]
-  priceBreakdown: PriceBreakdown[]
 }
 
 type AveragePricePerNight = {
@@ -90,6 +37,23 @@ type PriceBreakdown = {
   price: LowestAverageDormPricePerNight
 }
 
+type ID = 'depositPayable' | 'nonRefundable'
+
+type Label = 'Deposit only' | 'Non-refundable'
+
+type RatePlanType = 'STANDARD' | 'BED_AND_BREAKFAST'
+
+type PaymentProcedure = {
+  id: ID
+  label: Label
+  description: string
+}
+
+type Promotions = {
+  promotionsIds: number[]
+  totalDiscount: string
+}
+
 type RatePlan = {
   id: number
   paymentProcedure: PaymentProcedure
@@ -99,19 +63,55 @@ type RatePlan = {
   promotions?: Promotions
 }
 
-type PaymentProcedure = {
-  id: ID
-  label: Label
+type Dorm = {
+  id: number
+  token: string
+  name: string
   description: string
+  labelDescription: string
+  capacity: string
+  ensuite: string
+  basicType: BasicType
+  extendedType: string
+  grade: Grade
+  bathroomFacilities: never[]
+  mealPlan: string
+  view: string
+  bedTypes: never[]
+  facilities: never[]
+  images: Image[]
+  totalBedsAvailable: number
+  totalRoomsAvailable: number | null
+  numberOfGuestsPerRoom: number | null
+  ratePlans: RatePlan[]
+  averagePricePerNight: AveragePricePerNight[]
+  lowestPricePerNight: LowestAverageDormPricePerNight
+  stp: LowestAverageDormPricePerNight | null
+  conditions: never[]
+  totalPrice: AveragePricePerNight[]
+  priceBreakdown: PriceBreakdown[]
 }
 
-type ID = 'depositPayable' | 'nonRefundable'
-
-type Label = 'Deposit only' | 'Non-refundable'
-
-type Promotions = {
-  promotionsIds: number[]
-  totalDiscount: string
+type Rooms = {
+  dorms: Dorm[]
+  privates: Dorm[]
 }
 
-type RatePlanType = 'STANDARD' | 'BED_AND_BREAKFAST'
+export type HostelworldPropertyAvailability = {
+  id: string
+  cancellationPolicies: FreeCancellation[]
+  depositPercentage: number
+  rooms: Rooms
+  specialEventConditions: null
+  freeCancellation: FreeCancellation
+  lowestPricePerNight: LowestAverageDormPricePerNight
+  lowestPrivatePricePerNight: LowestAverageDormPricePerNight
+  lowestDormPricePerNight: LowestAverageDormPricePerNight
+  lowestAveragePricePerNight: LowestAverageDormPricePerNight
+  lowestAverageDormPricePerNight: LowestAverageDormPricePerNight
+  lowestAveragePrivatePricePerNight: LowestAverageDormPricePerNight
+  freeCancellationAvailable: boolean
+  freeCancellationAvailableUntil: Date
+  promotions: Promotion[]
+  stayRuleViolations: never[]
+}

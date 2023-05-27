@@ -1,6 +1,6 @@
 import type { CustomXMLHttpRequest } from './CustomXMLHttpRequest'
 import type { Callback } from 'Types/General'
-import { objectPick } from '../'
+import { emptyFunction, objectPick } from '../'
 
 type Modifier = (request: CustomXMLHttpRequest) => void
 
@@ -61,11 +61,9 @@ export class RequestModifier {
 
   public shouldNotFail (respondWithIfFailed?: string): this {
     this.modifiers.shouldNotFailOpen = (request: CustomXMLHttpRequest): void => {
-      const emptyCallback: Function = () => {}
-
-      this.onPropertyEnforce(request, 'onabort', emptyCallback)
-      this.onPropertyEnforce(request, 'onerror', emptyCallback)
-      this.onPropertyEnforce(request, 'ontimeout', emptyCallback)
+      this.onPropertyEnforce(request, 'onabort', emptyFunction)
+      this.onPropertyEnforce(request, 'onerror', emptyFunction)
+      this.onPropertyEnforce(request, 'ontimeout', emptyFunction)
     }
 
     this.modifiers.shouldNotFailLoadEnd = (request: CustomXMLHttpRequest): void => {
@@ -80,8 +78,8 @@ export class RequestModifier {
 
   public applyTo (request: CustomXMLHttpRequest, stage: InterceptionStage): void {
     const modifiers: Modifier[] = Object.values(
-        objectPick(this.modifiers, this.stages[stage] || [])
-      )
+      objectPick(this.modifiers, this.stages[stage] || [])
+    )
 
     for (const modifier of modifiers) {
       modifier(request)
@@ -93,7 +91,9 @@ export class RequestModifier {
 
     Object.defineProperty(request, property, {
       get: () => {
-        return request.backing[property] = value || request.backing[property]
+        request.backing[property] = value || request.backing[property]
+
+        return request.backing[property]
       },
       set: (newValue: unknown) => {
         if (disallowSet) return

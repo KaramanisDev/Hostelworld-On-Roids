@@ -12,12 +12,12 @@ type HostelworldState = {
   }
 }
 
+type VuexStoreCommit = (type: string, payload: unknown) => void
+
 type VuexStore = {
   commit: VuexStoreCommit,
   state: HostelworldState
 }
-
-type VuexStoreCommit = (type: string, payload: unknown) => void
 
 export class HostelworldFeatureToggler {
   public static async enableSearchCitySocialCues (): Promise<void> {

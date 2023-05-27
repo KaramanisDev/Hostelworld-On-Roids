@@ -7,14 +7,14 @@ export class HttpClient {
   private static readonly defaultCacheTimeInMinutes: number = 24 * 60
   private static readonly storage: CacheStorage<string> = new CacheStorage('http-client')
 
-  public static async getJson<T = Record<string, unknown>>(url: string, cacheInMinutes?: number): Promise<T> {
+  public static async getJson<T = Record<string, unknown>> (url: string, cacheInMinutes?: number): Promise<T> {
     const response: KyResponse = await KyClient.get(url, this.options(cacheInMinutes))
 
     return response.json()
   }
 
   private static options (cacheInMinutes?: number): Options {
-    if(!cacheInMinutes) return {}
+    if (!cacheInMinutes) return {}
 
     return {
       hooks: {

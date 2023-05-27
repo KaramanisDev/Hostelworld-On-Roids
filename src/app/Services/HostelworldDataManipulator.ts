@@ -1,7 +1,7 @@
 import type { Property as AvailableProperty } from 'Types/HostelworldSearchProperties'
 import type { Property as UnavailableProperty } from 'Types/HostelworldSearchUnavailableProperties'
 import { HostelworldDataHook } from 'Services/HostelworldDataHook'
-import { delay, promiseFallback, waitForElement, waitForProperty } from 'Utils'
+import { delay, emptyFunction, promiseFallback, waitForElement, waitForProperty } from 'Utils'
 
 type VuePropertyListComponent = {
   propertiesPerPage: number
@@ -26,7 +26,7 @@ export class HostelworldDataManipulator {
       Object.defineProperty(component, 'propertiesPerPage', {
         configurable: true,
         get: () => maxPossiblePropertiesFromRequest,
-        set: () => {}
+        set: () => emptyFunction
       })
     }
 
@@ -44,7 +44,7 @@ export class HostelworldDataManipulator {
       Object.defineProperty(component, 'isSellingOutFast', {
         configurable: true,
         get: () => isSellingOutFast,
-        set: () => {}
+        set: () => emptyFunction
       })
     }
 
@@ -62,7 +62,7 @@ export class HostelworldDataManipulator {
       Object.defineProperty(component, 'displayFeaturedProperties', {
         configurable: true,
         get: () => displayFeaturedProperties,
-        set: () => {}
+        set: () => emptyFunction
       })
     }
 
@@ -75,7 +75,7 @@ export class HostelworldDataManipulator {
     const showMaxUnavailablePropertiesAndSocialCues: () => Promise<void> = async (): Promise<void> => {
       await delay(2000)
 
-      const propertyCard: HTMLDivElement | undefined = await promiseFallback(
+      const propertyCard: HTMLElement = await promiseFallback(
         waitForElement('.property-card .property', 60 * 1000)
       )
       if (!propertyCard) return

@@ -22,7 +22,7 @@ export class HostelworldDataHook {
       component.isDisplayedPropertiesWatched = true
 
       component.$watch('displayedProperties', (properties: Property[]) => {
-        if(!properties[0]) return
+        if (!properties[0]) return
 
         callback(properties.map(property => String(property.id)))
       })

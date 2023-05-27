@@ -1,3 +1,8 @@
+// eslint-disable-next-line @typescript-eslint/no-empty-function
+export function emptyFunction () {
+// method intentionally left blank
+}
+
 export function delay (timeoutInMs: number): Promise<void> {
   return new Promise(resolve => setTimeout(resolve, timeoutInMs))
 }
@@ -14,18 +19,24 @@ export function hash (input: string): string {
   return new Uint32Array([hash])[0].toString(36)
 }
 
-export async function waitForProperty<T = unknown> (rootProperty: Object, pathToWait: string, maxTimeout: number = 5000): Promise<T> {
+export async function waitForProperty<T = unknown> (
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  root: any,
+  pathToWait: string,
+  maxTimeout: number = 5000
+): Promise<T> {
   const path: string[] = pathToWait.split('.')
-  const currentObj = path.reduce((obj: any, prop: string) => obj && obj[prop], rootProperty)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const lookedUp: unknown = path.reduce((carry: any, property: string) => carry && carry[property], root)
 
-  if (currentObj !== undefined) return currentObj
+  if (lookedUp !== undefined) return lookedUp as T
 
   if (maxTimeout <= 0) {
-    throw new Error(`${rootProperty} property path "${pathToWait}" is not available within the specified time.`)
+    throw new Error(`Property path "${pathToWait}" is not available within the specified time.`)
   }
 
   await delay(100)
-  return waitForProperty(rootProperty, pathToWait, maxTimeout - 100)
+  return waitForProperty<T>(root, pathToWait, maxTimeout - 100)
 }
 
 export async function waitForElement (selector: string, maxTimeout: number = 5000): Promise<HTMLElement> {
@@ -41,7 +52,7 @@ export async function waitForElement (selector: string, maxTimeout: number = 500
   return waitForElement(selector, maxTimeout - 100)
 }
 
-export function objectPick (object: Object, keys: string[]): Object {
+export function objectPick (object: object, keys: string[]): object {
   return Object.fromEntries(
     Object
       .entries(object)
@@ -49,7 +60,7 @@ export function objectPick (object: Object, keys: string[]): Object {
   )
 }
 
-export function objectsAreEqual (object1: Record<string, any>, object2: Record<string, any>): boolean {
+export function objectsAreEqual (object1: Record<string, unknown>, object2: Record<string, unknown>): boolean {
   const object1Keys: string[] = Object.keys(object1)
   const object2Keys: string[] = Object.keys(object2)
 
@@ -97,7 +108,7 @@ export function dateAddDays (date: Date, days: number): Date {
   return newDate
 }
 
-export async function promiseFallback<T = unknown> (promise: Promise<any>, fallback?: T): Promise<T> {
+export async function promiseFallback<T = unknown> (promise: Promise<T>, fallback?: T): Promise<T> {
   try {
     return await promise
   } catch {

@@ -17,7 +17,7 @@ export class AvailabilityMetrics {
     return this.max.mixed
   }
 
-  public getMixedBedsPercentage(): number {
+  public getMixedBedsPercentage (): number {
     return toPercent(this.getMixedBeds(), this.getMaxMixedBeds())
   }
 
@@ -29,7 +29,7 @@ export class AvailabilityMetrics {
     return this.max.female
   }
 
-  public getFemaleBedsPercentage(): number {
+  public getFemaleBedsPercentage (): number {
     return toPercent(this.getFemaleBeds(), this.getMaxFemaleBeds())
   }
 
@@ -41,7 +41,7 @@ export class AvailabilityMetrics {
     return this.max.private
   }
 
-  public getPrivateRoomsPercentage(): number {
+  public getPrivateRoomsPercentage (): number {
     return toPercent(this.getPrivateRooms(), this.getMaxPrivateRooms())
   }
 
@@ -53,7 +53,7 @@ export class AvailabilityMetrics {
     return this.max.total
   }
 
-  public getGuestsPercentage(): number {
+  public getGuestsPercentage (): number {
     return toPercent(this.getGuests(), this.getMaxGuests())
   }
 }

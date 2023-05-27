@@ -1,7 +1,44 @@
-export type HostelworldPropertyReviews = {
-  reviews: Review[]
-  reviewStatistics: ReviewStatistics | null
-  pagination: Pagination
+type Age = '18-24' | '25-30' | '31-40' | '41+'
+
+type GroupTypeCode = 'FEMALE' | 'MALE' | 'COUPLE' | 'ALLMALEGROUP' | 'ALLFEMALEGROUP' | 'MIXEDGROUP'
+
+type TripTypeCode = 'RTWTRIP' | 'GAPYEAR' | 'REGULARVACATION' | 'WEEKENDAWAY' | 'COLLEGEBREAK' | 'OTHER'
+
+type ID = 'Female' | 'Male'
+
+type Gender = {
+  value: ID
+  id: ID
+}
+
+type Image = {
+  prefix: string
+  suffix: string
+}
+
+type Nationality = {
+  code: string
+  name: string
+}
+
+type User = {
+  id: number
+  gender: Gender | null
+  nationality: Nationality
+  image: Image | null
+  nickname: string
+  numberOfReviews: string
+}
+
+type Rating = {
+  value: number
+  safety: number
+  location: number
+  staff: number
+  atmosphere: number
+  cleanliness: number
+  facilities: number
+  overall: number
 }
 
 type ReviewStatistics = {
@@ -19,6 +56,12 @@ type Pagination = {
   totalNumberOfItems: number
 }
 
+type GroupInformation = {
+  groupTypeCode: GroupTypeCode
+  age: Age
+  tripTypeCodes: TripTypeCode[]
+}
+
 export type Review = {
   id: string
   date: Date
@@ -34,51 +77,8 @@ export type Review = {
   recommended: null
 }
 
-type GroupInformation = {
-  groupTypeCode: GroupTypeCode
-  age: Age
-  tripTypeCodes: TripTypeCode[]
-}
-
-type Age = '18-24' | '25-30' | '31-40' | '41+'
-
-type GroupTypeCode = 'FEMALE' | 'MALE' | 'COUPLE' | 'ALLMALEGROUP' | 'ALLFEMALEGROUP' | 'MIXEDGROUP'
-
-type TripTypeCode = 'RTWTRIP' | 'GAPYEAR' | 'REGULARVACATION' | 'WEEKENDAWAY' | 'COLLEGEBREAK' | 'OTHER'
-
-type Rating = {
-  value: number
-  safety: number
-  location: number
-  staff: number
-  atmosphere: number
-  cleanliness: number
-  facilities: number
-  overall: number
-}
-
-type User = {
-  id: number
-  gender: Gender | null
-  nationality: Nationality
-  image: Image | null
-  nickname: string
-  numberOfReviews: string
-}
-
-type Gender = {
-  value: ID
-  id: ID
-}
-
-type ID = 'Female' | 'Male'
-
-type Image = {
-  prefix: string
-  suffix: string
-}
-
-type Nationality = {
-  code: string
-  name: string
+export type HostelworldPropertyReviews = {
+  reviews: Review[]
+  reviewStatistics: ReviewStatistics | null
+  pagination: Pagination
 }

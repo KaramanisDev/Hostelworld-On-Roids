@@ -1,7 +1,7 @@
 interface Window {
-  $nuxt: any
+  $nuxt: object
 }
 
 interface HTMLElement {
-  __vue__?: any;
+  __vue__?: object;
 }

@@ -10,7 +10,7 @@ export class PropertyRenderListener extends AbstractListener {
       ? this.propertyInSession(propertyOrId)
       : propertyOrId
 
-    if(!propertyToRender) return
+    if (!propertyToRender) return
 
     await SearchPropertyRenderer.render(propertyToRender)
   }

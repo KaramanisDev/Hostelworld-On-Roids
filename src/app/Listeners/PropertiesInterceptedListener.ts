@@ -10,7 +10,7 @@ export class PropertiesInterceptedListener extends AbstractListener {
   public async handle (searchResult: HostelworldSearchProperties): Promise<void> {
     const search: Search | undefined = this.latestSearchInSession()
 
-    if(!search) throw new Error('There is no search in session to properly compose the properties.')
+    if (!search) throw new Error('There is no search in session to properly compose the properties.')
 
     await promisesFulfillSequentially(
       searchResult.properties.map(

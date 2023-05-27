@@ -16,9 +16,9 @@ export class Search {
     return this.from
   }
 
-  public static createFromSearchUrl(url: URL): typeof this.prototype {
+  public static createFromSearchUrl (url: URL): typeof this.prototype {
     const parameters: URLSearchParams = url.searchParams
-    if (!parameters.has('date-start') || !parameters.has('num-nights')){
+    if (!parameters.has('date-start') || !parameters.has('num-nights')) {
       throw new Error('Not a hostelworld search url.')
     }
 
@@ -26,7 +26,7 @@ export class Search {
     const daysToAdd: number = Number(parameters.get('num-nights'))
 
     return new this({
-      from, to: dateAddDays(from, daysToAdd),
+      from, to: dateAddDays(from, daysToAdd)
     })
   }
 }

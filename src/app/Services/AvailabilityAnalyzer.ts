@@ -49,7 +49,7 @@ export class AvailabilityAnalyzer {
         )
       )
 
-      for (let key in metrics) {
+      for (const key in metrics) {
         const metricsKey: keyof Metrics = key as keyof Metrics
 
         if (maxMetrics[metricsKey] > metrics[metricsKey]) continue
@@ -73,7 +73,7 @@ export class AvailabilityAnalyzer {
 
     return await promiseFallback(
       HttpClient.getJson(endpoint, cacheInMinutes),
-      { rooms: {dorms:[], privates: [] }} as unknown as HostelworldPropertyAvailability
+      { rooms: { dorms: [], privates: [] } } as unknown as HostelworldPropertyAvailability
     )
   }
 
@@ -82,7 +82,7 @@ export class AvailabilityAnalyzer {
       mixed: 0,
       female: 0,
       private: 0,
-      total: 0,
+      total: 0
     }
 
     const { dorms, privates } = availability.rooms

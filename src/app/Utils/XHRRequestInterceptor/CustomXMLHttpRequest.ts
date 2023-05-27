@@ -1,11 +1,11 @@
-type BackingProperties = {
-  -readonly [K in keyof CustomXMLHttpRequest]?: unknown
+type BackingProperties<T> = {
+  -readonly [K in keyof T]?: unknown
 }
 
 export class CustomXMLHttpRequest extends XMLHttpRequest {
   public url: string = ''
   public method: string = ''
-  public backing: BackingProperties = {}
+  public backing: BackingProperties<this> = {}
   private static interceptCallback?: Function
 
   constructor () {
@@ -30,6 +30,7 @@ export class CustomXMLHttpRequest extends XMLHttpRequest {
     this.interceptCallback = callback
   }
 
+  // eslint-disable-next-line accessor-pairs
   set onloadend (callback: (event: ProgressEvent) => void | null) {
     super.onloadend = event => {
       CustomXMLHttpRequest.interceptCallback?.(this, 'loadend')

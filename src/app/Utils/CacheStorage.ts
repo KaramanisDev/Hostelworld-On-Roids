@@ -32,7 +32,6 @@ export class CacheStorage<T> {
     if (hasNotExpired) return payload
 
     await store.delete(key)
-    return
   }
 
   public async hasNotExpired (key: string): Promise<boolean> {

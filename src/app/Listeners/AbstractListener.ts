@@ -7,7 +7,7 @@ import { EventBus } from 'Core/EventBus'
 export abstract class AbstractListener implements ListenerInterface {
   private session!: Session
 
-  constructor (attributes: Record<string, Date>) {
+  constructor (attributes: Record<string, unknown>) {
     Object.assign(this, attributes)
   }
 

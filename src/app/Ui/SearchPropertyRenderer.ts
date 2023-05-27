@@ -65,7 +65,7 @@ export class SearchPropertyRenderer {
       {
         label: 'Guests:',
         value: `${metrics.getGuests()}/${metrics.getMaxGuests()} (${metrics.getGuestsPercentage()}%)`
-      },
+      }
     ]
 
     return this.metricsRow('Availability', items)
@@ -108,4 +108,3 @@ export class SearchPropertyRenderer {
     return element.innerHTML
   }
 }
-

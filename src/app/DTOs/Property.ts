@@ -27,7 +27,7 @@ export class Property {
     return this.availabilityMetrics
   }
 
-  public hasClosedDown(): boolean {
+  public hasClosedDown (): boolean {
     return this.getAvailabilityMetrics().getMaxGuests() === 0
   }
 }

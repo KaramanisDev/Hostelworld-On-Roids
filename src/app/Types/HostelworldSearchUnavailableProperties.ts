@@ -1,6 +1,15 @@
-export type HostelworldSearchUnavailableProperties = {
-  properties: Property[]
-  pagination: Pagination
+type Type = 'Hostel' | 'Bed and Breakfast' | 'Apartment'
+
+type Image = {
+  prefix: string
+  suffix: '.jpg'
+}
+
+type Pagination = {
+  next: string
+  prev: string
+  numberOfPages: number
+  totalNumberOfItems: number
 }
 
 export type Property = {
@@ -11,16 +20,7 @@ export type Property = {
   image: Image
 }
 
- type Pagination = {
-  next: string
-  prev: string
-  numberOfPages: number
-  totalNumberOfItems: number
+export type HostelworldSearchUnavailableProperties = {
+  properties: Property[]
+  pagination: Pagination
 }
-
-type Image = {
-  prefix: string
-  suffix: '.jpg'
-}
-
-type Type = 'Hostel' | 'Bed and Breakfast' | 'Apartment'

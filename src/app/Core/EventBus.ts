@@ -2,7 +2,7 @@ import type { ListenerInterface } from 'Listeners/ListenerInterface'
 
 type Listeners = Record<string, Function[]>
 type ListenerAttributes = Record<string, unknown>
-type ListenerClass = { new (...args: any[]): ListenerInterface }
+type ListenerClass = { new (attributes: ListenerAttributes): ListenerInterface }
 
 export class EventBus {
   private static listeners: Listeners = {}
@@ -12,8 +12,8 @@ export class EventBus {
     this.listenerInitWithAttributes = attributes
   }
 
-  public static subscribe (events: string, listenerClass: ListenerClass): void {
-    const listener: ListenerInterface = new listenerClass(
+  public static subscribe (events: string, ListenerClass: ListenerClass): void {
+    const listener: ListenerInterface = new ListenerClass(
       this.listenerInitWithAttributes
     )
 
