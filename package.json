@@ -6,9 +6,10 @@
     "node": "^20.1.0"
   },
   "scripts": {
-    "watch": "yarn dev --watch",
-    "prod": "webpack --config webpack.config.mjs --mode=production",
-    "dev": "webpack --config webpack.config.mjs --mode=development",
+    "watch": "yarn build:dev --watch",
+    "build:prod": "webpack --config webpack.config.mjs --mode=production",
+    "build:dev": "webpack --config webpack.config.mjs --mode=development",
+    "lint": "yarn lint:tsc && yarn lint:eslint && yarn lint:commit",
     "lint:tsc": "tsc --noEmit --incremental false",
     "lint:eslint": "eslint \"{src,scripts}/**/*.{ts,js,mjs}\"",
     "lint:commit": "node scripts/commitlint.mjs"
