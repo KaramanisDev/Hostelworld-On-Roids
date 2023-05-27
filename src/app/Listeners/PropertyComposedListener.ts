@@ -6,5 +6,7 @@ import { Subscribe } from 'Core/EventBus'
 export class PropertyComposedListener extends AbstractListener {
   public async handle (property: Property): Promise<void> {
     this.persistPropertyInSession(property)
+
+    this.emit('property:render', property)
   }
 }

@@ -1,0 +1,45 @@
+.property-card {
+  max-height: 100%;
+
+  .property {
+    min-height: 15rem;
+  }
+
+  .metrics-grid {
+    width: 100%;
+    display: grid;
+    grid-column: 1 / -1;
+    grid-template-columns: fit-content(100%) repeat(5, auto);
+
+    .row {
+      display: contents;
+
+      .title,
+      .item {
+        padding: 5px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border: 0.0825rem solid var(--wds-color-ink-lightest);
+
+        &.title {
+          font-size: 0.85rem;
+          grid-column: 1;
+          color: var(--wds-color-ink-darker);
+        }
+
+        &.item {
+          font-size: .8rem;
+
+          .label {
+            color: var(--wds-color-ink-darker);
+          }
+
+          .value {
+            color: var(--wds-color-ink);
+          }
+        }
+      }
+    }
+  }
+}

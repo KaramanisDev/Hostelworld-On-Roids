@@ -6,6 +6,7 @@ import * as fs from 'fs'
 import CopyPlugin from 'copy-webpack-plugin'
 import TerserPlugin from 'terser-webpack-plugin'
 import { CleanWebpackPlugin } from 'clean-webpack-plugin'
+import MiniCssExtractPlugin from 'mini-css-extract-plugin'
 
 const __dirname = path.dirname(url.fileURLToPath(import.meta.url))
 
@@ -15,7 +16,7 @@ function basePath (relative) {
 
 function aliases () {
   const aliases = {}
-  const appDirectory = basePath( 'src/app')
+  const appDirectory = basePath('src/app')
 
   fs.readdirSync(appDirectory).forEach((directory) => {
     aliases[directory] = basePath(`src/app/${directory}`)
@@ -31,8 +32,11 @@ export default {
     topLevelAwait: true
   },
   entry: {
-    roids: basePath('src/entries/app.ts'),
-    content: basePath('src/entries/content.ts'),
+    roids: [
+      basePath('src/entries/app.ts'),
+      basePath('src/assets/styles/app.scss')
+    ],
+    content: basePath('src/entries/content.ts')
   },
   output: {
     filename: '[name].js',
@@ -52,7 +56,7 @@ export default {
         exclude: /node_modules/,
         use: [
           {
-            loader: 'babel-loader',
+            loader: 'babel-loader'
           },
           {
             loader: 'ts-loader',
@@ -60,10 +64,18 @@ export default {
               transpileOnly: false,
               happyPackMode: false
             }
-          },
-        ],
+          }
+        ]
       },
-    ],
+      {
+        test: /\.scss$/,
+        use: [
+          MiniCssExtractPlugin.loader,
+          'css-loader',
+          'sass-loader'
+        ]
+      }
+    ]
   },
   optimization: {
     minimize: true,
@@ -74,11 +86,14 @@ export default {
     new CleanWebpackPlugin({
       cleanOnceBeforeBuildPatterns: [
         basePath('dist/**/*'),
-        `!${basePath('dist/.keep')}`,
+        `!${basePath('dist/.keep')}`
       ]
     }),
     new CopyPlugin({
-      patterns: [{ from: '.', to: '.', context: 'src/assets' }]
+      patterns: [{ from: '.', to: '.', context: 'src/assets/static' }]
+    }),
+    new MiniCssExtractPlugin({
+      filename: '[name].css'
     })
   ]
 }

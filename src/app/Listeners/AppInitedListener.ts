@@ -6,6 +6,7 @@ import { HosterworldDataAdapter } from 'Services/HosterworldDataAdapter'
 import { HostelworldFeatureToggler } from 'Services/HostelworldFeatureToggler'
 import { HostelworldDataManipulator } from 'Services/HostelworldDataManipulator'
 import { HostelworldNetworkInterceptor } from 'Services/HostelworldNetworkInterceptor'
+import { HostelworldDataHook } from 'Services/HostelworldDataHook'
 
 @Subscribe('app:inited')
 export class AppInitedListener extends AbstractListener {
@@ -16,6 +17,12 @@ export class AppInitedListener extends AbstractListener {
       this.toggleHostelworldFeatures(),
       this.manipulateHostelworldData()
     ])
+
+    await HostelworldDataHook.onDisplayedPropertiesUpdate((propertyIds: string[]) => {
+      for (const propertyId of propertyIds) {
+        this.emit('property:render', propertyId)
+      }
+    })
   }
 
   private applyRequestInterceptors (): void {

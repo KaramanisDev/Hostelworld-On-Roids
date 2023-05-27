@@ -1,18 +1,13 @@
-import { delay, promiseFallback, waitForElement, waitForProperty } from 'Utils'
 import type { Property as AvailableProperty } from 'Types/HostelworldSearchProperties'
 import type { Property as UnavailableProperty } from 'Types/HostelworldSearchUnavailableProperties'
-
-type VuexRouter = {
-  onReady: Function
-  afterEach: Function
-}
+import { HostelworldDataHook } from 'Services/HostelworldDataHook'
+import { delay, promiseFallback, waitForElement, waitForProperty } from 'Utils'
 
 type VuePropertyListComponent = {
   propertiesPerPage: number
   isSellingOutFast: boolean
   displayFeaturedProperties: boolean
 }
-
 
 type VueSearchComponent = {
   properties: AvailableProperty[]
@@ -35,7 +30,9 @@ export class HostelworldDataManipulator {
       })
     }
 
-    return this.onRouteLoad(showAllPropertiesInSearch)
+    return HostelworldDataHook.onRouteLoad(
+      showAllPropertiesInSearch.bind(this)
+    )
   }
 
   public static async hideSellingOutFastLabel (): Promise<void> {
@@ -51,7 +48,9 @@ export class HostelworldDataManipulator {
       })
     }
 
-    return this.onRouteLoad(hideSellingOutLabel)
+    return HostelworldDataHook.onRouteLoad(
+      hideSellingOutLabel.bind(this)
+    )
   }
 
   public static async hideFeaturedProperties (): Promise<void> {
@@ -67,7 +66,9 @@ export class HostelworldDataManipulator {
       })
     }
 
-    return this.onRouteLoad(hideFeaturedProperties)
+    return HostelworldDataHook.onRouteLoad(
+      hideFeaturedProperties.bind(this)
+    )
   }
 
   public static async showMaxUnavailablePropertiesAndSocialCues (): Promise<void> {
@@ -92,14 +93,9 @@ export class HostelworldDataManipulator {
       await component.getUsersWhoBooked(propertyIds)
     }
 
-    return this.onRouteLoad(showMaxUnavailablePropertiesAndSocialCues)
-  }
-
-  private static async onRouteLoad (callback: () => void | Promise<void>): Promise<void> {
-    const router: VuexRouter = await waitForProperty(window, '$nuxt.$router', 60 * 1000)
-
-    router.onReady(callback.bind(this))
-    router.afterEach(callback.bind(this))
+    return HostelworldDataHook.onRouteLoad(
+      showMaxUnavailablePropertiesAndSocialCues.bind(this)
+    )
   }
 
   private static async propertyListComponent (): Promise<VuePropertyListComponent> {

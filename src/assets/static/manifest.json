@@ -9,14 +9,15 @@
   "content_scripts": [
     {
       "js": ["content.js"],
+      "css": ["roids.css"],
       "run_at": "document_start",
-      "matches": ["https://*.hostelworld.com/*"]
+      "matches": ["https://hostelworld.com/*", "https://www.hostelworld.com/*"]
     }
   ],
   "web_accessible_resources": [
     {
       "resources": ["roids.js"],
-      "matches": ["https://*.hostelworld.com/*"]
+      "matches": ["https://hostelworld.com/*", "https://www.hostelworld.com/*"]
     }
   ]
 }
