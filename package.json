@@ -9,9 +9,10 @@
     "watch": "yarn build:dev --watch",
     "build:prod": "webpack --config webpack.config.mjs --mode=production",
     "build:dev": "webpack --config webpack.config.mjs --mode=development",
-    "lint": "yarn lint:tsc && yarn lint:eslint && yarn lint:commit",
+    "lint": "yarn lint:tsc && yarn lint:eslint && yarn lint:scss && yarn lint:commit",
     "lint:tsc": "tsc --noEmit --incremental false",
     "lint:eslint": "eslint \"{src,scripts}/**/*.{ts,js,mjs}\"",
+    "lint:scss": "stylelint \"src/**/*.scss\"",
     "lint:commit": "node scripts/commitlint.mjs"
   },
   "devDependencies": {
@@ -36,6 +37,9 @@
     "mini-css-extract-plugin": "^2.7.6",
     "sass": "^1.62.1",
     "sass-loader": "^13.3.0",
+    "stylelint": "^15.6.2",
+    "stylelint-config-sass-guidelines": "^10.0.0",
+    "stylelint-scss": "^5.0.0",
     "terser-webpack-plugin": "^5.3.8",
     "ts-loader": "^9.4.2",
     "typescript": "^5.0.4",
