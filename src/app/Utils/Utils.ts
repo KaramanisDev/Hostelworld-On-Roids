@@ -97,11 +97,11 @@ export function dateAddDays (date: Date, days: number): Date {
   return newDate
 }
 
-export async function promiseFallback<T = unknown> (promise: Promise<any>, fallback?: T): Promise<T | undefined> {
+export async function promiseFallback<T = unknown> (promise: Promise<any>, fallback?: T): Promise<T> {
   try {
     return await promise
   } catch {
-    return fallback
+    return fallback as T
   }
 }
 

@@ -1,5 +1,5 @@
 import type { HostelworldPropertyReviews, Review } from 'Types/HostelworldPropertyReviews'
-import { delay, randomNumber } from 'Utils'
+import { delay, promiseFallback, randomNumber } from 'Utils'
 import { HttpClient } from 'Utils/HttpClient'
 
 export type ReviewMetrics = {
@@ -16,7 +16,10 @@ export class ReviewAnalyzer {
   public static async analyze (property: string): Promise<ReviewMetrics> {
     const metrics: ReviewMetrics = { male: 0, female: 0, other: 0, solo: 0, total: 0 }
 
-    const { reviews: firstPageReviews, reviewStatistics, pagination } = await this.request(property, 1)
+    const { reviews: firstPageReviews, reviewStatistics, pagination } = await promiseFallback(
+      this.request(property, 1),
+      { reviews: [], pagination: { totalNumberOfItems: 0, numberOfPages: 1 }, reviewStatistics: { soloPercentage: 0 } }
+    )
 
     metrics.total = pagination.totalNumberOfItems
     metrics.solo = Math.round(metrics.total * ((reviewStatistics?.soloPercentage ?? 0) / 100))
@@ -27,7 +30,9 @@ export class ReviewAnalyzer {
         .from({ length: leftOverPages }, (_, i) => i + 2)
         .map(async page => {
           await delay(randomNumber(3, 12) * 100)
-          const { reviews } = await this.request(property, page)
+          const { reviews } = await promiseFallback(
+            this.request(property, page), { reviews: [] }
+          )
 
           return reviews
         })

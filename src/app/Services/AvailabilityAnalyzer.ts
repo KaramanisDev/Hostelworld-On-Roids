@@ -1,6 +1,6 @@
 import type { HostelworldPropertyAvailability } from 'Types/HostelworldPropertyAvailability'
 import { HttpClient } from 'Utils/HttpClient'
-import { dateAddDays, dateFormat, delay, randomNumber } from 'Utils'
+import { dateAddDays, dateFormat, delay, promiseFallback, randomNumber } from 'Utils'
 
 export type Metrics = {
   mixed: number
@@ -71,7 +71,10 @@ export class AvailabilityAnalyzer {
       .replace('{nights}', String(nights))
       .replace('{property}', property)
 
-    return HttpClient.getJson(endpoint, cacheInMinutes)
+    return await promiseFallback(
+      HttpClient.getJson(endpoint, cacheInMinutes),
+      { rooms: {dorms:[], privates: [] }} as unknown as HostelworldPropertyAvailability
+    )
   }
 
   private static toMetrics (availability: HostelworldPropertyAvailability): Metrics {
