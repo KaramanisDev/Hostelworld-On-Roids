@@ -9,8 +9,9 @@
     "watch": "yarn dev --watch",
     "prod": "webpack --config webpack.config.mjs --mode=production",
     "dev": "webpack --config webpack.config.mjs --mode=development",
-    "lint:commit": "node scripts/commitlint.mjs",
-    "lint:eslint": "eslint \"{src,scripts}/**/*.{ts,js,mjs}\""
+    "lint:tsc": "tsc --noEmit --incremental false",
+    "lint:eslint": "eslint \"{src,scripts}/**/*.{ts,js,mjs}\"",
+    "lint:commit": "node scripts/commitlint.mjs"
   },
   "devDependencies": {
     "@babel/core": "^7.21.8",

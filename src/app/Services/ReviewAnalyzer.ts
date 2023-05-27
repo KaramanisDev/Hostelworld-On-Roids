@@ -16,10 +16,7 @@ export class ReviewAnalyzer {
   public static async analyze (property: string): Promise<ReviewMetrics> {
     const metrics: ReviewMetrics = { male: 0, female: 0, other: 0, solo: 0, total: 0 }
 
-    const { reviews: firstPageReviews, reviewStatistics, pagination } = await promiseFallback(
-      this.request(property, 1),
-      { reviews: [], pagination: { totalNumberOfItems: 0, numberOfPages: 1 }, reviewStatistics: { soloPercentage: 0 } }
-    )
+    const { reviews: firstPageReviews, reviewStatistics, pagination } = await this.request(property, 1)
 
     metrics.total = pagination.totalNumberOfItems
     metrics.solo = Math.round(metrics.total * ((reviewStatistics?.soloPercentage ?? 0) / 100))
@@ -30,9 +27,7 @@ export class ReviewAnalyzer {
         .from({ length: leftOverPages }, (_, i) => i + 2)
         .map(async page => {
           await delay(randomNumber(3, 12) * 100)
-          const { reviews } = await promiseFallback(
-            this.request(property, page), { reviews: [] }
-          )
+          const { reviews } = await this.request(property, page)
 
           return reviews
         })
@@ -55,6 +50,24 @@ export class ReviewAnalyzer {
       .replace('{property}', property)
 
     const cacheTimeInDays: number = [1, 2].includes(page) ? 1 : 3
-    return HttpClient.getJson(endpoint, cacheTimeInDays * 24 * 60)
+
+    return await promiseFallback(
+      HttpClient.getJson(endpoint, cacheTimeInDays * 24 * 60),
+      this.requestFallback()
+    )
+  }
+
+  private static requestFallback (): HostelworldPropertyReviews {
+    return {
+      reviews: [],
+      pagination: { totalNumberOfItems: 0, numberOfPages: 1, prev: null, next: '' },
+      reviewStatistics: {
+        positiveCount: 0,
+        negativeCount: 0,
+        soloPercentage: 0,
+        groupsPercentage: 0,
+        couplesPercentage: 0
+      }
+    }
   }
 }
