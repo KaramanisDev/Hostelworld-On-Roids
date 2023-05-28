@@ -1,3 +1,3 @@
-import { ContentInitializer } from '../app/Core/ContentInitializer'
+import { ContentInitializer } from 'Core/ContentInitializer'
 
 await ContentInitializer.init()

@@ -1,3 +1,3 @@
-import { AppInitializer } from '../app/Core/AppInitializer'
+import { AppInitializer } from 'Core/AppInitializer'
 
 AppInitializer.init()
