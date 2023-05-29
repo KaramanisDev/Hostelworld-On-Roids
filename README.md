@@ -29,7 +29,7 @@ This section will be updated when additional browsers are supported.
 ## Development & Building 
 
 Apart from the obvious [git](https://git-scm.com/) one :), you'll need [node.js](https://nodejs.org) and
-[yarn](https://yarnpkg.com/lang/en/docs/install/).
+[yarn](https://yarnpkg.com/getting-started/install/).
 
 The required versions of nodejs & yarn needed can be found at the [engines section](/package.json#L4-L6) of the 
 `package.json`.
