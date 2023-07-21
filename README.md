@@ -29,7 +29,7 @@ This section will be updated when additional browsers are supported.
 ## Development & Building 
 
 Apart from the obvious [git](https://git-scm.com/) one :), you'll need [node.js](https://nodejs.org) and
-[yarn](https://yarnpkg.com/getting-started/install/).
+[yarn](https://yarnpkg.com/getting-started/install/) (utilize corepack magic, so you don't have to install that one)".
 
 The required versions of nodejs & yarn needed can be found at the [engines section](/package.json#L4-L6) of the 
 `package.json`.
@@ -37,6 +37,7 @@ The required versions of nodejs & yarn needed can be found at the [engines secti
 Simply:
 * Use `git` to clone the project.
 * Navigate to project's root folder.
+* Run `corepack enable` in that folder.
 * Run `yarn` in that folder.
 * Once completed, run `yarn watch` to build it.
 
