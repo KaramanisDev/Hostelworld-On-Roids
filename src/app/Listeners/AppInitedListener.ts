@@ -63,9 +63,7 @@ export class AppInitedListener extends AbstractListener {
   private async manipulateHostelworldData (): Promise<void> {
     await Promise.all([
       HostelworldDataManipulator.hideFeaturedProperties(),
-      HostelworldDataManipulator.hideSellingOutFastLabel(),
-      HostelworldDataManipulator.showMaxPropertiesInSearch(),
-      HostelworldDataManipulator.showMaxUnavailablePropertiesAndSocialCues()
+      HostelworldDataManipulator.showMaxPropertiesInSearch()
     ])
   }
 }
