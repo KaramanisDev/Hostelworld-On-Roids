@@ -4,12 +4,6 @@ type HostelworldState = {
   property: {
     socialCuesEnabled: boolean
   }
-  search: {
-    travelSolo: boolean
-    citySocialCues: boolean
-    socialCuesEnabled: boolean
-    searchNoAvailabilityCardsEnabled: boolean
-  }
 }
 
 type VuexStoreCommit = (type: string, payload: unknown) => void
@@ -20,27 +14,6 @@ type VuexStore = {
 }
 
 export class HostelworldFeatureToggler {
-  public static async enableSearchCitySocialCues (): Promise<void> {
-    const store: VuexStore = await this.hostelworldStore()
-
-    store.state.search.citySocialCues = true
-    this.onStoreCommitOverwriteWith(store, 'search/setCitySocialCuesExperiment', true)
-  }
-
-  public static async enableSearchPropertySocialCues (): Promise<void> {
-    const store: VuexStore = await this.hostelworldStore()
-
-    store.state.search.socialCuesEnabled = true
-    this.onStoreCommitOverwriteWith(store, 'search/setSocialCuesEnabled', true)
-  }
-
-  public static async enableSearchUnavailableProperties (): Promise<void> {
-    const store: VuexStore = await this.hostelworldStore()
-
-    store.state.search.searchNoAvailabilityCardsEnabled = true
-    this.onStoreCommitOverwriteWith(store, 'search/setUnavailabilityExclusion', { searchNoAvailabilityCards: true })
-  }
-
   public static async enableViewPropertySocialCues (): Promise<void> {
     const store: VuexStore = await this.hostelworldStore()
 

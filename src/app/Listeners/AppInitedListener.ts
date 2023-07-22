@@ -52,12 +52,7 @@ export class AppInitedListener extends AbstractListener {
   }
 
   private async toggleHostelworldFeatures (): Promise<void> {
-    await Promise.all([
-      HostelworldFeatureToggler.enableViewPropertySocialCues(),
-      HostelworldFeatureToggler.enableSearchCitySocialCues(),
-      HostelworldFeatureToggler.enableSearchPropertySocialCues(),
-      HostelworldFeatureToggler.enableSearchUnavailableProperties()
-    ])
+    await HostelworldFeatureToggler.enableViewPropertySocialCues()
   }
 
   private async manipulateHostelworldData (): Promise<void> {
