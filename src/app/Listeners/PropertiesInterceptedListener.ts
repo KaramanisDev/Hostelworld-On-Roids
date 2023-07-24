@@ -25,6 +25,6 @@ export class PropertiesInterceptedListener extends AbstractListener {
       await PropertyFactory.create(property, search)
     )
 
-    return delay(800)
+    return delay(250)
   }
 }

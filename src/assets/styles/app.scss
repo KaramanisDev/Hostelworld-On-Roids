@@ -1,9 +1,26 @@
 .property-card {
-  border-radius: 1.5rem;
-  box-shadow: 0 0 0.6rem #dddf;
+  border-radius: 0.5rem;
+  box-shadow: 0 0 0.6rem var(--wds-color-ink-lighter);
 
   .property-card-container[data-v-1d5b8f7c] {
     box-shadow: none;
+    border-radius: 0.5rem !important;
+  }
+
+  .property-card-container {
+    .social-cues-container {
+      padding: unset !important;
+
+      .avatar-list {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+
+        .avatar-item:not(:last-child) {
+          margin-right: -0.3rem !important
+        }
+      }
+    }
   }
 
   .metrics-grid {

@@ -3,30 +3,42 @@ import { default as KyClient } from 'ky'
 import { CacheStorage } from './CacheStorage'
 import { hash } from './Utils'
 
+export type HttpClientOptions = {
+  cacheInMinutes?: number
+  headers?: Record<string, string | undefined>,
+}
+
 export class HttpClient {
   private static readonly defaultCacheTimeInMinutes: number = 24 * 60
   private static readonly storage: CacheStorage<string> = new CacheStorage('http-client')
 
-  public static async getJson<T = Record<string, unknown>> (url: string, cacheInMinutes?: number): Promise<T> {
-    const response: KyResponse = await KyClient.get(url, this.options(cacheInMinutes))
+  public static async getJson<T = Record<string, unknown>> (url: string, options?: HttpClientOptions): Promise<T> {
+    const response: KyResponse = await KyClient.get(url, this.options(options))
 
     return response.json()
   }
 
-  private static options (cacheInMinutes?: number): Options {
-    if (!cacheInMinutes) return {}
+  private static options (options?: HttpClientOptions): Options {
+    let kyOptions: Options = {
+      headers: options?.headers
+    }
 
-    return {
-      hooks: {
-        beforeRequest: [
-          async (request: Request): Promise<Request | Response> => this.beforeRequestHook(request)
-        ],
-        afterResponse: [
-          (request: Request, _: NormalizedOptions, response: Response): Promise<void> =>
-            this.afterResponseHook(request, response, cacheInMinutes)
-        ]
+    if (options?.cacheInMinutes) {
+      kyOptions = {
+        ...kyOptions,
+        hooks: {
+          beforeRequest: [
+            async (request: Request): Promise<Request | Response> => this.beforeRequestHook(request)
+          ],
+          afterResponse: [
+            (request: Request, _: NormalizedOptions, response: Response): Promise<void> =>
+              this.afterResponseHook(request, response, options?.cacheInMinutes)
+          ]
+        }
       }
     }
+
+    return kyOptions
   }
 
   private static async beforeRequestHook (request: Request): Promise<Request | Response> {

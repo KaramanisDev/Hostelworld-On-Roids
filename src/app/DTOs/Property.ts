@@ -1,11 +1,13 @@
 import type { AvailabilityMetrics } from 'DTOs/AvailabilityMetrics'
-import { ReviewMetrics } from 'DTOs/ReviewMetrics'
+import type { ReviewMetrics } from 'DTOs/ReviewMetrics'
+import type { BookedCountry } from 'DTOs/BookedCountry'
 
 export class Property {
   private id!: string
   private name!: string
   private reviewMetrics!: ReviewMetrics
   private availabilityMetrics!: AvailabilityMetrics
+  private bookedCountries!: BookedCountry[]
 
   constructor (attributes: Record<string, unknown>) {
     Object.assign(this, attributes)
@@ -27,7 +29,7 @@ export class Property {
     return this.availabilityMetrics
   }
 
-  public hasClosedDown (): boolean {
-    return this.getAvailabilityMetrics().getMaxGuests() === 0
+  public getBookedCountries (): BookedCountry[] {
+    return this.bookedCountries
   }
 }

@@ -53,7 +53,7 @@ export class ReviewAnalyzer {
     const cacheTimeInDays: number = [1, 2].includes(page) ? 1 : 3
 
     return await promiseFallback(
-      HttpClient.getJson(endpoint, cacheTimeInDays * 24 * 60),
+      HttpClient.getJson(endpoint, { cacheInMinutes: cacheTimeInDays * 24 * 60 }),
       this.requestFallback()
     )
   }

@@ -41,7 +41,7 @@ export class AvailabilityAnalyzer {
       const fromWithDaysAdded: Date = dateAddDays(from, days)
       const toWithFromPlus3Days: Date = dateAddDays(fromWithDaysAdded, 2)
 
-      await delay(randomNumber(2, 7) * 100)
+      await delay(randomNumber(2, 5) * 100)
 
       const metrics: Metrics = this.toMetrics(
         this.adaptDormBedToMaxCapacity(
@@ -72,7 +72,7 @@ export class AvailabilityAnalyzer {
       .replaceAll('{property}', property)
 
     return await promiseFallback(
-      HttpClient.getJson(endpoint, cacheInMinutes),
+      HttpClient.getJson(endpoint, { cacheInMinutes }),
       { rooms: { dorms: [], privates: [] } } as unknown as HostelworldPropertyAvailability
     )
   }
