@@ -41,7 +41,7 @@ export class HostelworldDataHook {
   }
 
   private static async propertyListComponent (): Promise<VuePropertyListComponent> {
-    const propertyListElement: HTMLElement = await waitForElement('.search .page-inner div[page]', 60 * 1000)
+    const propertyListElement: HTMLElement = await waitForElement('.search .search-results .search-results .content .search-results div[page]', 60 * 1000)
 
     return waitForProperty(propertyListElement, '__vue__', 60 * 1000)
   }

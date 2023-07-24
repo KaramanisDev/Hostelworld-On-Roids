@@ -10,7 +10,7 @@ type MetricItem = {
 
 export class SearchPropertyRenderer {
   public static async render (property: Property): Promise<void> {
-    await waitForElement('.property-card .property')
+    await waitForElement('.property-card .property-card-container')
 
     const propertyCards: NodeListOf<Element> = document.querySelectorAll('.property-card')
     const propertyCard: Element | undefined = [...propertyCards].find(
@@ -21,7 +21,7 @@ export class SearchPropertyRenderer {
 
     if (!propertyCard) return
 
-    const metrics: HTMLDivElement = this.elementWith('metrics-grid')
+    const metrics: HTMLElement = this.elementWith('div', 'metrics-grid')
 
     metrics.append(
       this.reviewMetrics(property.getReviewMetrics())
@@ -36,7 +36,7 @@ export class SearchPropertyRenderer {
     propertyCard.append(metrics)
   }
 
-  private static reviewMetrics (metrics: ReviewMetrics): HTMLDivElement {
+  private static reviewMetrics (metrics: ReviewMetrics): HTMLElement {
     const items: MetricItem[] = [
       { label: 'Male:', value: `${metrics.getMale()} (${metrics.getMalePercentage()}%)` },
       { label: 'Female:', value: `${metrics.getFemale()} (${metrics.getFemalePercentage()}%)` },
@@ -48,7 +48,7 @@ export class SearchPropertyRenderer {
     return this.metricsRow('Reviews', items)
   }
 
-  private static availabilityMetrics (metrics: AvailabilityMetrics): HTMLDivElement {
+  private static availabilityMetrics (metrics: AvailabilityMetrics): HTMLElement {
     const items: MetricItem[] = [
       {
         label: 'Mixed:',
@@ -71,21 +71,19 @@ export class SearchPropertyRenderer {
     return this.metricsRow('Availability', items)
   }
 
-  private static metricsRow (title: string, items: MetricItem[]): HTMLDivElement {
-    const rowElement: HTMLDivElement = this.elementWith('row')
-    rowElement.append(
-      this.elementWith('title', `<span>${title}</span><span>→</span>`)
-    )
+  private static metricsRow (title: string, items: MetricItem[]): HTMLElement {
+    const rowElement: HTMLElement = this.elementWith('div', 'row')
+
+    const titleElement: HTMLElement = this.elementWith('div', 'title')
+    titleElement.append(this.elementWith('span', undefined, title))
+    titleElement.append(this.elementWith('span', undefined, '→'))
+
+    rowElement.append(titleElement)
 
     for (const { label, value } of items) {
-      const item: HTMLDivElement = this.elementWith('item')
-
-      item.append(
-        this.elementWith('label', label)
-      )
-      item.append(
-        this.elementWith('value', value)
-      )
+      const item: HTMLElement = this.elementWith('div', 'item')
+      item.append(this.elementWith('div', 'label', label))
+      item.append(this.elementWith('div', 'value', value))
 
       rowElement.append(item)
     }
@@ -93,11 +91,10 @@ export class SearchPropertyRenderer {
     return rowElement
   }
 
-  private static elementWith (className: string, innerHtml?: string): HTMLDivElement {
-    const element: HTMLDivElement = document.createElement('div')
-    element.className = className
-
-    if (innerHtml) element.innerHTML = innerHtml
+  private static elementWith (tagName: string, className?: string, textContent?: string): HTMLElement {
+    const element: HTMLElement = document.createElement(tagName)
+    if (className) element.className = className
+    if (textContent) element.textContent = textContent
 
     return element
   }
