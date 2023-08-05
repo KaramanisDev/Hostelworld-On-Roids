@@ -10,7 +10,7 @@ export type HttpClientOptions = {
 
 export class HttpClient {
   private static readonly defaultCacheTimeInMinutes: number = 24 * 60
-  private static readonly storage: CacheStorage<string> = new CacheStorage('http-client')
+  private static readonly storage: CacheStorage<string> = new CacheStorage('hor-http-client')
 
   public static async getJson<T = Record<string, unknown>> (url: string, options?: HttpClientOptions): Promise<T> {
     const response: KyResponse = await KyClient.get(url, this.options(options))
