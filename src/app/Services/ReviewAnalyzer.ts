@@ -27,7 +27,7 @@ export class ReviewAnalyzer {
       Array
         .from({ length: leftOverPages }, (_, index) => index + 2)
         .map(async page => {
-          await delay(randomNumber(3, 12) * 100)
+          await delay(randomNumber(1, 8) * 100)
           const { reviews } = await this.request(property, page)
 
           return reviews

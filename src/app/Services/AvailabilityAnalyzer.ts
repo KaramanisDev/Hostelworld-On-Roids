@@ -41,7 +41,7 @@ export class AvailabilityAnalyzer {
       const fromWithDaysAdded: Date = dateAddDays(from, days)
       const toWithFromPlus3Days: Date = dateAddDays(fromWithDaysAdded, 2)
 
-      await delay(randomNumber(2, 5) * 100)
+      await delay(randomNumber(0, 5) * 100)
 
       const metrics: Metrics = this.toMetrics(
         this.adaptDormBedToMaxCapacity(
