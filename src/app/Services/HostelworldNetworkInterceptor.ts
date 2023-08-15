@@ -1,15 +1,10 @@
 import type { Callback } from 'Types/General'
-import type { HostelworldSearchProperties } from 'Types/HostelworldSearchProperties'
-import type { HostelworldSearchUnavailableProperties } from 'Types/HostelworldSearchUnavailableProperties'
+import type { HostelworldSearch } from 'Types/HostelworldSearch'
 import { XHRRequestInterceptor } from 'Utils/XHRRequestInterceptor'
 
-type HostelworldSearch = HostelworldSearchProperties | HostelworldSearchUnavailableProperties
-
 export class HostelworldNetworkInterceptor {
-  private static searchPropertiesUrl: string = 'https://prod.apigee.hostelworld.com/legacy-hwapi-service/2.2/cities'
-  private static citiesSocialCuesUrl: string = 'https://prod.apigee.hostelworld.com/socialcues-service/api/v1/cities'
-  private static searchUnavailablePropertiesRegex: RegExp =
-    /^https:\/\/prod\.apigee\.hostelworld\.com\/legacy-hwapi-service\/2\.2\/cities\/.+\/properties\/no-availabilities/
+  private static searchPropertiesRegex: RegExp = /cities\/\d+\/properties\/\?.*(?=date-start=(?!1943-04-19))/
+  private static searchAllPropertiesRegex: RegExp = /cities\/\d+\/properties\/\?.*date-start=1943-04-19/
 
   public static onSearchProperties (UrlCallback: Callback<URL>, responseCallback: Callback<HostelworldSearch>): typeof this {
     const parseUrlWithCallback: Callback<string> = (url: string): string => {
@@ -26,40 +21,26 @@ export class HostelworldNetworkInterceptor {
     }
 
     XHRRequestInterceptor
-      .intercept({ url: this.searchPropertiesUrl })
+      .intercept({ url: this.searchPropertiesRegex })
       .withUrl(parseUrlWithCallback)
 
     XHRRequestInterceptor
-      .intercept({ url: this.searchPropertiesUrl, status: 200 })
+      .intercept({ url: this.searchPropertiesRegex, status: 200 })
       .withResponse(parseResponseWithCallback)
 
     return this
   }
 
-  public static increaseSearchUnavailablePropertiesPerPage (): typeof this {
-    const newPerPage: number = 100
+  public static onAllSearchProperties (UrlCallback: Callback<URL>): typeof this {
+    const parseUrlWithCallback: Callback<string> = (url: string): string => {
+      const parsed: URL = new URL(url)
 
-    const increasePerPage: Callback<string> = (requestUrl: string): string => {
-      const url = new URL(requestUrl)
-
-      if (!url.searchParams.has('per-page')) return url.toString()
-      url.searchParams.set('per-page', String(newPerPage))
-
-      return url.toString()
+      return UrlCallback(parsed).toString()
     }
 
     XHRRequestInterceptor
-      .intercept({ url: this.searchUnavailablePropertiesRegex })
-      .withUrl(increasePerPage)
-
-    return this
-  }
-
-  public static guardAgainstFailingCitySocialCues (): typeof this {
-    XHRRequestInterceptor
-      .intercept({ url: this.citiesSocialCuesUrl })
-      .shouldNotFail(JSON.stringify({ nationalities: [], profileImages: { all: [], soloPax: [] } }))
-      .withTimeout(90 * 1000)
+      .intercept({ url: this.searchAllPropertiesRegex })
+      .withUrl(parseUrlWithCallback)
 
     return this
   }

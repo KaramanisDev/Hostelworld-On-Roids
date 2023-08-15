@@ -1,12 +1,12 @@
-import type { HostelworldSearch } from 'Services/HosterworldDataAdapter'
 import { Search } from 'DTOs/Search'
 import { Subscribe } from 'Core/EventBus'
 import { AbstractListener } from './AbstractListener'
-import { HosterworldDataAdapter } from 'Services/HosterworldDataAdapter'
+import { HostelworldDataAdapter } from 'Services/HostelworldDataAdapter'
 import { HostelworldFeatureToggler } from 'Services/HostelworldFeatureToggler'
 import { HostelworldDataManipulator } from 'Services/HostelworldDataManipulator'
 import { HostelworldNetworkInterceptor } from 'Services/HostelworldNetworkInterceptor'
 import { HostelworldDataHook } from 'Services/HostelworldDataHook'
+import type { HostelworldSearch } from 'Types/HostelworldSearch'
 
 @Subscribe('app:inited')
 export class AppInitedListener extends AbstractListener {
@@ -27,28 +27,38 @@ export class AppInitedListener extends AbstractListener {
 
   private applyRequestInterceptors (): void {
     HostelworldNetworkInterceptor
-      .guardAgainstFailingCitySocialCues()
-      .increaseSearchUnavailablePropertiesPerPage()
       .onSearchProperties(
         this.persistLatestSearch.bind(this),
         this.onSearchProperties.bind(this)
       )
+      .onAllSearchProperties(
+        this.updateCustomUrlToSearchAll.bind(this)
+      )
   }
 
   private persistLatestSearch (url: URL): URL {
-    this.persistSearchInSession(
-      Search.createFromSearchUrl(url)
-    )
+    const search: Search = Search.createFromHostelworldSearchUrl(url)
+    this.persistSearchInSession(search)
+
+    void HostelworldDataManipulator.displayAllProperties(search.getCityId())
 
     return url
   }
 
   private onSearchProperties (search: HostelworldSearch): HostelworldSearch {
-    const adapted: HostelworldSearch = HosterworldDataAdapter.adaptSearch(search)
+    const adapted: HostelworldSearch = HostelworldDataAdapter.adaptSearch(search)
 
-    this.emit('properties:intercepted', adapted)
+    this.emit('hostelworld:search:intercepted', adapted)
 
     return adapted
+  }
+
+  private updateCustomUrlToSearchAll (url: URL): URL {
+    url.searchParams.delete('guests')
+    url.searchParams.delete('num-nights')
+    url.searchParams.delete('date-start')
+
+    return url
   }
 
   private async toggleHostelworldFeatures (): Promise<void> {

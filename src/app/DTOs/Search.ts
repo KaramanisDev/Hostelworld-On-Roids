@@ -3,8 +3,9 @@ import { dateAddDays } from 'Utils'
 export class Search {
   private to!: Date
   private from!: Date
+  private cityId!: string
 
-  constructor (attributes: Record<string, Date>) {
+  constructor (attributes: Record<string, Date | string>) {
     Object.assign(this, attributes)
   }
 
@@ -16,7 +17,11 @@ export class Search {
     return this.from
   }
 
-  public static createFromSearchUrl (url: URL): typeof this.prototype {
+  public getCityId (): string {
+    return this.cityId
+  }
+
+  public static createFromHostelworldSearchUrl (url: URL): typeof this.prototype {
     const parameters: URLSearchParams = url.searchParams
     if (!parameters.has('date-start') || !parameters.has('num-nights')) {
       throw new Error('Not a hostelworld search url.')
@@ -24,9 +29,10 @@ export class Search {
 
     const from: Date = new Date(<string>parameters.get('date-start'))
     const daysToAdd: number = Number(parameters.get('num-nights'))
+    const [, cityId]: [string, string] = url.toString().match(/cities\/(\d+)\/properties\//) as [string, string]
 
     return new this({
-      from, to: dateAddDays(from, daysToAdd)
+      cityId, from, to: dateAddDays(from, daysToAdd)
     })
   }
 }

@@ -1,4 +1,4 @@
-import type { Property } from 'Types/HostelworldSearchProperties'
+import type { Property } from 'Types/HostelworldSearch'
 import { promiseFallback, waitForElement, waitForProperty } from 'Utils'
 
 type VuexRouter = {

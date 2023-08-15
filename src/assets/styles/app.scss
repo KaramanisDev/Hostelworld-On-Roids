@@ -8,6 +8,12 @@
   }
 
   .property-card-container {
+    &.unavailable {
+      .social-cues-container {
+        filter: grayscale(85%);
+      }
+    }
+
     .social-cues-container {
       padding: unset !important;
 

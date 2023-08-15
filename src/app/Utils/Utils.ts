@@ -125,3 +125,9 @@ export async function promisesFulfillSequentially (promiseFactories: (() => Prom
 
   return outputs
 }
+
+export function pluck<T extends object, K extends keyof T> (arrayOfObjects: T[], property: K): T[K][] {
+  return arrayOfObjects.map(
+    item => item[property]
+  )
+}

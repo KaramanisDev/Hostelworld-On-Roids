@@ -1,5 +1,5 @@
 import type { Search } from 'DTOs/Search'
-import type { Property as SearchProperty } from 'Types/HostelworldSearchProperties'
+import type { Property as SearchProperty } from 'Types/HostelworldSearch'
 import { Property } from 'DTOs/Property'
 import { AvailabilityMetrics } from 'DTOs/AvailabilityMetrics'
 import { AvailabilityAnalyzer } from 'Services/AvailabilityAnalyzer'
