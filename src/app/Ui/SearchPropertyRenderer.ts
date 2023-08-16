@@ -38,11 +38,11 @@ export class SearchPropertyRenderer {
 
   private static reviewMetrics (metrics: ReviewMetrics): HTMLElement {
     const items: MetricItem[] = [
-      { label: 'Male:', value: `${metrics.getMale()} (${metrics.getMalePercentage()}%)` },
-      { label: 'Female:', value: `${metrics.getFemale()} (${metrics.getFemalePercentage()}%)` },
-      { label: 'Other:', value: `${metrics.getOther()} (${metrics.getOtherPercentage()}%)` },
-      { label: 'Solo:', value: `${metrics.getSolo()} (${metrics.getSoloPercentage()}%)` },
-      { label: 'Total:', value: String(metrics.getTotal()) }
+      { label: 'Male', value: `${metrics.getMale()} (${metrics.getMalePercentage()}%)` },
+      { label: 'Female', value: `${metrics.getFemale()} (${metrics.getFemalePercentage()}%)` },
+      { label: 'Other', value: `${metrics.getOther()} (${metrics.getOtherPercentage()}%)` },
+      { label: 'Solo', value: `${metrics.getSolo()} (${metrics.getSoloPercentage()}%)` },
+      { label: 'Total', value: String(metrics.getTotal()) }
     ]
 
     return this.metricsRow('Reviews', items)
@@ -51,19 +51,19 @@ export class SearchPropertyRenderer {
   private static availabilityMetrics (metrics: AvailabilityMetrics): HTMLElement {
     const items: MetricItem[] = [
       {
-        label: 'Mixed:',
+        label: 'Mixed',
         value: `${metrics.getMixedBeds()}/${metrics.getMaxMixedBeds()} (${metrics.getMixedBedsPercentage()}%)`
       },
       {
-        label: 'Female:',
+        label: 'Female',
         value: `${metrics.getFemaleBeds()}/${metrics.getMaxFemaleBeds()} (${metrics.getFemaleBedsPercentage()}%)`
       },
       {
-        label: 'Private:',
+        label: 'Private',
         value: `${metrics.getPrivateRooms()}/${metrics.getMaxPrivateRooms()} (${metrics.getPrivateRoomsPercentage()}%)`
       },
       {
-        label: 'Guests:',
+        label: 'Guests',
         value: `${metrics.getGuests()}/${metrics.getMaxGuests()} (${metrics.getGuestsPercentage()}%)`
       }
     ]
