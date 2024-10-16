@@ -88,7 +88,7 @@ export class AvailabilityAnalyzer {
     const { dorms, privates } = availability.rooms
 
     for (const dorm of dorms) {
-      if (dorm.basicType.toLowerCase().includes('mixed')) metrics.mixed += dorm.totalBedsAvailable
+      if (!dorm.basicType.toLowerCase().includes('female')) metrics.mixed += dorm.totalBedsAvailable
       if (dorm.basicType.toLowerCase().includes('female')) metrics.female += dorm.totalBedsAvailable
 
       metrics.total += dorm.totalBedsAvailable

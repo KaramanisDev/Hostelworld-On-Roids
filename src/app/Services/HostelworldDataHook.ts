@@ -24,7 +24,9 @@ export class HostelworldDataHook {
       component.$watch('displayedProperties', (properties: Property[]) => {
         if (!properties[0]) return
 
-        callback(properties.map(property => String(property.id)))
+        callback(
+          properties.map(property => String(property.id))
+        )
       })
     }
 
@@ -41,7 +43,7 @@ export class HostelworldDataHook {
   }
 
   private static async propertyListComponent (): Promise<VuePropertyListComponent> {
-    const propertyListElement: HTMLElement = await waitForElement('.search .search-results .search-results .content .search-results div[page]', 60 * 1000)
+    const propertyListElement: HTMLElement = await waitForElement('.search .property-list >div', 60 * 1000)
 
     return waitForProperty(propertyListElement, '__vue__', 60 * 1000)
   }

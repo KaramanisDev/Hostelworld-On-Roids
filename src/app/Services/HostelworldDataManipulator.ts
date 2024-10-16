@@ -52,6 +52,16 @@ type VueSearchComponent = {
   usersWhoBookedAvatars: Booked[]
 }
 
+export type VuePropertyCardComponent = HTMLElement & {
+  __vue__: {
+    socialCuesAvatars: {
+      title?: string,
+      avatarLimit: number,
+      avatarList: Avatar[]
+    }
+  }
+}
+
 export class HostelworldDataManipulator {
   public static async showMaxPropertiesInSearch (): Promise<void> {
     const showAllPropertiesInSearch: () => Promise<void> = async (): Promise<void> => {
@@ -89,8 +99,10 @@ export class HostelworldDataManipulator {
     )
   }
 
-  public static async setPropertyBookingsOnSearch (property: string, countries: BookedCountry[]): Promise<void> {
-    const component: VueSearchComponent | undefined = await promiseFallback(this.searchComponent())
+  public static async setPropertyBookings (property: Element, countries: BookedCountry[]): Promise<void> {
+    const component: VuePropertyCardComponent | undefined = <VuePropertyCardComponent>
+      await promiseFallback(waitForElement('.nuxt-link >a', 10 * 1000, property))
+
     if (!component || !countries.length) return
 
     const avatars: Avatar[] = countries
@@ -108,14 +120,10 @@ export class HostelworldDataManipulator {
         []
       )
 
-    const existingBookingIndex: number = component.usersWhoBookedAvatars.findIndex(booked => booked.propertyId === Number(property))
-    if (existingBookingIndex !== -1) component.usersWhoBookedAvatars.splice(existingBookingIndex, 1)
-
-    component.usersWhoBookedAvatars.push({
+    component.__vue__.socialCuesAvatars = {
       avatarLimit: 999,
-      avatarList: avatars,
-      propertyId: Number(property)
-    })
+      avatarList: avatars
+    }
   }
 
   public static async displayAllProperties (cityId: string): Promise<void> {
@@ -144,7 +152,7 @@ export class HostelworldDataManipulator {
   }
 
   private static async propertyListComponent (): Promise<VuePropertyListComponent> {
-    const propertyListElement: HTMLElement = await waitForElement('.search .search-results .search-results .content .search-results div[page]', 60 * 1000)
+    const propertyListElement: HTMLElement = await waitForElement('.search .property-list >div', 60 * 1000)
 
     return waitForProperty(propertyListElement, '__vue__', 60 * 1000)
   }

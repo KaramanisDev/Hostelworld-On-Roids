@@ -2,6 +2,7 @@ import type { Property } from 'DTOs/Property'
 import { waitForElement } from 'Utils'
 import type { ReviewMetrics } from 'DTOs/ReviewMetrics'
 import type { AvailabilityMetrics } from 'DTOs/AvailabilityMetrics'
+import { HostelworldDataManipulator } from 'Services/HostelworldDataManipulator'
 
 type MetricItem = {
   label: string,
@@ -34,6 +35,10 @@ export class SearchPropertyRenderer {
     if (existingMetrics) existingMetrics.remove()
 
     propertyCard.append(metrics)
+
+    await HostelworldDataManipulator.setPropertyBookings(
+      propertyCard, property.getBookedCountries()
+    )
   }
 
   private static reviewMetrics (metrics: ReviewMetrics): HTMLElement {

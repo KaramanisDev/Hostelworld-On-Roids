@@ -39,8 +39,8 @@ export async function waitForProperty<T = unknown> (
   return waitForProperty<T>(root, pathToWait, maxTimeout - 100)
 }
 
-export async function waitForElement (selector: string, maxTimeout: number = 5000): Promise<HTMLElement> {
-  const element: HTMLElement | null = document.querySelector(selector)
+export async function waitForElement (selector: string, maxTimeout: number = 30_000, onElement: Document | Element = document): Promise<HTMLElement> {
+  const element: HTMLElement | null = onElement.querySelector(selector)
 
   if (element) return element
 
