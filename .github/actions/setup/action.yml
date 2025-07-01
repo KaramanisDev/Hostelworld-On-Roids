@@ -1,0 +1,19 @@
+name: Setup
+description: Common setup with Corepack, Yarn, and Node.js
+runs:
+  using: "composite"
+  steps:
+    - name: Enable Corepack
+      run: corepack enable
+      shell: bash
+
+    - name: Setup Node.js with Yarn caching
+      uses: actions/setup-node@v4
+      with:
+        node-version: '24'
+        cache: 'yarn'
+        cache-dependency-path: '**/yarn.lock'
+
+    - name: Install dependencies
+      run: yarn install --immutable
+      shell: bash
