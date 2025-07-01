@@ -10,6 +10,11 @@ export class PropertyRenderListener extends AbstractListener {
       ? this.propertyInSession(propertyOrId)
       : propertyOrId
 
+    if (!propertyToRender && typeof propertyOrId === 'string') {
+      await SearchPropertyRenderer.renderProcessingMessage(propertyOrId)
+      return
+    }
+
     if (!propertyToRender) return
 
     await SearchPropertyRenderer.render(propertyToRender)

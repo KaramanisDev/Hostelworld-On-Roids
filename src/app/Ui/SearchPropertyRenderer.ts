@@ -21,24 +21,50 @@ export class SearchPropertyRenderer {
     )
 
     if (!propertyCard) return
+    this.cleanUpRenderedElementsOf(propertyCard)
 
     const metrics: HTMLElement = this.elementWith('div', 'metrics-grid')
-
     metrics.append(
       this.reviewMetrics(property.getReviewMetrics())
     )
     metrics.append(
       this.availabilityMetrics(property.getAvailabilityMetrics())
     )
-
-    const existingMetrics: HTMLDivElement | null = propertyCard.querySelector('.metrics-grid')
-    if (existingMetrics) existingMetrics.remove()
-
     propertyCard.append(metrics)
+
+    const updateNote: HTMLElement = this.elementWith(
+      'div', 'note', 'ℹ️ Data displayed here can take up to an hour to be refreshed.'
+    )
+    propertyCard.append(updateNote)
 
     await HostelworldDataManipulator.setPropertyBookings(
       propertyCard, property.getBookedCountries()
     )
+  }
+
+  public static async renderProcessingMessage (propertyId: string): Promise<void> {
+    await waitForElement('.property-card .property-card-container')
+
+    const propertyCards: NodeListOf<Element> = document.querySelectorAll('.property-card')
+    const propertyCard: Element | undefined = [...propertyCards].find(
+      card => card.innerHTML.includes(propertyId)
+    )
+
+    if (!propertyCard) return
+
+    this.cleanUpRenderedElementsOf(propertyCard)
+    const note: HTMLElement = this.elementWith(
+      'div', 'note', '🔄 Property data are being processed...'
+    )
+    propertyCard.append(note)
+  }
+
+  private static cleanUpRenderedElementsOf (propertyCard: Element): void {
+    const metricsElement: HTMLDivElement | null = propertyCard.querySelector('.metrics-grid')
+    if (metricsElement) metricsElement.remove()
+
+    const note: HTMLDivElement | null = propertyCard.querySelector('.note')
+    if (note) note.remove()
   }
 
   private static reviewMetrics (metrics: ReviewMetrics): HTMLElement {

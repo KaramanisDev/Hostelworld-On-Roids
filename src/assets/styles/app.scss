@@ -82,6 +82,13 @@
       }
     }
   }
+
+  .note {
+    text-align: center;
+    font-size: .8rem;
+    color: var(--wds-color-ink);
+    border-top: 0.0625rem solid var(--wds-color-ink-lighter);
+  }
 }
 
 @media (max-width: 520px) {
