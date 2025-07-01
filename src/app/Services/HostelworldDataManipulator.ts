@@ -54,7 +54,7 @@ type VueSearchComponent = {
 
 export type VuePropertyCardComponent = HTMLElement & {
   __vue__: {
-    socialCuesAvatars: {
+    stayingAvatars: {
       title?: string,
       avatarLimit: number,
       avatarList: Avatar[]
@@ -120,7 +120,7 @@ export class HostelworldDataManipulator {
         []
       )
 
-    component.__vue__.socialCuesAvatars = {
+    component.__vue__.stayingAvatars = {
       avatarLimit: 999,
       avatarList: avatars
     }
