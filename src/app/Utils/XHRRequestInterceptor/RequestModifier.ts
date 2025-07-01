@@ -70,7 +70,9 @@ export class RequestModifier {
       if (request.status === 200) return
 
       this.onPropertyEnforce(request, 'status', 200)
-      respondWithIfFailed && this.onPropertyEnforce(request, 'responseText', respondWithIfFailed)
+
+      if (!respondWithIfFailed) return
+      this.onPropertyEnforce(request, 'responseText', respondWithIfFailed)
     }
 
     return this

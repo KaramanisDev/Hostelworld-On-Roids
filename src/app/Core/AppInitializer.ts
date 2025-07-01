@@ -20,7 +20,6 @@ export class AppInitializer {
   }
 
   private static subscribeListeners (): void {
-    // eslint-disable-next-line unicorn/prefer-module
     const context: RequireContext = require.context(
       '../Listeners',
       true,

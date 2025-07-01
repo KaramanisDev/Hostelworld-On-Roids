@@ -23,9 +23,11 @@ export class BookedCountriesStatsProvider {
           const booking: BookedCountryStat | undefined = carry
             .find(country => country.code === datum.countryCode)
 
-          booking
-            ? booking.count++
-            : carry.push({ count: 1, code: datum.countryCode, name: datum.nationality })
+          if (booking) {
+            booking.count++
+          } else {
+            carry.push({ count: 1, code: datum.countryCode, name: datum.nationality })
+          }
 
           return carry
         },

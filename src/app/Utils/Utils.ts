@@ -1,4 +1,4 @@
-// eslint-disable-next-line @typescript-eslint/no-empty-function
+// eslint-disable-next-line unicorn/prevent-abbreviations
 export function emptyFunction (): void {
 // method intentionally left blank
 }

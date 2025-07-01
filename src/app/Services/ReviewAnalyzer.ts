@@ -22,7 +22,6 @@ export class ReviewAnalyzer {
     metrics.solo = Math.round(metrics.total * ((reviewStatistics?.soloPercentage ?? 0) / 100))
 
     const leftOverPages: number = pagination.numberOfPages - 1
-    // eslint-disable-next-line unicorn/prefer-spread
     const restOfPagesReviews: Review[] = Array.from(await Promise.all(
       Array
         .from({ length: leftOverPages }, (_, index) => index + 2)
