@@ -2,14 +2,14 @@ import type { Property } from 'DTOs/Property'
 import { waitForElement } from 'Utils'
 import type { ReviewMetrics } from 'DTOs/ReviewMetrics'
 import type { AvailabilityMetrics } from 'DTOs/AvailabilityMetrics'
-import { HostelworldDataManipulator } from 'Services/HostelworldDataManipulator'
+import { PropertyCardComponentPatcher } from 'Services/Hostelworld/Patchers/PropertyCardComponentPatcher'
 
 type MetricItem = {
   label: string,
   value: string
 }
 
-export class SearchPropertyRenderer {
+export class PropertyCardRenderer {
   public static async render (property: Property): Promise<void> {
     await waitForElement('.property-card .property-card-container')
 
@@ -37,7 +37,7 @@ export class SearchPropertyRenderer {
     )
     propertyCard.append(updateNote)
 
-    await HostelworldDataManipulator.setPropertyBookings(
+    await PropertyCardComponentPatcher.injectBookedCountries(
       propertyCard, property.getBookedCountries()
     )
   }

@@ -9,15 +9,16 @@ export type Metrics = {
   total: number
 }
 
-export type AvailabilityMetrics = {
+export type PropertyAvailability = {
   max: Metrics
   current: Metrics
 }
 
-export class AvailabilityAnalyzer {
-  private static readonly endpoint: string = 'https://prod.apigee.hostelworld.com/legacy-hwapi-service/2.2/properties/{property}/availability/?date-start={from}&num-nights={nights}'
+export class AvailabilityClient {
+  private static readonly endpoint: string = 'https://prod.apigee.hostelworld.com/legacy-hwapi-service/2.2/' +
+    'properties/{property}/availability/?date-start={from}&num-nights={nights}'
 
-  public static async analyze (property: string, from: Date, to: Date): Promise<AvailabilityMetrics> {
+  public static async fetch (property: string, from: Date, to: Date): Promise<PropertyAvailability> {
     const current: Metrics = await this.currentCapacity(property, from, to)
     const max: Metrics = await this.possibleMaxCapacity(property, from, current)
 
@@ -60,23 +61,6 @@ export class AvailabilityAnalyzer {
     return maxMetrics
   }
 
-  private static async request (property: string, from: Date, to: Date, cacheInMinutes?: number): Promise<HostelworldPropertyAvailability> {
-    const oneDayInMs: number = 24 * 60 * 60 * 1000
-    const nights: number = Math.round(
-      Math.abs(from.getTime() - to.getTime()) / oneDayInMs
-    )
-
-    const endpoint: string = this.endpoint
-      .replaceAll('{from}', dateFormat(from))
-      .replaceAll('{nights}', String(nights))
-      .replaceAll('{property}', property)
-
-    return await promiseFallback(
-      HttpClient.getJson(endpoint, { cacheInMinutes }),
-      { rooms: { dorms: [], privates: [] } } as unknown as HostelworldPropertyAvailability
-    )
-  }
-
   private static toMetrics (availability: HostelworldPropertyAvailability): Metrics {
     const metrics: Metrics = {
       mixed: 0,
@@ -111,5 +95,22 @@ export class AvailabilityAnalyzer {
       return dorm
     })
     return availability
+  }
+
+  private static async request (property: string, from: Date, to: Date, cacheInMinutes?: number): Promise<HostelworldPropertyAvailability> {
+    const oneDayInMs: number = 24 * 60 * 60 * 1000
+    const nights: number = Math.round(
+      Math.abs(from.getTime() - to.getTime()) / oneDayInMs
+    )
+
+    const endpoint: string = this.endpoint
+      .replaceAll('{from}', dateFormat(from))
+      .replaceAll('{nights}', String(nights))
+      .replaceAll('{property}', property)
+
+    return await promiseFallback(
+      HttpClient.getJson(endpoint, { cacheInMinutes }),
+      { rooms: { dorms: [], privates: [] } } as unknown as HostelworldPropertyAvailability
+    )
   }
 }

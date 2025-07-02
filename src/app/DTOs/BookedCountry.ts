@@ -1,11 +1,11 @@
-import type { BookedCountryStat } from 'Services/BookedCountriesStatsProvider'
+import type { GuestCountry } from 'Services/Hostelworld/Api/VisitorsCountryClient'
 
 export class BookedCountry {
   private code!: string
   private name!: string
   private count!: number
 
-  constructor (attributes: BookedCountryStat) {
+  constructor (attributes: GuestCountry) {
     Object.assign(this, attributes)
   }
 

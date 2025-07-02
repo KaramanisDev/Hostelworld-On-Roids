@@ -12,8 +12,8 @@ type VuePropertyListComponent = {
   isDisplayedPropertiesWatched?: boolean
 }
 
-export class HostelworldDataHook {
-  public static async onDisplayedPropertiesUpdate (callback: (propertyIds: string[]) => void): Promise<void> {
+export class VuexDataHook {
+  public static async onPropertiesDisplayed (callback: (propertyIds: string[]) => void): Promise<void> {
     const onDisplayedPropertiesUpdate: () => Promise<void> = async (): Promise<void> => {
       const component: VuePropertyListComponent | undefined = await promiseFallback(this.propertyListComponent())
       if (!component) return
@@ -30,12 +30,12 @@ export class HostelworldDataHook {
       })
     }
 
-    return this.onRouteLoad(
+    return this.onRouteChanged(
       onDisplayedPropertiesUpdate.bind(this)
     )
   }
 
-  public static async onRouteLoad (callback: () => void | Promise<void>): Promise<void> {
+  public static async onRouteChanged (callback: () => void | Promise<void>): Promise<void> {
     const router: VuexRouter = await waitForProperty(window, '$nuxt.$router', 60 * 1000)
 
     router.onReady(callback.bind(this))

@@ -1,7 +1,7 @@
 import type { Property } from 'DTOs/Property'
 import { Subscribe } from 'Core/EventBus'
 import { AbstractListener } from 'Listeners/AbstractListener'
-import { SearchPropertyRenderer } from 'Ui/SearchPropertyRenderer'
+import { PropertyCardRenderer } from 'Services/PropertyCardRenderer'
 
 @Subscribe('property:render')
 export class PropertyRenderListener extends AbstractListener {
@@ -11,12 +11,12 @@ export class PropertyRenderListener extends AbstractListener {
       : propertyOrId
 
     if (!propertyToRender && typeof propertyOrId === 'string') {
-      await SearchPropertyRenderer.renderProcessingMessage(propertyOrId)
+      await PropertyCardRenderer.renderProcessingMessage(propertyOrId)
       return
     }
 
     if (!propertyToRender) return
 
-    await SearchPropertyRenderer.render(propertyToRender)
+    await PropertyCardRenderer.render(propertyToRender)
   }
 }

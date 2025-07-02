@@ -1,4 +1,4 @@
-import type { Metrics } from 'Services/AvailabilityAnalyzer'
+import type { Metrics } from 'Services/Hostelworld/Api/AvailabilityClient'
 import { toPercent } from 'Utils'
 
 export class AvailabilityMetrics {

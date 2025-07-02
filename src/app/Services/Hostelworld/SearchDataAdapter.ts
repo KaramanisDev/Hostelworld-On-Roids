@@ -1,7 +1,7 @@
 import type { HostelworldSearch } from 'Types/HostelworldSearch'
 
-export class HostelworldDataAdapter {
-  public static adaptSearch (search: HostelworldSearch): HostelworldSearch {
+export class SearchDataAdapter {
+  public static stripPromotions (search: HostelworldSearch): HostelworldSearch {
     search.properties = search.properties.map(property => {
       property.isElevate = false
       property.isFeatured = false

@@ -1,12 +1,11 @@
-export type Datum = {
+export type Data = {
   id: string;
-  ageRange?: string;
   countryCode: string;
   nationality: string;
   profilePictureURL: string;
 }
 
 export type HostelworldPropertyGuests = {
-  data: Datum[];
+  data: Data[];
   total: number;
 }

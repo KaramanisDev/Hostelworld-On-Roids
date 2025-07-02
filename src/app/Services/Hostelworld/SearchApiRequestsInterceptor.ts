@@ -2,11 +2,11 @@ import type { Callback } from 'Types/General'
 import type { HostelworldSearch } from 'Types/HostelworldSearch'
 import { XHRRequestInterceptor } from 'Utils/XHRRequestInterceptor'
 
-export class HostelworldNetworkInterceptor {
+export class SearchApiRequestsInterceptor {
   private static searchPropertiesRegex: RegExp = /cities\/\d+\/properties\/\?.*(?=date-start=(?!1943-04-19))/
   private static searchAllPropertiesRegex: RegExp = /cities\/\d+\/properties\/\?.*date-start=1943-04-19/
 
-  public static onSearchProperties (UrlCallback: Callback<URL>, responseCallback: Callback<HostelworldSearch>): typeof this {
+  public static interceptSearch (UrlCallback: Callback<URL>, responseCallback: Callback<HostelworldSearch>): typeof this {
     const parseUrlWithCallback: Callback<string> = (url: string): string => {
       const parsed: URL = new URL(url)
       UrlCallback(parsed)
@@ -31,7 +31,7 @@ export class HostelworldNetworkInterceptor {
     return this
   }
 
-  public static onAllSearchProperties (UrlCallback: Callback<URL>): typeof this {
+  public static interceptSearchAll (UrlCallback: Callback<URL>): typeof this {
     const parseUrlWithCallback: Callback<string> = (url: string): string => {
       const parsed: URL = new URL(url)
 

@@ -2,7 +2,7 @@ import type { HostelworldPropertyReviews, Review } from 'Types/HostelworldProper
 import { delay, promiseFallback, randomNumber } from 'Utils'
 import { HttpClient } from 'Utils/HttpClient'
 
-export type ReviewMetrics = {
+export type PropertyReviews = {
   male: number
   female: number
   other: number
@@ -10,11 +10,12 @@ export type ReviewMetrics = {
   total: number
 }
 
-export class ReviewAnalyzer {
-  private static readonly endpoint: string = 'https://prod.apigee.hostelworld.com/legacy-hwapi-service/2.2/properties/{property}/reviews/?page={page}&sort=newest&allLanguages=true&monthCount=72&per-page=50'
+export class ReviewsClient {
+  private static readonly endpoint: string = 'https://prod.apigee.hostelworld.com/legacy-hwapi-service/2.2/' +
+    'properties/{property}/reviews/?page={page}&sort=newest&allLanguages=true&monthCount=72&per-page=50'
 
-  public static async analyze (property: string): Promise<ReviewMetrics> {
-    const metrics: ReviewMetrics = { male: 0, female: 0, other: 0, solo: 0, total: 0 }
+  public static async fetch (property: string): Promise<PropertyReviews> {
+    const metrics: PropertyReviews = { male: 0, female: 0, other: 0, solo: 0, total: 0 }
 
     const { reviews: firstPageReviews, reviewStatistics, pagination } = await this.request(property, 1)
 

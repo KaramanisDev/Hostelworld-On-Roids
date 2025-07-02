@@ -2,28 +2,31 @@ import type { Search } from 'DTOs/Search'
 import type { Property as SearchProperty } from 'Types/HostelworldSearch'
 import { Property } from 'DTOs/Property'
 import { AvailabilityMetrics } from 'DTOs/AvailabilityMetrics'
-import { AvailabilityAnalyzer } from 'Services/AvailabilityAnalyzer'
-import type { AvailabilityMetrics as AvailabilityMetricsRawRaw } from 'Services/AvailabilityAnalyzer'
-import type { ReviewMetrics as ReviewMetricsRaw } from 'Services/ReviewAnalyzer'
-import type { BookedCountryStats } from 'Services/BookedCountriesStatsProvider'
+import type { PropertyAvailability } from 'Services/Hostelworld/Api/AvailabilityClient'
+import type { PropertyReviews } from 'Services/Hostelworld/Api/ReviewsClient'
+import type { PropertyGuestsCountries } from 'Services/Hostelworld/Api/VisitorsCountryClient'
 import { ReviewMetrics } from 'DTOs/ReviewMetrics'
-import { ReviewAnalyzer } from 'Services/ReviewAnalyzer'
-import { BookedCountriesStatsProvider } from 'Services/BookedCountriesStatsProvider'
+import { ReviewsClient } from 'Services/Hostelworld/Api/ReviewsClient'
+import { VisitorsCountryClient } from 'Services/Hostelworld/Api/VisitorsCountryClient'
 import { BookedCountry } from 'DTOs/BookedCountry'
+import { AvailabilityClient } from 'Services/Hostelworld/Api/AvailabilityClient'
 
 export class PropertyFactory {
   public static async create (searchProperty: SearchProperty, search: Search): Promise<Property> {
     const { id, name } = searchProperty
 
-    const [reviewMetricsRaw, availabilityMetricsRaw, bookedCountriesStats]: [ReviewMetricsRaw, AvailabilityMetricsRawRaw, BookedCountryStats] = await Promise.all([
-      ReviewAnalyzer.analyze(String(id)),
-      AvailabilityAnalyzer.analyze(String(id), search.getFrom(), search.getTo()),
-      BookedCountriesStatsProvider.fetch(String(id), search.getFrom(), search.getTo())
-    ])
+    const [reviews, availability, countries]: [PropertyReviews, PropertyAvailability, PropertyGuestsCountries] =
+      await Promise.all([
+        ReviewsClient.fetch(String(id)),
+        AvailabilityClient.fetch(String(id), search.getFrom(), search.getTo()),
+        VisitorsCountryClient.fetch(String(id), search.getFrom(), search.getTo())
+      ])
 
-    const reviewMetrics: ReviewMetrics = new ReviewMetrics(reviewMetricsRaw)
-    const availabilityMetrics: AvailabilityMetrics = new AvailabilityMetrics(availabilityMetricsRaw)
-    const bookedCountries: BookedCountry[] = bookedCountriesStats.map(stat => new BookedCountry(stat))
+    const reviewMetrics: ReviewMetrics = new ReviewMetrics(reviews)
+    const availabilityMetrics: AvailabilityMetrics = new AvailabilityMetrics(availability)
+    const bookedCountries: BookedCountry[] = countries.map(
+      country => new BookedCountry(country)
+    )
 
     return new Property({
       name,

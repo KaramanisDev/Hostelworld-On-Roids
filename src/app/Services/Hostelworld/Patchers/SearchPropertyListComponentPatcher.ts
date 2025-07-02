@@ -1,24 +1,10 @@
 import type { Property } from 'Types/HostelworldSearch'
-import type { BookedCountry } from 'DTOs/BookedCountry'
-import { HostelworldDataHook } from 'Services/HostelworldDataHook'
+import { VuexDataHook } from 'Services/Hostelworld/VuexDataHook'
 import { emptyFunction, pluck, promiseFallback, waitForElement, waitForProperty } from 'Utils'
 
 type VuePropertyListComponent = {
   propertiesPerPage: number
   displayFeaturedProperties: boolean
-}
-
-type Avatar = {
-  flag: string,
-  name: string,
-  picture: string
-}
-
-type Booked = {
-  title?: string,
-  propertyId: number,
-  avatarLimit: number,
-  avatarList: Avatar[]
 }
 
 type HostelworldSearchServiceResult = {
@@ -46,24 +32,8 @@ type VuexStore = {
   }
 }
 
-type VueSearchComponent = {
-  $store: VuexStore,
-  properties: Property[],
-  usersWhoBookedAvatars: Booked[]
-}
-
-export type VuePropertyCardComponent = HTMLElement & {
-  __vue__: {
-    stayingAvatars: {
-      title?: string,
-      avatarLimit: number,
-      avatarList: Avatar[]
-    }
-  }
-}
-
-export class HostelworldDataManipulator {
-  public static async showMaxPropertiesInSearch (): Promise<void> {
+export class SearchPropertyListComponentPatcher {
+  public static async disablePagination (): Promise<void> {
     const showAllPropertiesInSearch: () => Promise<void> = async (): Promise<void> => {
       const component: VuePropertyListComponent | undefined = await promiseFallback(this.propertyListComponent())
       if (!component) return
@@ -76,13 +46,13 @@ export class HostelworldDataManipulator {
       })
     }
 
-    return HostelworldDataHook.onRouteLoad(
+    return VuexDataHook.onRouteChanged(
       showAllPropertiesInSearch.bind(this)
     )
   }
 
-  public static async hideFeaturedProperties (): Promise<void> {
-    const hideFeaturedProperties: () => Promise<void> = async (): Promise<void> => {
+  public static async disableFeatured (): Promise<void> {
+    const disableFeaturedProperties: () => Promise<void> = async (): Promise<void> => {
       const component: VuePropertyListComponent | undefined = await promiseFallback(this.propertyListComponent())
       if (!component) return
 
@@ -94,39 +64,12 @@ export class HostelworldDataManipulator {
       })
     }
 
-    return HostelworldDataHook.onRouteLoad(
-      hideFeaturedProperties.bind(this)
+    return VuexDataHook.onRouteChanged(
+      disableFeaturedProperties.bind(this)
     )
   }
 
-  public static async setPropertyBookings (property: Element, countries: BookedCountry[]): Promise<void> {
-    const component: VuePropertyCardComponent | undefined = <VuePropertyCardComponent>
-      await promiseFallback(waitForElement('.nuxt-link >a', 10 * 1000, property))
-
-    if (!component || !countries.length) return
-
-    const avatars: Avatar[] = countries
-      .sort((a: BookedCountry, b: BookedCountry) => b.getCount() - a.getCount())
-      .reduce(
-        (carry: Avatar[], country: BookedCountry) => {
-          carry.push({
-            flag: `https://dummyimage.com/50x50/fff/000.jpg&text=${country.getCount()}`,
-            name: `${country.getCount()} people are coming from ${country.getName()}.`,
-            picture: `https://a.hwstatic.com/hw/flags/${country.getCode()}.svg`
-          })
-
-          return carry
-        },
-        []
-      )
-
-    component.__vue__.stayingAvatars = {
-      avatarLimit: 999,
-      avatarList: avatars
-    }
-  }
-
-  public static async displayAllProperties (cityId: string): Promise<void> {
+  public static async loadAllForCity (cityId: string): Promise<void> {
     const store: VuexStore | undefined = await promiseFallback(this.hostelworldStore())
     if (!store) return
 
@@ -155,13 +98,5 @@ export class HostelworldDataManipulator {
     const propertyListElement: HTMLElement = await waitForElement('.search .property-list >div', 60 * 1000)
 
     return waitForProperty(propertyListElement, '__vue__', 60 * 1000)
-  }
-
-  private static async searchComponent (): Promise<VueSearchComponent> {
-    await waitForElement('.property-card .property-card-container', 60 * 1000)
-
-    const searchElement: HTMLElement = await waitForElement('.search', 60 * 1000)
-
-    return waitForProperty(searchElement, '__vue__', 60 * 1000)
   }
 }
