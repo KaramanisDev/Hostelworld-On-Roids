@@ -2,7 +2,6 @@ import { Search } from 'DTOs/Search'
 import { Subscribe } from 'Core/EventBus'
 import { AbstractListener } from './AbstractListener'
 import { HostelworldDataAdapter } from 'Services/HostelworldDataAdapter'
-import { HostelworldFeatureToggler } from 'Services/HostelworldFeatureToggler'
 import { HostelworldDataManipulator } from 'Services/HostelworldDataManipulator'
 import { HostelworldNetworkInterceptor } from 'Services/HostelworldNetworkInterceptor'
 import { HostelworldDataHook } from 'Services/HostelworldDataHook'
@@ -13,10 +12,7 @@ export class AppInitedListener extends AbstractListener {
   public async handle (): Promise<void> {
     this.applyRequestInterceptors()
 
-    await Promise.all([
-      this.toggleHostelworldFeatures(),
-      this.manipulateHostelworldData()
-    ])
+    await this.manipulateHostelworldData()
 
     await HostelworldDataHook.onDisplayedPropertiesUpdate((propertyIds: string[]) => {
       for (const propertyId of propertyIds) {
@@ -59,10 +55,6 @@ export class AppInitedListener extends AbstractListener {
     url.searchParams.delete('date-start')
 
     return url
-  }
-
-  private async toggleHostelworldFeatures (): Promise<void> {
-    await HostelworldFeatureToggler.enableViewPropertySocialCues()
   }
 
   private async manipulateHostelworldData (): Promise<void> {
