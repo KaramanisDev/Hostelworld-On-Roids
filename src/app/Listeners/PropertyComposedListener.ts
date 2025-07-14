@@ -1,5 +1,5 @@
 import type { Property } from 'DTOs/Property'
-import { AbstractListener } from 'Listeners/AbstractListener'
+import { AbstractListener } from './AbstractListener'
 import { Subscribe } from 'Core/EventBus'
 
 @Subscribe('property:composed')

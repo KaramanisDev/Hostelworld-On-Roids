@@ -3,7 +3,7 @@ import { Search } from 'DTOs/Search'
 import { Subscribe } from 'Core/EventBus'
 import { delay, promisesFulfillSequentially } from 'Utils'
 import { PropertyFactory } from 'Factories/PropertyFactory'
-import { AbstractListener } from 'Listeners/AbstractListener'
+import { AbstractListener } from './AbstractListener'
 
 @Subscribe('hostelworld:search:intercepted')
 export class PropertiesInterceptedListener extends AbstractListener {

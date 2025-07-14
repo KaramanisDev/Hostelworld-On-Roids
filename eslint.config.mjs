@@ -50,6 +50,9 @@ export default [
         replacements: {
           args: false
         }
+      }],
+      'import/no-useless-path-segments': ['error', {
+        noUselessIndex: true
       }]
     }
   }
