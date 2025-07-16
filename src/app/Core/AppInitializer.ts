@@ -1,6 +1,7 @@
 import { EventBus } from './EventBus'
 import { Session } from 'DTOs/Session'
 import { XHRRequestInterceptor } from 'Utils/XHRRequestInterceptor'
+import { WorkerRPCProxy } from 'Communication/WorkerRPCProxy'
 
 type RequireContext = __WebpackModuleApi.RequireContext
 
@@ -9,6 +10,10 @@ export class AppInitializer {
     this.initEventBusWithListeners()
 
     XHRRequestInterceptor.init()
+
+    WorkerRPCProxy.onResult((event: string, result: unknown): void => {
+      EventBus.emit(`worker:result:${event}`, result)
+    })
 
     return EventBus.emit('app:inited')
   }

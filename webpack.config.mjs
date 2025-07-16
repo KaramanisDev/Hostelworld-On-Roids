@@ -36,6 +36,7 @@ export default {
       basePath('src/entries/app.ts'),
       basePath('src/assets/styles/app.scss')
     ],
+    worker: basePath('src/entries/worker.ts'),
     content: basePath('src/entries/content.ts')
   },
   output: {

@@ -11,6 +11,10 @@
       "matches": ["https://hostelworld.com/*", "https://www.hostelworld.com/*"]
     }
   ],
+  "background": {
+    "service_worker": "worker.js",
+    "type": "module"
+  },
   "web_accessible_resources": [
     {
       "resources": ["roids.js"],

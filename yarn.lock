@@ -1794,7 +1794,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/webextension-polyfill@npm:^0.12.0":
+"@types/webextension-polyfill@npm:^0.12.3":
   version: 0.12.3
   resolution: "@types/webextension-polyfill@npm:0.12.3"
   checksum: 10c0/0f0cea5ab70a3958f7eca61168b8b431288c35ee7e8f052f5b3bf6a6aa101183aa760addd4dcf408027d558731aa8a8f107e47a373bb7c347cb7cba807fe46e6
@@ -4158,7 +4158,7 @@ __metadata:
     "@eslint/eslintrc": "npm:^3.3.1"
     "@eslint/js": "npm:^9.30.0"
     "@types/node": "npm:^24.0.8"
-    "@types/webextension-polyfill": "npm:^0.12.0"
+    "@types/webextension-polyfill": "npm:^0.12.3"
     "@types/webpack-env": "npm:^1.18.5"
     "@typescript-eslint/eslint-plugin": "npm:^8.35.1"
     "@typescript-eslint/parser": "npm:^8.35.1"

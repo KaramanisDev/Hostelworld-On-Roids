@@ -1,8 +1,11 @@
 import { ScriptLoader } from 'Utils/ScriptLoader'
 import { ExtensionRuntime } from 'Utils/ExtensionRuntime'
+import { WorkerRPCEndpoint } from 'Communication/WorkerRPCEndpoint'
 
 export class ContentInitializer {
   public static async init (): Promise<void> {
+    WorkerRPCEndpoint.listen()
+
     /*
      Why? you wonder?
      Well in order to have access to the window attributes to be able to do things like intercepting XHR requests etc...
