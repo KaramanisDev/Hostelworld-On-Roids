@@ -30,7 +30,10 @@ export class CustomXMLHttpRequest extends XMLHttpRequest {
     this.interceptCallback = callback
   }
 
-  // eslint-disable-next-line accessor-pairs
+  get onloadend (): ((event: ProgressEvent) => void) | null {
+    return super.onloadend
+  }
+
   set onloadend (callback: (event: ProgressEvent) => void | null) {
     super.onloadend = event => {
       CustomXMLHttpRequest.interceptCallback?.(this, 'loadend')

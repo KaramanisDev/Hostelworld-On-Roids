@@ -19,8 +19,8 @@ type Modifiers = {
 export type InterceptionStage = keyof Stages
 
 export class RequestModifier {
-  private modifiers: Modifiers = {}
-  private stages: Stages = {
+  private readonly modifiers: Modifiers = {}
+  private readonly stages: Stages = {
     open: ['withUrl', 'withTimeout', 'shouldNotFailOpen'],
     loadend: ['withResponse', 'shouldNotFailLoadEnd']
   }
