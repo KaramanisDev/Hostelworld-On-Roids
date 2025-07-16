@@ -88,7 +88,12 @@ export class RequestModifier {
     }
   }
 
-  private onPropertyEnforce (request: CustomXMLHttpRequest, property: RequestProperty, value: unknown, disallowSet: boolean = true): void {
+  private onPropertyEnforce (
+    request: CustomXMLHttpRequest,
+    property: RequestProperty,
+    value: unknown,
+    disallowSet: boolean = true
+  ): void {
     request.backing[property] = request[property]
 
     Object.defineProperty(request, property, {

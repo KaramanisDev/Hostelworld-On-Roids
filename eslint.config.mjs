@@ -37,6 +37,7 @@ export default [
       sourceType: 'module'
     },
     rules: {
+      'max-len': ['error', { code: 120 }],
       'no-void': 'off',
       'import/no-named-default': 'off',
       '@typescript-eslint/no-inferrable-types': 'off',

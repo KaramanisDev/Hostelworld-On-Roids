@@ -12,7 +12,13 @@ type HostelworldSearchServiceResult = {
 }
 
 interface HostelworldSearchService {
-  search (type: 'New Search Page', cityId: number, from: string, to: string, showRooms: boolean): Promise<HostelworldSearchServiceResult>
+  search (
+    type: 'New Search Page',
+    cityId: number,
+    from: string,
+    to: string,
+    showRooms: boolean
+  ): Promise<HostelworldSearchServiceResult>
 }
 
 type HostelworldState = {

@@ -50,7 +50,11 @@ export class HttpClient {
     return new Response(cachedContent)
   }
 
-  private static async afterResponseHook (request: Request, response: Response, cacheInMinutes?: number): Promise<void> {
+  private static async afterResponseHook (
+    request: Request,
+    response: Response,
+    cacheInMinutes?: number
+  ): Promise<void> {
     const cacheKey: string = this.cacheKey(request)
 
     const hasNotExpired: boolean = await this.storage.hasNotExpired(cacheKey)

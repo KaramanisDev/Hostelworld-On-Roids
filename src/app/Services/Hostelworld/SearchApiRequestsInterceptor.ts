@@ -6,7 +6,10 @@ export class SearchApiRequestsInterceptor {
   private static searchPropertiesRegex: RegExp = /cities\/\d+\/properties\/\?.*(?=date-start=(?!1943-04-19))/
   private static searchAllPropertiesRegex: RegExp = /cities\/\d+\/properties\/\?.*date-start=1943-04-19/
 
-  public static interceptSearch (UrlCallback: Callback<URL>, responseCallback: Callback<HostelworldSearch>): typeof this {
+  public static interceptSearch (
+    UrlCallback: Callback<URL>,
+    responseCallback: Callback<HostelworldSearch>
+  ): typeof this {
     const parseUrlWithCallback: Callback<string> = (url: string): string => {
       const parsed: URL = new URL(url)
       UrlCallback(parsed)

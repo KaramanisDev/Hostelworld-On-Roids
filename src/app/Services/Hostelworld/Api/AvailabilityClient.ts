@@ -86,7 +86,9 @@ export class AvailabilityClient {
     return metrics
   }
 
-  private static adaptDormBedToMaxCapacity (availability: HostelworldPropertyAvailability): HostelworldPropertyAvailability {
+  private static adaptDormBedToMaxCapacity (
+    availability: HostelworldPropertyAvailability
+  ): HostelworldPropertyAvailability {
     availability.rooms.dorms = availability.rooms.dorms.map(dorm => {
       dorm.totalBedsAvailable = Math.ceil(
         dorm.totalBedsAvailable / Number(dorm.capacity)
@@ -97,7 +99,12 @@ export class AvailabilityClient {
     return availability
   }
 
-  private static async request (property: string, from: Date, to: Date, cacheInMinutes?: number): Promise<HostelworldPropertyAvailability> {
+  private static async request (
+    property: string,
+    from: Date,
+    to: Date,
+    cacheInMinutes?: number
+  ): Promise<HostelworldPropertyAvailability> {
     const oneDayInMs: number = 24 * 60 * 60 * 1000
     const nights: number = Math.round(
       Math.abs(from.getTime() - to.getTime()) / oneDayInMs
