@@ -11,7 +11,7 @@ export abstract class AbstractListener implements ListenerInterface {
     Object.assign(this, attributes)
   }
 
-  public abstract handle (...args: [unknown]): Promise<void> | void
+  public abstract handle (...args: unknown[]): Promise<void> | void
 
   protected emit (event: string, ...args: unknown[]): void {
     return EventBus.emit(event, ...args)

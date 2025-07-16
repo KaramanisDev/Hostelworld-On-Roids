@@ -1,8 +1,8 @@
-import type { ListenerInterface } from 'Listeners/ListenerInterface'
+import type { ListenerInterface, ListenerHandler } from 'Listeners/ListenerInterface'
 
-type Listeners = Record<string, Function[]>
+type Listeners = Record<string, ListenerHandler[]>
 type ListenerAttributes = Record<string, unknown>
-type ListenerClass = { new (attributes: ListenerAttributes): ListenerInterface }
+type ListenerClass = new (attributes: ListenerAttributes) => ListenerInterface
 
 export class EventBus {
   private static listeners: Listeners = {}
@@ -20,7 +20,7 @@ export class EventBus {
     return this.listen(events, listener.handle.bind(listener))
   }
 
-  public static listen (events: string, callback: Function): void {
+  public static listen (events: string, callback: ListenerHandler): void {
     const splitEvents: string[] = events.split(' ')
 
     for (const event of splitEvents) {
@@ -36,7 +36,7 @@ export class EventBus {
     }
   }
 
-  private static execute (listeners: Function[], args: unknown[]): void {
+  private static execute (listeners: ListenerHandler[], args: unknown[]): void {
     if (!listeners) return
 
     for (const listener of listeners) {
@@ -45,6 +45,8 @@ export class EventBus {
   }
 }
 
-export function Subscribe (events: string) {
-  return <T extends ListenerClass> (listenerClass: T): void => EventBus.subscribe(events, listenerClass)
+export function Subscribe (events: string): <T extends ListenerClass>(listenerClass: T) => void {
+  return <T extends ListenerClass>(listenerClass: T): void => {
+    EventBus.subscribe(events, listenerClass)
+  }
 }
