@@ -17,6 +17,10 @@ export class ExtensionRuntime {
     return Extension.runtime.getURL(filename)
   }
 
+  public static isWithinServiceWorker (): boolean {
+    return typeof window === 'undefined' && typeof self !== 'undefined'
+  }
+
   public static sendMessage (event: string, payload: unknown): void {
     if (!this.isWithinServiceWorker()) {
       void Extension.runtime.sendMessage({ event, payload })
@@ -60,9 +64,5 @@ export class ExtensionRuntime {
     }
 
     return listener
-  }
-
-  private static isWithinServiceWorker (): boolean {
-    return typeof window === 'undefined' && typeof self !== 'undefined'
   }
 }

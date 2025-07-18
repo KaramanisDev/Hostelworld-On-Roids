@@ -3,6 +3,7 @@
   "version": "0.0.0",
   "description": "This extension is made for enhancing your hostelworld experience.",
   "manifest_version": 3,
+  "permissions": ["storage"],
   "content_scripts": [
     {
       "js": ["content.js"],

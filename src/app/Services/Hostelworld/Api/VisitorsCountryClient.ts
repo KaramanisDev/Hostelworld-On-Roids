@@ -1,4 +1,5 @@
-import { HttpClient, HttpClientOptions } from 'Utils/HttpClient'
+import { HttpClient } from 'Utils/HttpClient'
+import type { HttpClientOptions } from 'Utils/HttpClient'
 import { dateFormat, promiseFallback } from 'Utils'
 import type { Data, HostelworldPropertyGuests } from 'Types/HostelworldPropertyGuests'
 
