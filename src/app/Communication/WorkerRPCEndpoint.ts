@@ -33,6 +33,14 @@ export class WorkerRPCEndpoint {
       const originalEvent: string = event.replace(':request', '')
       const response: TResponse = callback(originalEvent, deserialize<TPayload>(payload))
 
+      if (response instanceof Promise) {
+        void response.then(
+          response => ExtensionRuntime.sendMessage(`${originalEvent}:response`, serialize(response))
+        )
+
+        return
+      }
+
       ExtensionRuntime.sendMessage(`${originalEvent}:response`, serialize(response))
     })
   }
