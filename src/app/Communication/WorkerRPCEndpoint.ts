@@ -6,18 +6,18 @@ type OnRequestHandler<TPayload = unknown, TResponse = unknown> = (event: string,
 
 export class WorkerRPCEndpoint {
   public static listen (): void {
+    ExtensionRuntime.onMessage((event: string, payload: string): void => {
+      if (!event.endsWith(':response')) return
+
+      const result: RPCResult = { task: event.replace(':response', ''), result: payload }
+
+      window.dispatchEvent(
+        new CustomEvent('rpc:result', { detail: result })
+      )
+    })
+
     window.addEventListener('rpc:call', async (eventInit: CustomEventInit<RPCRequest<string>>): Promise<void> => {
       if (!eventInit.detail) return
-
-      ExtensionRuntime.onMessageOnce((event: string, payload: string): void => {
-        if (!event.endsWith(':response')) return
-
-        const result: RPCResult = { task: event.replace(':response', ''), result: payload }
-
-        window.dispatchEvent(
-          new CustomEvent('rpc:result', { detail: result })
-        )
-      })
 
       const { task, args } = eventInit.detail
       const dispatchEvent = `${task}:request`
