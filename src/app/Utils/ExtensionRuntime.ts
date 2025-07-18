@@ -6,7 +6,6 @@ export type Message<TPayload = unknown> = {
   payload: TPayload
 }
 
-type MessageListener = Runtime.OnMessageListener
 type MessageSender = Runtime.MessageSender
 type OnMessageHandler<TPayload> = (event: string, payload: TPayload) => void
 
@@ -23,7 +22,7 @@ export class ExtensionRuntime {
 
   public static sendMessage (event: string, payload: unknown): void {
     if (!this.isWithinServiceWorker()) {
-      void Extension.runtime.sendMessage({ event, payload })
+      void promiseFallback(Extension.runtime.sendMessage({ event, payload }))
 
       return
     }
@@ -35,34 +34,16 @@ export class ExtensionRuntime {
     }
   }
 
-  public static onMessage<TPayload = unknown> (callback: OnMessageHandler<TPayload>) {
+  public static onMessage<TPayload = unknown> (callback: OnMessageHandler<TPayload>): void {
     Extension.runtime.onMessage.addListener(
-      this.listener(callback, false)
-    )
-  }
+      (request: unknown, sender: MessageSender): void => {
+        if (sender.tab?.id) {
+          this.contentScriptTabs.add(sender.tab.id)
+        }
 
-  public static onMessageOnce<TPayload = unknown> (callback: OnMessageHandler<TPayload>) {
-    Extension.runtime.onMessage.addListener(
-      this.listener(callback, true)
-    )
-  }
-
-  private static listener<TPayload = unknown> (
-    callback: OnMessageHandler<TPayload>,
-    removeOnExecute: boolean = false
-  ): MessageListener {
-    const listener: MessageListener = (request: unknown, sender: MessageSender): void => {
-      if (sender.tab?.id) {
-        this.contentScriptTabs.add(sender.tab.id)
+        const { event, payload } = request as Message<TPayload>
+        callback(event, payload)
       }
-
-      const { event, payload } = request as Message<TPayload>
-      void callback(event, payload)
-
-      if (!removeOnExecute) return
-      Extension.runtime.onMessage.removeListener(listener)
-    }
-
-    return listener
+    )
   }
 }
