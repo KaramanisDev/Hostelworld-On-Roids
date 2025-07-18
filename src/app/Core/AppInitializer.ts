@@ -2,8 +2,7 @@ import { EventBus } from './EventBus'
 import { Session } from 'DTOs/Session'
 import { XHRRequestInterceptor } from 'Utils/XHRRequestInterceptor'
 import { WorkerRPCProxy } from 'Communication/WorkerRPCProxy'
-
-type RequireContext = __WebpackModuleApi.RequireContext
+import RequireContext = __WebpackModuleApi.RequireContext
 
 export class AppInitializer {
   public static init (): void {

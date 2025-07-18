@@ -1,4 +1,7 @@
 // eslint-disable-next-line unicorn/prevent-abbreviations
+import { deserialize as deserializeAnything, serialize as serializeAnything } from 'serialize-anything'
+import RequireContext = __WebpackModuleApi.RequireContext
+
 export function emptyFunction (): void {
 // method intentionally left blank
 }
@@ -134,4 +137,40 @@ export function pluck<T extends object, K extends keyof T> (arrayOfObjects: T[],
   return arrayOfObjects.map(
     item => item[property]
   )
+}
+
+export function serialize (input: unknown): string {
+  return serializeAnything(input)
+}
+
+export function deserialize<T = unknown> (serializedInput: string): T {
+  const customDeserializer: (className: string) => T | undefined = (className: string): T | undefined => {
+    const context: RequireContext = require.context(
+      '../DTOs',
+      true,
+      /^(?!.*(?:Abstract|Interface)).*\.ts$/,
+      'sync'
+    )
+
+    const loadedClassMap: Record<string, ClassConstructor> = {}
+
+    const filePaths: string[] = context.keys()
+    for (const file of filePaths) {
+      const module: Record<string, unknown> = context(file)
+
+      const className: string = file.replace(/^\.\/(.+)\.ts$/, '$1')
+      const ClassConstructor = module[className]
+
+      if (!ClassConstructor || typeof ClassConstructor !== 'function') continue
+
+      loadedClassMap[className] = ClassConstructor as ClassConstructor
+    }
+
+    const ClassConstructor = loadedClassMap[className] as ClassConstructor<T>
+    if (!ClassConstructor) return
+
+    return new ClassConstructor()
+  }
+
+  return deserializeAnything<T>(serializedInput, customDeserializer)
 }

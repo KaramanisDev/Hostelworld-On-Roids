@@ -81,7 +81,7 @@ export default {
   optimization: {
     minimize: true,
     usedExports: true,
-    minimizer: [new TerserPlugin({ extractComments: false })]
+    minimizer: [new TerserPlugin({ extractComments: false, terserOptions: { keep_classnames: true } })]
   },
   plugins: [
     new CleanWebpackPlugin({
