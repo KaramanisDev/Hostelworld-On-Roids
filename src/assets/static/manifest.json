@@ -3,13 +3,22 @@
   "version": "0.0.0",
   "description": "This extension is made for enhancing your hostelworld experience.",
   "manifest_version": 3,
-  "permissions": ["storage"],
+  "permissions": [
+    "storage"
+  ],
   "content_scripts": [
     {
-      "js": ["content.js"],
-      "css": ["roids.css"],
+      "js": [
+        "content.js"
+      ],
+      "css": [
+        "roids.css"
+      ],
       "run_at": "document_start",
-      "matches": ["https://hostelworld.com/*", "https://www.hostelworld.com/*"]
+      "matches": [
+        "https://hostelworld.com/*",
+        "https://www.hostelworld.com/*"
+      ]
     }
   ],
   "background": {
@@ -18,8 +27,13 @@
   },
   "web_accessible_resources": [
     {
-      "resources": ["roids.js"],
-      "matches": ["https://hostelworld.com/*", "https://www.hostelworld.com/*"]
+      "resources": [
+        "roids.js"
+      ],
+      "matches": [
+        "https://hostelworld.com/*",
+        "https://www.hostelworld.com/*"
+      ]
     }
   ]
 }

@@ -1,6 +1,6 @@
 import type { StorageAdapterInterface } from './StorageAdapterInterface'
 
-export class WindowCacheApiAdapter implements StorageAdapterInterface {
+export class CacheApiAdapter implements StorageAdapterInterface {
   private readonly cacheName: string
 
   constructor (cacheName: string) {
@@ -27,7 +27,7 @@ export class WindowCacheApiAdapter implements StorageAdapterInterface {
   }
 
   private getCache (): Promise<Cache> {
-    return window.caches.open(this.cacheName)
+    return caches.open(this.cacheName)
   }
 
   private key (key: string): string {

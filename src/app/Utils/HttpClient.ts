@@ -1,9 +1,7 @@
 import type { KyResponse, NormalizedOptions, Options } from 'ky'
 import { default as KyClient } from 'ky'
 import { CacheStorage } from 'Utils/Storage/CacheStorage'
-import { ExtensionStorage } from 'Utils/Storage/ExtensionStorage'
 import { hash } from 'Utils/index'
-import { ExtensionRuntime } from 'Utils/ExtensionRuntime'
 import type { StorageInterface } from 'Utils/Storage/StorageInterface'
 
 export type HttpClientOptions = {
@@ -13,9 +11,7 @@ export type HttpClientOptions = {
 
 export class HttpClient {
   private static readonly defaultCacheTimeInMinutes: number = 24 * 60
-  private static readonly storage: StorageInterface<string> = ExtensionRuntime.isWithinServiceWorker()
-    ? new ExtensionStorage('hor-http-client')
-    : new CacheStorage('hor-http-client')
+  private static readonly storage: StorageInterface<string> = new CacheStorage('hor-http-client')
 
   public static async getJson<T = Record<string, unknown>> (url: string, options?: HttpClientOptions): Promise<T> {
     const response: KyResponse = await KyClient.get(url, this.options(options))

@@ -1,5 +1,5 @@
 import { AbstractStorage } from './AbstractStorage'
-import { WindowCacheApiAdapter } from './Adapters/WindowCacheApiAdapter'
+import { CacheApiAdapter } from './Adapters/CacheApiAdapter'
 import type { StorageAdapterInterface } from './Adapters/StorageAdapterInterface'
 
 export class CacheStorage<T = unknown> extends AbstractStorage<T> {
@@ -8,6 +8,6 @@ export class CacheStorage<T = unknown> extends AbstractStorage<T> {
   constructor (name: string) {
     super(name)
 
-    this.store = new WindowCacheApiAdapter(name)
+    this.store = new CacheApiAdapter(name)
   }
 }
