@@ -2,7 +2,6 @@ import type { HostelworldSearch, Property as SearchProperty } from 'Types/Hostel
 import { Search } from 'DTOs/Search'
 import { Subscribe } from 'Core/EventBus'
 import { delay, promisesFulfillSequentially } from 'Utils'
-import { PropertyFactory } from 'Factories/PropertyFactory'
 import { AbstractListener } from './AbstractListener'
 
 @Subscribe('hostelworld:search:intercepted')
@@ -20,10 +19,7 @@ export class PropertiesInterceptedListener extends AbstractListener {
   }
 
   private async composeProperty (property: SearchProperty, search: Search): Promise<void> {
-    this.emit(
-      'property:composed',
-      await PropertyFactory.create(property, search)
-    )
+    this.emit('worker:task:dispatch', 'compose:property', property, search)
 
     return delay(120)
   }

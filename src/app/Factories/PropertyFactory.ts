@@ -1,5 +1,5 @@
 import type { Search } from 'DTOs/Search'
-import type { Property as SearchProperty } from 'Types/HostelworldSearch'
+import type { Property as HostelworldProperty } from 'Types/HostelworldSearch'
 import { Property } from 'DTOs/Property'
 import { AvailabilityMetrics } from 'DTOs/AvailabilityMetrics'
 import type { PropertyAvailability } from 'Services/Hostelworld/Api/AvailabilityClient'
@@ -12,8 +12,8 @@ import { BookedCountry } from 'DTOs/BookedCountry'
 import { AvailabilityClient } from 'Services/Hostelworld/Api/AvailabilityClient'
 
 export class PropertyFactory {
-  public static async create (searchProperty: SearchProperty, search: Search): Promise<Property> {
-    const { id, name } = searchProperty
+  public static async create (property: HostelworldProperty, search: Search): Promise<Property> {
+    const { id, name } = property
 
     const [reviews, availability, countries]: [PropertyReviews, PropertyAvailability, PropertyGuestsCountries] =
       await Promise.all([

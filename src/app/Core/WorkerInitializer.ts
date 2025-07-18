@@ -1,6 +1,7 @@
 import { WorkerRPCEndpoint } from 'Communication/WorkerRPCEndpoint'
 import { WorkerTaskDispatcher } from 'WorkerTasks/WorkerTaskDispatcher'
 import type { WorkerTaskResult } from 'WorkerTasks/WorkerTaskDispatcher'
+import { ComposePropertyTask } from 'WorkerTasks/Tasks/ComposePropertyTask'
 
 export class WorkerInitializer {
   public static init (): void {
@@ -12,6 +13,6 @@ export class WorkerInitializer {
   }
 
   private static registerTasks (): void {
-    // THEEEeee place to register worker tasks :)
+    WorkerTaskDispatcher.register('compose:property', new ComposePropertyTask())
   }
 }
