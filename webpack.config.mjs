@@ -7,6 +7,7 @@ import CopyPlugin from 'copy-webpack-plugin'
 import TerserPlugin from 'terser-webpack-plugin'
 import { CleanWebpackPlugin } from 'clean-webpack-plugin'
 import MiniCssExtractPlugin from 'mini-css-extract-plugin'
+import ExtensionReloader from 'webpack-ext-reloader'
 
 const __dirname = path.dirname(url.fileURLToPath(import.meta.url))
 
@@ -95,6 +96,9 @@ export default {
     }),
     new MiniCssExtractPlugin({
       filename: '[name].css'
+    }),
+    new ExtensionReloader({
+      manifest: basePath('src/assets/static/manifest.json')
     })
   ]
 }
