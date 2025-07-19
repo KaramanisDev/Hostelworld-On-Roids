@@ -1,7 +1,7 @@
 {
-  "name": "Hostelworld on Roids",
+  "name": "Hostelworld on Roids (H.O.R)",
   "version": "0.0.0",
-  "description": "This extension is made for enhancing your hostelworld experience.",
+  "description": "Take your Hostelworld hunt from “meh” to “marvelous” — your secret weapon for hostel-hunting!",
   "manifest_version": 3,
   "permissions": [
     "storage"
