@@ -1,4 +1,3 @@
-import type { Callback } from 'Types/General'
 import type { HostelworldSearch } from 'Types/HostelworldSearch'
 import { XHRRequestInterceptor } from 'Utils/XHRRequestInterceptor'
 

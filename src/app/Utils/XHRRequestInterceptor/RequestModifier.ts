@@ -1,5 +1,4 @@
 import type { CustomXMLHttpRequest } from './CustomXMLHttpRequest'
-import type { Callback } from 'Types/General'
 import { emptyFunction, objectPick } from '..'
 
 type Modifier = (request: CustomXMLHttpRequest) => void
