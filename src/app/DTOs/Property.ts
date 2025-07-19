@@ -3,7 +3,7 @@ import type { ReviewMetrics } from 'DTOs/ReviewMetrics'
 import type { BookedCountry } from 'DTOs/BookedCountry'
 
 export class Property {
-  private id!: string
+  private id!: number
   private name!: string
   private reviewMetrics!: ReviewMetrics
   private availabilityMetrics!: AvailabilityMetrics
@@ -13,7 +13,7 @@ export class Property {
     Object.assign(this, attributes)
   }
 
-  public getId (): string {
+  public getId (): number {
     return this.id
   }
 

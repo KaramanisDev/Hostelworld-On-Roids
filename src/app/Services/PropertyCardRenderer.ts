@@ -16,7 +16,7 @@ export class PropertyCardRenderer {
     const propertyCards: NodeListOf<Element> = document.querySelectorAll('.property-card')
     const propertyCard: Element | undefined = [...propertyCards].find(
       card =>
-        card.innerHTML.includes(property.getId()) &&
+        card.innerHTML.includes(String(property.getId())) &&
         card.innerHTML.includes(this.htmlEncode(property.getName()))
     )
 
@@ -42,12 +42,12 @@ export class PropertyCardRenderer {
     )
   }
 
-  public static async renderProcessingMessage (propertyId: string): Promise<void> {
+  public static async renderProcessingMessage (propertyId: number): Promise<void> {
     await waitForElement('.property-card .property-card-container')
 
     const propertyCards: NodeListOf<Element> = document.querySelectorAll('.property-card')
     const propertyCard: Element | undefined = [...propertyCards].find(
-      card => card.innerHTML.includes(propertyId)
+      card => card.innerHTML.includes(String(propertyId))
     )
 
     if (!propertyCard) return

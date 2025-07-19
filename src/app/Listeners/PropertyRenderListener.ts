@@ -5,12 +5,12 @@ import { PropertyCardRenderer } from 'Services/PropertyCardRenderer'
 
 @Subscribe('property:render')
 export class PropertyRenderListener extends AbstractListener {
-  public async handle (propertyOrId: Property | string): Promise<void> {
-    const propertyToRender: Property | undefined = typeof propertyOrId === 'string'
+  public async handle (propertyOrId: Property | number): Promise<void> {
+    const propertyToRender: Property | undefined = typeof propertyOrId === 'number'
       ? this.propertyInSession(propertyOrId)
       : propertyOrId
 
-    if (!propertyToRender && typeof propertyOrId === 'string') {
+    if (!propertyToRender && typeof propertyOrId === 'number') {
       await PropertyCardRenderer.renderProcessingMessage(propertyOrId)
       return
     }

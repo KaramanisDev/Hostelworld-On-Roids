@@ -14,10 +14,10 @@ export class ReviewsClient {
   private static readonly endpoint: string = 'https://prod.apigee.hostelworld.com/legacy-hwapi-service/2.2/' +
     'properties/{property}/reviews/?page={page}&sort=newest&allLanguages=true&monthCount=72&per-page=50'
 
-  public static async fetch (property: string): Promise<PropertyReviews> {
+  public static async fetch (propertyId: number): Promise<PropertyReviews> {
     const metrics: PropertyReviews = { male: 0, female: 0, other: 0, solo: 0, total: 0 }
 
-    const { reviews: firstPageReviews, reviewStatistics, pagination } = await this.request(property, 1)
+    const { reviews: firstPageReviews, reviewStatistics, pagination } = await this.request(propertyId, 1)
 
     metrics.total = pagination.totalNumberOfItems
     metrics.solo = Math.round(metrics.total * ((reviewStatistics?.soloPercentage ?? 0) / 100))
@@ -28,7 +28,7 @@ export class ReviewsClient {
         .from({ length: leftOverPages }, (_, index) => index + 2)
         .map(async page => {
           await delay(randomNumber(1, 8) * 100)
-          const { reviews } = await this.request(property, page)
+          const { reviews } = await this.request(propertyId, page)
 
           return reviews
         })
@@ -45,10 +45,10 @@ export class ReviewsClient {
     return metrics
   }
 
-  private static async request (property: string, page: number): Promise<HostelworldPropertyReviews> {
+  private static async request (propertyId: number, page: number): Promise<HostelworldPropertyReviews> {
     const endpoint: string = this.endpoint
       .replaceAll('{page}', String(page))
-      .replaceAll('{property}', property)
+      .replaceAll('{property}', String(propertyId))
 
     const cacheTimeInDays: number = [1, 2].includes(page) ? 1 : 3
 

@@ -13,7 +13,7 @@ type VuePropertyListComponent = {
 }
 
 export class VuexDataHook {
-  public static async onPropertiesDisplayed (callback: (propertyIds: string[]) => void): Promise<void> {
+  public static async onPropertiesDisplayed (callback: (propertyIds: number[]) => void): Promise<void> {
     const onDisplayedPropertiesUpdate: () => Promise<void> = async (): Promise<void> => {
       const component: VuePropertyListComponent | undefined = await promiseFallback(this.propertyListComponent())
       if (!component) return
@@ -25,7 +25,7 @@ export class VuexDataHook {
         if (!properties[0]) return
 
         callback(
-          properties.map(property => String(property.id))
+          properties.map(property => property.id)
         )
       })
     }

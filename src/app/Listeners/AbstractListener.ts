@@ -29,7 +29,7 @@ export abstract class AbstractListener implements ListenerInterface {
     return this.session.persistProperty(property)
   }
 
-  protected propertyInSession (propertyId: string): Property | undefined {
+  protected propertyInSession (propertyId: number): Property | undefined {
     return this.session.pullProperty(propertyId)
   }
 }

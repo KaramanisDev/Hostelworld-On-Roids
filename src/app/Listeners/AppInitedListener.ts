@@ -17,7 +17,7 @@ export class AppInitedListener extends AbstractListener {
       SearchPropertyListComponentPatcher.disablePagination()
     ])
 
-    const renderProperties: Function = (propertyIds: string[]) => {
+    const renderProperties: Function = (propertyIds: number[]) => {
       for (const propertyId of propertyIds) {
         this.emit('property:render', propertyId)
       }

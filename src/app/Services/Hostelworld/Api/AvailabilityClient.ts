@@ -18,20 +18,20 @@ export class AvailabilityClient {
   private static readonly endpoint: string = 'https://prod.apigee.hostelworld.com/legacy-hwapi-service/2.2/' +
     'properties/{property}/availability/?date-start={from}&num-nights={nights}'
 
-  public static async fetch (property: string, from: Date, to: Date): Promise<PropertyAvailability> {
-    const current: Metrics = await this.currentCapacity(property, from, to)
-    const max: Metrics = await this.possibleMaxCapacity(property, from, current)
+  public static async fetch (propertyId: number, from: Date, to: Date): Promise<PropertyAvailability> {
+    const current: Metrics = await this.currentCapacity(propertyId, from, to)
+    const max: Metrics = await this.possibleMaxCapacity(propertyId, from, current)
 
     return { current, max }
   }
 
-  private static async currentCapacity (property: string, from: Date, to: Date): Promise<Metrics> {
-    const availability: HostelworldPropertyAvailability = await this.request(property, from, to, 30)
+  private static async currentCapacity (propertyId: number, from: Date, to: Date): Promise<Metrics> {
+    const availability: HostelworldPropertyAvailability = await this.request(propertyId, from, to, 30)
 
     return this.toMetrics(availability)
   }
 
-  private static async possibleMaxCapacity (property: string, from: Date, current: Metrics): Promise<Metrics> {
+  private static async possibleMaxCapacity (propertyId: number, from: Date, current: Metrics): Promise<Metrics> {
     const maxMetrics: Metrics = {
       ...current
     }
@@ -46,7 +46,7 @@ export class AvailabilityClient {
 
       const metrics: Metrics = this.toMetrics(
         this.adaptDormBedToMaxCapacity(
-          await this.request(property, fromWithDaysAdded, toWithFromPlus3Days, 24 * 60)
+          await this.request(propertyId, fromWithDaysAdded, toWithFromPlus3Days, 24 * 60)
         )
       )
 
@@ -100,7 +100,7 @@ export class AvailabilityClient {
   }
 
   private static async request (
-    property: string,
+    propertyId: number,
     from: Date,
     to: Date,
     cacheInMinutes?: number
@@ -113,7 +113,7 @@ export class AvailabilityClient {
     const endpoint: string = this.endpoint
       .replaceAll('{from}', dateFormat(from))
       .replaceAll('{nights}', String(nights))
-      .replaceAll('{property}', property)
+      .replaceAll('{property}', String(propertyId))
 
     return await promiseFallback(
       HttpClient.getJson(endpoint, { cacheInMinutes }),

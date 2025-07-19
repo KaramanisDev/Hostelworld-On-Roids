@@ -1,7 +1,7 @@
 import type { Search } from 'DTOs/Search'
 import type { Property } from 'DTOs/Property'
 
-type ComposedProperties = Record<string, Property>
+type ComposedProperties = Record<number, Property>
 
 export class Session {
   private latestSearch?: Search
@@ -15,7 +15,7 @@ export class Session {
     this.latestSearch = search
   }
 
-  public pullProperty (propertyId: string): Property | undefined {
+  public pullProperty (propertyId: number): Property | undefined {
     return this.properties[propertyId]
   }
 

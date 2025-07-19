@@ -16,8 +16,8 @@ export class VisitorsCountryClient {
   private static endpoint: string = 'https://prod.apigee.hostelworld.com/socialcues-service/api/v1/' +
     'properties/{property}/other-guests?from={from}&to={to}'
 
-  static async fetch (property: string, from: Date, to: Date): Promise<PropertyGuestsCountries> {
-    const guests: HostelworldPropertyGuests = await this.request(property, from, to)
+  static async fetch (propertyId: number, from: Date, to: Date): Promise<PropertyGuestsCountries> {
+    const guests: HostelworldPropertyGuests = await this.request(propertyId, from, to)
 
     return guests.data
       .reduce(
@@ -37,10 +37,10 @@ export class VisitorsCountryClient {
       )
   }
 
-  private static async request (property: string, from: Date, to: Date): Promise<HostelworldPropertyGuests> {
+  private static async request (propertyId: number, from: Date, to: Date): Promise<HostelworldPropertyGuests> {
     const endpoint: string = this.endpoint
       .replaceAll('{to}', dateFormat(to))
-      .replaceAll('{property}', property)
+      .replaceAll('{property}', String(propertyId))
       .replaceAll('{from}', dateFormat(from))
 
     const options: HttpClientOptions = {

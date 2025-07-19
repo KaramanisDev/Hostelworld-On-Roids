@@ -17,9 +17,9 @@ export class PropertyFactory {
 
     const [reviews, availability, countries]: [PropertyReviews, PropertyAvailability, PropertyGuestsCountries] =
       await Promise.all([
-        ReviewsClient.fetch(String(id)),
-        AvailabilityClient.fetch(String(id), search.getFrom(), search.getTo()),
-        VisitorsCountryClient.fetch(String(id), search.getFrom(), search.getTo())
+        ReviewsClient.fetch(id),
+        AvailabilityClient.fetch(id, search.getFrom(), search.getTo()),
+        VisitorsCountryClient.fetch(id, search.getFrom(), search.getTo())
       ])
 
     const reviewMetrics: ReviewMetrics = new ReviewMetrics(reviews)
@@ -29,8 +29,8 @@ export class PropertyFactory {
     )
 
     return new Property({
+      id,
       name,
-      id: String(id),
       reviewMetrics,
       bookedCountries,
       availabilityMetrics
