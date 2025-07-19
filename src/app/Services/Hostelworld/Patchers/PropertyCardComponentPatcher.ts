@@ -1,5 +1,5 @@
 import type { BookedCountry } from 'DTOs/BookedCountry'
-import { promiseFallback, waitForElement } from 'Utils'
+import { emptyFunction, promiseFallback, waitForElement } from 'Utils'
 
 type Avatar = {
   flag: string,
@@ -7,13 +7,15 @@ type Avatar = {
   picture: string
 }
 
+type StayingAvatars = {
+  title?: string,
+  avatarLimit: number,
+  avatarList: Avatar[]
+}
+
 type VuePropertyCardComponent = HTMLElement & {
   __vue__: {
-    stayingAvatars: {
-      title?: string,
-      avatarLimit: number,
-      avatarList: Avatar[]
-    }
+    stayingAvatars: StayingAvatars
   }
 }
 
@@ -39,9 +41,16 @@ export class PropertyCardComponentPatcher {
         []
       )
 
-    component.__vue__.stayingAvatars = {
+    const staying: StayingAvatars = {
       avatarLimit: 999,
       avatarList: avatars
     }
+
+    component.__vue__.stayingAvatars = staying
+    Object.defineProperty(component.__vue__, 'stayingAvatars', {
+      configurable: true,
+      get: () => staying,
+      set: () => emptyFunction
+    })
   }
 }
