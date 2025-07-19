@@ -34,7 +34,7 @@ export class AppInitedListener extends AbstractListener {
         this.onSearchProperties.bind(this)
       )
       .interceptSearchAll(
-        this.updateCustomUrlToSearchAll.bind(this)
+        this.onAllSearchProperties.bind(this)
       )
   }
 
@@ -50,16 +50,16 @@ export class AppInitedListener extends AbstractListener {
   private onSearchProperties (search: HostelworldSearch): HostelworldSearch {
     const adapted: HostelworldSearch = SearchDataAdapter.stripPromotions(search)
 
-    this.emit('hostelworld:search:intercepted', adapted)
+    this.emit('hostelworld:search:intercepted', adapted.properties)
 
     return adapted
   }
 
-  private updateCustomUrlToSearchAll (url: URL): URL {
-    url.searchParams.delete('guests')
-    url.searchParams.delete('num-nights')
-    url.searchParams.delete('date-start')
+  private onAllSearchProperties (search: HostelworldSearch): HostelworldSearch {
+    const adapted: HostelworldSearch = SearchDataAdapter.stripPromotions(search)
 
-    return url
+    this.emit('hostelworld:search:intercepted', adapted.properties)
+
+    return adapted
   }
 }
