@@ -1,15 +1,17 @@
 # Hostelworld On Roids
 
+<img src="src/assets/logo.png" alt="Extension Logo" width="400" />
+
 ## Introduction
 
 Hostelworld on Roids (H.O.R) is a browser extension designed to enhance your experience while searching and selecting
 hostels.
 
 It eliminates obstructions from featured/promoted properties and unlocks hidden native features on hostelworld, such as
-displaying social cues per property and searched cities. Moreover, it lists some properties which may be unavailable due
-to scheduling conflicts, but would have been more ideal if your travel dates were more flexible.
+displaying guest-origin stats per property and searched cities. Moreover, it lists some properties which may be
+unavailable due to scheduling conflicts, but would have been more ideal for you if your travel dates were more flexible.
 
-In addition, the extension provides extra metrics by analyzing the availability and reviews per property, presenting 
+In addition, the extension provides extra metrics by analyzing the availability and reviews per property, presenting
 this data directly on the property card. This might help facilitating your decision-making process when selecting a
 hostel.
 
@@ -26,12 +28,12 @@ on other browsers, it has not been officially tested and confirmed yet.
 This section will be updated when additional browsers are supported.
 
 
-## Development & Building 
+## Development & Building
 
 Apart from the obvious [git](https://git-scm.com/) one :), you'll need [node.js](https://nodejs.org) and
 [yarn](https://yarnpkg.com/getting-started/install/) (utilize corepack magic, so you don't have to install that one)".
 
-The required versions of nodejs & yarn needed can be found at the [engines section](/package.json#L4-L6) of the 
+The required versions of nodejs & yarn needed can be found at the [engines section](/package.json#L4-L6) of the
 `package.json`.
 
 Simply:
@@ -56,7 +58,7 @@ Additional `build` & `lint` commands can be found at the [scripts section](/pack
 Contributions are more than welcome! Feel free to open a PR to introduce new features or fix any existing issues.
 
 Please adhere to the software practices & principles to the best of your knowledge, try to align with the coding
-style of the project to minimize cognitive load for reviewers/readers, and don't forget to run `yarn lint` before 
+style of the project to minimize cognitive load for reviewers/readers, and don't forget to run `yarn lint` before
 opening a PR. :)
 
 
