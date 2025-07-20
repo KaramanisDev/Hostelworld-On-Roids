@@ -3,6 +3,7 @@
 import url from 'url'
 import path from 'path'
 import * as fs from 'fs'
+import { execSync } from 'child_process'
 import CopyPlugin from 'copy-webpack-plugin'
 import TerserPlugin from 'terser-webpack-plugin'
 import { CleanWebpackPlugin } from 'clean-webpack-plugin'
@@ -24,6 +25,16 @@ function aliases () {
   })
 
   return aliases
+}
+
+function latestGitTag () {
+  let latestGitTag = '0.0.0'
+  try {
+    latestGitTag = execSync('git describe --tags --abbrev=0').toString().trim()
+  } catch {
+    console.log('\x1b[33m%s\x1b[0m', `WARNING: Could not get git tag. Defaulting to version ${latestGitTag}`)
+  }
+  return latestGitTag
 }
 
 export default {
@@ -92,7 +103,19 @@ export default {
       ]
     }),
     new CopyPlugin({
-      patterns: [{ from: '.', to: '.', context: 'src/assets/static' }]
+      patterns: [{
+        from: '.',
+        to: '.',
+        context: 'src/assets/static',
+        transform: (content, absoluteFilePath) => {
+          if (!absoluteFilePath.endsWith('manifest.json')) return content
+
+          const manifest = JSON.parse(content.toString())
+          manifest.version = latestGitTag()
+
+          return JSON.stringify(manifest, null, 2)
+        }
+      }]
     }),
     new MiniCssExtractPlugin({
       filename: '[name].css'
