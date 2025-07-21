@@ -105,7 +105,8 @@ export class RequestModifier {
         if (disallowSet) return
 
         request.backing[property] = newValue
-      }
+      },
+      configurable: true
     })
   }
 }
