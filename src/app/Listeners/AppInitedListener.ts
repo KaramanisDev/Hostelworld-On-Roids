@@ -34,7 +34,7 @@ export class AppInitedListener extends AbstractListener {
         this.onSearchProperties.bind(this)
       )
       .interceptSearchAll(
-        this.onAllSearchProperties.bind(this)
+        this.onSearchProperties.bind(this)
       )
   }
 
@@ -48,14 +48,6 @@ export class AppInitedListener extends AbstractListener {
   }
 
   private onSearchProperties (search: HostelworldSearch): HostelworldSearch {
-    const adapted: HostelworldSearch = SearchDataAdapter.stripPromotions(search)
-
-    this.emit('hostelworld:search:intercepted', adapted.properties)
-
-    return adapted
-  }
-
-  private onAllSearchProperties (search: HostelworldSearch): HostelworldSearch {
     const adapted: HostelworldSearch = SearchDataAdapter.stripPromotions(search)
 
     this.emit('hostelworld:search:intercepted', adapted.properties)
