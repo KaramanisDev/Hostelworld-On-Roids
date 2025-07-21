@@ -13,11 +13,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: ./.github/actions/setup
       - run: yarn lint:tsc
       - run: yarn lint:eslint
       - run: yarn lint:scss
-      - run: yarn lint:commit
+      - run: yarn lint:commit "${{ github.head_ref || github.ref_name }}"
 
   audit:
     name: Run Audit
