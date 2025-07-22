@@ -1,4 +1,3 @@
-// eslint-disable-next-line unicorn/prevent-abbreviations
 import { deserialize as deserializeAnything, serialize as serializeAnything } from 'serialize-anything'
 import RequireContext = __WebpackModuleApi.RequireContext
 

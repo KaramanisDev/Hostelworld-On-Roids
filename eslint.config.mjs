@@ -49,7 +49,8 @@ export default [
       'unicorn/prefer-add-event-listener': 0,
       'unicorn/prevent-abbreviations': ['error', {
         replacements: {
-          args: false
+          args: false,
+          utils: false
         }
       }],
       'import/no-useless-path-segments': ['error', {
