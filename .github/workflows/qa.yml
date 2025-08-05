@@ -19,7 +19,7 @@ jobs:
       - run: yarn lint:tsc
       - run: yarn lint:eslint
       - run: yarn lint:scss
-      - run: yarn lint:commit "${{ github.head_ref || github.ref_name }}"
+      - run: yarn lint:commit --branch "${{ github.head_ref || github.ref_name }}"
 
   audit:
     name: Run Audit
