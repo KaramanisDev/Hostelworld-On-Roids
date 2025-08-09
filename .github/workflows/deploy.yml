@@ -2,14 +2,16 @@ name: Deploy Extension
 
 on:
   push:
-    branches: [master]
+    branches: [dev]
+
+permissions:
+  contents: write
+  actions: read
 
 jobs:
   build:
     name: Build Extension
     runs-on: ubuntu-latest
-    outputs:
-      version: ${{ steps.package-info.outputs.version }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -17,14 +19,8 @@ jobs:
       - uses: ./.github/actions/setup
       - run: yarn build:prod
 
-      - name: Get version info
-        id: package-info
-        run: |
-          VERSION=$(git describe --tags --exact-match HEAD)
-          echo "version=$VERSION" >> $GITHUB_OUTPUT
-
       - name: Upload build artifacts
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v4
         with:
           name: extension-build
           path: dist/
@@ -40,7 +36,7 @@ jobs:
       - uses: ./.github/actions/setup
 
       - name: Download build artifacts
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v4
         with:
           name: extension-build
           path: dist/
@@ -48,7 +44,7 @@ jobs:
       - run: yarn package:zip
 
       - name: Upload package artifacts
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v4
         with:
           name: extension-package
           path: packages/
@@ -64,13 +60,13 @@ jobs:
       - uses: ./.github/actions/setup
 
       - name: Download package artifacts
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v4
         with:
           name: extension-package
           path: packages/
 
       - name: Deploy to Chrome Web Store
-        run: yarn extension:deploy
+        run: yarn extension:upload
         env:
           CHROME_WEB_STORE_CLIENT_ID: ${{ secrets.CHROME_WEB_STORE_CLIENT_ID }}
           CHROME_WEB_STORE_CLIENT_SECRET: ${{ secrets.CHROME_WEB_STORE_CLIENT_SECRET }}
@@ -78,18 +74,42 @@ jobs:
           CHROME_WEB_STORE_APP_ID: ${{ secrets.CHROME_WEB_STORE_APP_ID }}
 
       - name: Create GitHub Release
-        uses: softprops/action-gh-release@v2
-        with:
-          tag_name: ${{ needs.build.outputs.version }}
-          name: Release ${{ needs.build.outputs.version }}
-          body: |
-            Extension package for version ${{ needs.build.outputs.version }}
+        run: |
+          VERSION=$(git describe --tags --abbrev=0)
 
-            This release has been automatically uploaded to the Chrome Web Store and submitted for review.
-          files: |
-            packages/*.zip
-          draft: false
-          prerelease: false
-          make_latest: true
+          TAG_MESSAGE=$(git tag -l --format='%(contents)' "$VERSION")
+
+          if [ -n "$TAG_MESSAGE" ]; then
+            TAG_VERSION=$(echo "$TAG_MESSAGE" | head -1 | sed 's/Release //' | sed 's/^[[:space:]]*//')
+            if [ -z "$TAG_VERSION" ] || [ "$TAG_VERSION" = "$TAG_MESSAGE" ]; then
+              TAG_VERSION=${VERSION#v}
+            fi
+
+
+            CHANGELOG_ITEMS=$(echo "$TAG_MESSAGE" | grep "^-" || echo "$TAG_MESSAGE" | sed -n '/Changelog:/,//p' | grep "^-")
+
+            RELEASE_NOTES="## Release $TAG_VERSION
+
+          ### Changelog
+          $CHANGELOG_ITEMS
+
+          "
+          else
+            PREVIOUS_TAG=$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || echo "")
+            if [ -n "$PREVIOUS_TAG" ]; then
+              COMMITS=$(git log --oneline --pretty=format:"- %s" "$PREVIOUS_TAG..HEAD")
+            else
+              COMMITS=$(git log --oneline --pretty=format:"- %s")
+            fi
+
+            RELEASE_NOTES="## Release ${VERSION#v}
+
+          ### Changelog
+          $COMMITS"
+          fi
+
+          gh release create "$VERSION" packages/*.zip \
+            --title "${VERSION#v}" \
+            --notes "$RELEASE_NOTES"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
