@@ -12,12 +12,21 @@ displaying guest-origin stats per property and searched cities. Moreover, it lis
 unavailable due to scheduling conflicts, but would have been more ideal for you if your travel dates were more flexible.
 
 In addition, the extension provides extra metrics by analyzing the availability and reviews per property, presenting
-this data directly on the property card. This might help facilitating your decision-making process when selecting a
+this data directly on the property card. This might help to facilitate your decision-making process when selecting a
 hostel.
 
 H.O.R was developed as a personal side project to simplify the process of selecting the "best" hostel from an extensive
 range of good ones. It proved & continues to prove useful during my travels, assisting me in finding the most suitable
-place to stay depending on my mood, whether I was looking for some busy or more quiet place to stay at. :)
+place to stay depending on my mood, whether I was looking for some busy or quieter place to stay at. :)
+
+
+## Installation
+
+[![Chrome Web Store Version](https://img.shields.io/chrome-web-store/v/dfilmjjmeegkakfmnadkimgflocnnnbg.svg?style=for-the-badge)](https://chrome.google.com/webstore/detail/dfilmjjmeegkakfmnadkimgflocnnnbg)
+[![Chrome Web Store Rating](https://img.shields.io/chrome-web-store/rating/dfilmjjmeegkakfmnadkimgflocnnnbg.svg?style=for-the-badge)](https://chrome.google.com/webstore/detail/dfilmjjmeegkakfmnadkimgflocnnnbg)
+[![Chrome Web Store Users](https://img.shields.io/chrome-web-store/users/dfilmjjmeegkakfmnadkimgflocnnnbg.svg?style=for-the-badge)](https://chrome.google.com/webstore/detail/dfilmjjmeegkakfmnadkimgflocnnnbg)
+
+Install the extension directly from the [Chrome Web Store](https://chrome.google.com/webstore/detail/dfilmjjmeegkakfmnadkimgflocnnnbg).
 
 
 ## Supported platforms
@@ -31,7 +40,7 @@ This section will be updated when additional browsers are supported.
 ## Development & Building
 
 Apart from the obvious [git](https://git-scm.com/) one :), you'll need [node.js](https://nodejs.org) and
-[yarn](https://yarnpkg.com/getting-started/install/) (utilize corepack magic, so you don't have to install that one)".
+[yarn](https://yarnpkg.com/getting-started/install/) (utilize corepack magic, so you don't have to install that one).
 
 The required versions of nodejs & yarn needed can be found at the [engines section](/package.json#L4-L6) of the
 `package.json`.
@@ -50,8 +59,27 @@ Once build, head over to your Chrome browser and:
 Congratulations, the extension should now be installed in your browser! Please note that in some cases, you may need to
 `reload` the extension for the changes to take effect.
 
-Additional `build` & `lint` commands can be found at the [scripts section](/package.json#L9-L16) of the `package.json`.
+Additional `build` & `lint` commands can be found at the [scripts section](/package.json#L9-L24) of the `package.json`.
 
+
+## Packaging & Deployment
+
+### Environment Setup
+
+**Note:** _This setup is optional and only required for extension packaging and shipping. It's unnecessary for local development._
+
+For packaging and deployment functionality, you'll need to set up environment variables. Simply:
+* Copy `.env.example` to `.env` in the project root.
+* Fill in the actual values for your specific setup.
+
+### Available Commands
+
+Once environment is configured, you can use these packaging and deployment commands:
+* `yarn package:zip` - Creates a ZIP package for manual installation or Web Store upload.
+* `yarn package:crx` - Creates a signed CRX package for direct installation.
+* `yarn extension:upload` - Uploads the latest version to Chrome Web Store.
+* `yarn extension:publish` - Submits the current version for review and publication.
+* `yarn extension:deploy` - Uploads and publishes the latest version in one go.
 
 ## Contributing
 
