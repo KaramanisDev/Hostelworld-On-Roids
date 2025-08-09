@@ -2,6 +2,7 @@ import fs from 'fs'
 import path from 'path'
 import url from 'url'
 import chalk from 'chalk'
+import { execSync } from 'child_process'
 
 export const logSuccess = (message) => console.log(`✅ ${chalk.green(message)}`)
 export const logError = (message) => console.error(`❌ ${chalk.red(message)}`)
@@ -38,4 +39,18 @@ export const basePath = (relative) => {
   )
 
   return path.resolve(__dirname, '..', relative)
+}
+
+export function latestGitTag () {
+  try {
+    return execSync('git describe --tags --abbrev=0').toString().trim()
+  } catch {
+    const defaultTag = '0.0.0'
+    logWarning(`Could not get git tag. Defaulting to version ${defaultTag}`)
+    return defaultTag
+  }
+}
+
+export function shouldExcludeFile (fileName) {
+  return fileName.endsWith('.map') || fileName.startsWith('.')
 }

@@ -3,6 +3,8 @@
 .yarn/
 dist/*
 !dist/.keep
+packages/*
+!packages/.keep
 node_modules/
 yarn-error.log
 package-lock.json

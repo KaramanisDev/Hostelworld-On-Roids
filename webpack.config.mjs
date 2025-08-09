@@ -1,13 +1,12 @@
 'use strict'
 
 import * as fs from 'fs'
-import { execSync } from 'child_process'
 import CopyPlugin from 'copy-webpack-plugin'
 import TerserPlugin from 'terser-webpack-plugin'
 import { CleanWebpackPlugin } from 'clean-webpack-plugin'
 import MiniCssExtractPlugin from 'mini-css-extract-plugin'
 import ExtensionReloader from 'webpack-ext-reloader'
-import { basePath } from './scripts/utils.mjs'
+import { basePath, latestGitTag } from './scripts/utils.mjs'
 
 function aliases () {
   const aliases = {}
@@ -18,16 +17,6 @@ function aliases () {
   })
 
   return aliases
-}
-
-function latestGitTag () {
-  let latestGitTag = '0.0.0'
-  try {
-    latestGitTag = execSync('git describe --tags --abbrev=0').toString().trim()
-  } catch {
-    console.log('\x1b[33m%s\x1b[0m', `WARNING: Could not get git tag. Defaulting to version ${latestGitTag}`)
-  }
-  return latestGitTag
 }
 
 export default {

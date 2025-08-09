@@ -15,8 +15,10 @@
     "lint:eslint": "eslint \"{src,scripts}/**/*.{ts,js,mjs}\"",
     "lint:scss": "stylelint \"src/**/*.scss\"",
     "lint:commit": "node scripts/commitlint.mjs",
-    "crx:key": "node scripts/create-crx-key.mjs"
-    "crx:key": "node scripts/crx-key.mjs"
+    "crx:key": "node scripts/crx-key.mjs",
+    "upload": "node scripts/upload.mjs",
+    "package:zip": "node scripts/package.mjs --type zip",
+    "package:crx": "node scripts/package.mjs --type crx"
   },
   "devDependencies": {
     "@babel/core": "^7.24.7",
@@ -30,11 +32,13 @@
     "@types/webpack-env": "^1.18.5",
     "@typescript-eslint/eslint-plugin": "^8.35.1",
     "@typescript-eslint/parser": "^8.35.1",
+    "archiver": "^7.0.1",
     "babel-loader": "^10.0.0",
     "chalk": "^5.4.1",
     "clean-webpack-plugin": "^4.0.0",
     "copy-webpack-plugin": "^12.0.2",
     "core-js": "3",
+    "crx": "^5.0.1",
     "css-loader": "^7.1.2",
     "dotenv": "^17.2.0",
     "eslint": "9.0.0",
