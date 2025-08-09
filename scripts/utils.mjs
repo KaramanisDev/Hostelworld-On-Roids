@@ -54,3 +54,13 @@ export function latestGitTag () {
 export function shouldExcludeFile (fileName) {
   return fileName.endsWith('.map') || fileName.startsWith('.')
 }
+
+export function loadEnvironmentVariable (variableName) {
+  const value = process.env[variableName]
+
+  if (!value) {
+    throw new Error(`${variableName} environment variable is required`)
+  }
+
+  return value
+}

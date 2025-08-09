@@ -18,7 +18,10 @@
     "crx:key": "node scripts/crx-key.mjs",
     "upload": "node scripts/upload.mjs",
     "package:zip": "node scripts/package.mjs --type zip",
-    "package:crx": "node scripts/package.mjs --type crx"
+    "package:crx": "node scripts/package.mjs --type crx",
+    "extension:upload": "node scripts/deploy.mjs --upload",
+    "extension:publish": "node scripts/deploy.mjs --publish",
+    "extension:deploy": "node scripts/deploy.mjs --upload --publish"
   },
   "devDependencies": {
     "@babel/core": "^7.24.7",
