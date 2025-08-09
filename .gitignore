@@ -1,3 +1,5 @@
+.env
+*.pem
 .yarn/
 dist/*
 !dist/.keep

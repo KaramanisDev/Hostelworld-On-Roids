@@ -1,7 +1,5 @@
 'use strict'
 
-import url from 'url'
-import path from 'path'
 import * as fs from 'fs'
 import { execSync } from 'child_process'
 import CopyPlugin from 'copy-webpack-plugin'
@@ -9,12 +7,7 @@ import TerserPlugin from 'terser-webpack-plugin'
 import { CleanWebpackPlugin } from 'clean-webpack-plugin'
 import MiniCssExtractPlugin from 'mini-css-extract-plugin'
 import ExtensionReloader from 'webpack-ext-reloader'
-
-const __dirname = path.dirname(url.fileURLToPath(import.meta.url))
-
-function basePath (relative) {
-  return path.resolve(__dirname, relative)
-}
+import { basePath } from './scripts/utils.mjs'
 
 function aliases () {
   const aliases = {}
