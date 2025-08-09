@@ -1,0 +1,95 @@
+name: Deploy Extension
+
+on:
+  push:
+    branches: [master]
+
+jobs:
+  build:
+    name: Build Extension
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.package-info.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: ./.github/actions/setup
+      - run: yarn build:prod
+
+      - name: Get version info
+        id: package-info
+        run: |
+          VERSION=$(git describe --tags --exact-match HEAD)
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v5
+        with:
+          name: extension-build
+          path: dist/
+
+  package:
+    name: Package Extension
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: ./.github/actions/setup
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@v5
+        with:
+          name: extension-build
+          path: dist/
+
+      - run: yarn package:zip
+
+      - name: Upload package artifacts
+        uses: actions/upload-artifact@v5
+        with:
+          name: extension-package
+          path: packages/
+
+  deploy:
+    name: Deploy Extension
+    runs-on: ubuntu-latest
+    needs: [build, package]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: ./.github/actions/setup
+
+      - name: Download package artifacts
+        uses: actions/download-artifact@v5
+        with:
+          name: extension-package
+          path: packages/
+
+      - name: Deploy to Chrome Web Store
+        run: yarn extension:deploy
+        env:
+          CHROME_WEB_STORE_CLIENT_ID: ${{ secrets.CHROME_WEB_STORE_CLIENT_ID }}
+          CHROME_WEB_STORE_CLIENT_SECRET: ${{ secrets.CHROME_WEB_STORE_CLIENT_SECRET }}
+          CHROME_WEB_STORE_REFRESH_TOKEN: ${{ secrets.CHROME_WEB_STORE_REFRESH_TOKEN }}
+          CHROME_WEB_STORE_APP_ID: ${{ secrets.CHROME_WEB_STORE_APP_ID }}
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ needs.build.outputs.version }}
+          name: Release ${{ needs.build.outputs.version }}
+          body: |
+            Extension package for version ${{ needs.build.outputs.version }}
+
+            This release has been automatically uploaded to the Chrome Web Store and submitted for review.
+          files: |
+            packages/*.zip
+          draft: false
+          prerelease: false
+          make_latest: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
