@@ -8,16 +8,17 @@ type VuePropertyListComponent = {
 }
 
 type HostelworldSearchServiceResult = {
-  properties: Property[]
+  properties: Property[],
+  location: unknown
 }
 
 interface HostelworldSearchService {
   search (
-    type: 'New Search Page',
-    cityId: number,
-    from: string,
-    to: string,
-    showRooms: boolean
+    cityId: string,
+    fromDate: string | null,
+    toDate: string | null,
+    guests: number,
+    options: Record<string, unknown>
   ): Promise<HostelworldSearchServiceResult>
 }
 
@@ -80,12 +81,12 @@ export class SearchPropertyListComponentPatcher {
     if (!store) return
 
     const service: HostelworldSearchService = await store.$services.search()
-    const { properties } = await service.search('New Search Page', Number(cityId), '1943-04-19', '1943-04-20', true)
+    const { properties } = await service.search(cityId, null, null, 1, {})
 
     await waitForElement('.property-card .property-card-container')
 
     const loaded: Property[] = store.state.search.properties
-    const loadedPropertyIds: number[] = pluck(store.state.search.properties, 'id')
+    const loadedPropertyIds: number[] = pluck(loaded, 'id')
 
     const unavailable: Property[] = [...properties].filter(property => !loadedPropertyIds.includes(property.id))
     const allProperties: Property[] = [
