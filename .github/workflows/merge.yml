@@ -19,3 +19,4 @@ jobs:
         with:
           merge: true
           comment: always
+          github_token: ${{ secrets.PAT_TOKEN }}
