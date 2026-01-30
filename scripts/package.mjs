@@ -3,7 +3,7 @@ import path from 'path'
 import archiver from 'archiver'
 import yargs from 'yargs'
 import { hideBin } from 'yargs/helpers'
-import Crx from 'crx'
+import crx3 from 'crx3'
 import { config } from 'dotenv'
 import {
   logInfo, logSuccess, logError,
@@ -133,20 +133,19 @@ async function createCrxPackage () {
   try {
     await copyFilteredFiles(basePath('dist'), temporaryDirectory)
 
-    const crx = new Crx({
-      privateKey: fs.readFileSync(pemPath)
-    })
-
-    const loadedCrx = await crx.load(temporaryDirectory)
-    const crxBuffer = await loadedCrx.pack()
-
     const outputFilename = `${packageFilePrefix}-${latestGitTag()}.crx`
     const outputPath = basePath(`packages/${outputFilename}`)
-    fs.writeFileSync(outputPath, crxBuffer)
+
+    await crx3([path.join(temporaryDirectory, 'manifest.json')], {
+      keyPath: pemPath,
+      crxPath: outputPath
+    })
+
+    const stats = fs.statSync(outputPath)
 
     return {
       outputPath,
-      size: crxBuffer.length
+      size: stats.size
     }
   } finally {
     if (fs.existsSync(temporaryDirectory)) {
