@@ -55,6 +55,10 @@ export default [
       }],
       'import/no-useless-path-segments': ['error', {
         noUselessIndex: true
+      }],
+      'import/no-cycle': ['error', {
+        maxDepth: Infinity,
+        ignoreExternal: true
       }]
     }
   }
