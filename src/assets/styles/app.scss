@@ -3,6 +3,26 @@
   box-shadow: 0 0 0.625rem var(--wds-color-ink-lighter);
   border: 0.0625rem solid var(--wds-color-ink-lighter);
 
+  .tags-container {
+    flex-direction: column;
+
+    .extension-tag-badge {
+      margin-bottom: 0.5rem;
+      display: flex;
+      width: fit-content;
+      clip-path: polygon(0 0, 100% 0, calc(100% - 4px) 100%, 0 100%);
+
+      .tag-text {
+        font-family: Inter, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Helvetica, Arial, sans-serif;
+        font-size: 0.75rem;
+        font-weight: 700;
+        letter-spacing: 0.0125rem;
+        line-height: 1rem;
+        padding: 0.125rem 0.5rem;
+      }
+    }
+  }
+
   .property-card-container {
     box-shadow: none;
     border-radius: 0.5rem 0.5rem 0 0 !important;

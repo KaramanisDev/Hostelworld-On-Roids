@@ -74,7 +74,7 @@ export class PropertyCardViewDTOFactory {
         { label: 'Male', value: `${metrics.getMale()}/${metrics.getTotal()} (${metrics.getMalePercentage()}%)` },
         { label: 'Female', value: `${metrics.getFemale()}/${metrics.getTotal()} (${metrics.getFemalePercentage()}%)` },
         { label: 'Other', value: `${metrics.getOther()}/${metrics.getTotal()} (${metrics.getOtherPercentage()}%)` },
-        { label: 'Solo', value: `${metrics.getSolo()}/${metrics.getTotal()} (${metrics.getSoloPercentage()}%)` },
+        { label: 'Solo', value: `${metrics.getSolo()}/${metrics.getTotal()} (${metrics.getSoloPercentage()}%)` }
       ]
     }
   }

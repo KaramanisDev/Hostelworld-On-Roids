@@ -1,17 +1,20 @@
 import type { Property } from 'DTOs/Property'
 import type { ReviewMetrics } from 'DTOs/ReviewMetrics'
 import type { AvailabilityMetrics } from 'DTOs/AvailabilityMetrics'
+import type { PropertyBadge } from 'Services/PropertyBadgeService'
 import type { ViewAdapterInterface } from 'UI/ViewAdapterInterface'
 import { PropertyCardView } from 'UI/SolidJS/PropertyCard/PropertyCardView'
 import type { PropertyCardViewDTO } from './ViewDTOs'
 import { PropertyCardViewDTOFactory } from './ViewDTOs'
 import { waitForElement } from 'Utils'
 import { PropertyCardComponentPatcher } from 'Services/Hostelworld/Patchers/PropertyCardComponentPatcher'
+import { BadgeTagsView } from 'UI/SolidJS/BadgeTags/BadgeTagsView'
 import { BookedCountry } from 'DTOs/BookedCountry'
 import type { PropertyGuestsCountries } from 'Services/Hostelworld/Api/VisitorsCountryClient'
 
 export class PropertyCardRenderer {
   private static readonly view: ViewAdapterInterface<PropertyCardViewDTO> = new PropertyCardView()
+  private static readonly badgeTagsView: BadgeTagsView = new BadgeTagsView()
 
   public static async render (propertyId: number, propertyName?: string): Promise<void> {
     await waitForElement('.property-card .property-card-container')
@@ -23,7 +26,7 @@ export class PropertyCardRenderer {
     this.view.mount(container, viewDto)
   }
 
-  public static async renderWithData (property: Property): Promise<void> {
+  public static async renderWithData (property: Property, badges: PropertyBadge[]): Promise<void> {
     await waitForElement('.property-card .property-card-container')
 
     const container: HTMLElement | null = this.findContainer(property.getId(), property.getName())
@@ -36,6 +39,8 @@ export class PropertyCardRenderer {
       container,
       property.getBookedCountries()
     )
+
+    this.badgeTagsView.mount(container, { propertyId: property.getId(), badges })
   }
 
   public static updateReviewMetrics (propertyId: number, metrics: ReviewMetrics): void {
