@@ -8,14 +8,26 @@ export type PropertyReviews = {
   other: number
   solo: number
   total: number
+  ages: Record<string, number>
 }
 
 export class ReviewsClient {
   private static readonly endpoint: string = 'https://prod.apigee.hostelworld.com/legacy-hwapi-service/2.2/' +
     'properties/{property}/reviews/?page={page}&sort=newest&allLanguages=true&monthCount=72&per-page=50'
 
+  private static readonly ageBrackets: string[] = ['18-24', '25-30', '31-40', '41+']
+
   public static async fetch (propertyId: number): Promise<PropertyReviews> {
-    const metrics: PropertyReviews = { male: 0, female: 0, other: 0, solo: 0, total: 0 }
+    const metrics: PropertyReviews = {
+      male: 0,
+      female: 0,
+      other: 0,
+      solo: 0,
+      total: 0,
+      ages: Object.fromEntries(
+        this.ageBrackets.map(bracket => [bracket, 0])
+      )
+    }
 
     const { reviews: firstPageReviews, reviewStatistics, pagination } = await this.request(propertyId, 1)
 
@@ -40,6 +52,9 @@ export class ReviewsClient {
       metrics.male += Number(['MALE', 'ALLMALEGROUP'].includes(review.groupInformation.groupTypeCode))
       metrics.female += Number(['FEMALE', 'ALLFEMALEGROUP'].includes(review.groupInformation.groupTypeCode))
       metrics.other += Number(['COUPLE', 'MIXEDGROUP'].includes(review.groupInformation.groupTypeCode))
+
+      const age: string = review.groupInformation.age
+      metrics.ages[age] = (metrics.ages[age] ?? 0) + 1
     }
 
     return metrics

@@ -40,8 +40,9 @@
   .metrics-grid {
     width: 100%;
     display: grid;
+    line-height: 1.2rem;
     grid-column: 1 / -1;
-    grid-template-columns: fit-content(100%) repeat(5, auto);
+    grid-template-columns: fit-content(100%) repeat(4, auto);
 
     .row {
       display: contents;

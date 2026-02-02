@@ -41,7 +41,8 @@ export class PropertyCardRenderer {
   public static updateReviewMetrics (propertyId: number, metrics: ReviewMetrics): void {
     this.view.update({
       propertyId,
-      reviews: PropertyCardViewDTOFactory.reviewsRow(metrics)
+      reviews: PropertyCardViewDTOFactory.reviewsRow(metrics),
+      ageGroups: PropertyCardViewDTOFactory.ageGroupsRow(metrics)
     })
   }
 

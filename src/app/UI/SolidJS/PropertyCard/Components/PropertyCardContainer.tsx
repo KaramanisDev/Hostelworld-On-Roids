@@ -7,11 +7,13 @@ import { Note } from './Note'
 export type CardState = {
   reviews?: MetricRowViewDTO | null
   availability?: MetricRowViewDTO | null
+  ageGroups?: MetricRowViewDTO | null
 }
 
 export type CardStateSetters = {
   setReviews: Setter<MetricRowViewDTO | null | undefined>
   setAvailability: Setter<MetricRowViewDTO | null | undefined>
+  setAgeGroups: Setter<MetricRowViewDTO | null | undefined>
 }
 
 type Properties = {
@@ -27,10 +29,15 @@ export const PropertyCardContainer = (properties: Properties) => {
   const [availability, setAvailability] = createSignal<MetricRowViewDTO | null | undefined>(
     properties.initialState.availability
   )
+  const [ageGroups, setAgeGroups] = createSignal<MetricRowViewDTO | null | undefined>(
+    properties.initialState.ageGroups
+  )
 
-  properties.onStateReady({ setReviews, setAvailability })
+  properties.onStateReady({ setReviews, setAvailability, setAgeGroups })
 
-  const isFinalized = createMemo(() => reviews() !== undefined && availability() !== undefined)
+  const isFinalized = createMemo(() =>
+    reviews() !== undefined && availability() !== undefined && ageGroups() !== undefined
+  )
   const isLoading = createMemo(() => !isFinalized())
   const note = createMemo(() => isFinalized() ? PropertyCardNotes.finalized : PropertyCardNotes.loading)
 
@@ -38,6 +45,7 @@ export const PropertyCardContainer = (properties: Properties) => {
     <>
       <div class="metrics-grid" data-property-id={properties.propertyId}>
         <MetricsRow metricType="reviews" data={reviews()} />
+        <MetricsRow metricType="ageGroups" data={ageGroups()} />
         <MetricsRow metricType="availability" data={availability()} />
       </div>
 

@@ -2,7 +2,7 @@ import type { Property } from 'DTOs/Property'
 import type { ReviewMetrics } from 'DTOs/ReviewMetrics'
 import type { AvailabilityMetrics } from 'DTOs/AvailabilityMetrics'
 
-export type MetricType = 'reviews' | 'availability'
+export type MetricType = 'reviews' | 'availability' | 'ageGroups'
 
 export type MetricValueViewDTO = {
   label: string
@@ -18,24 +18,33 @@ export type PropertyCardViewDTO = {
   propertyId: number
   reviews?: MetricRowViewDTO | null
   availability?: MetricRowViewDTO | null
+  ageGroups?: MetricRowViewDTO | null
 }
 
 export class PropertyCardLabels {
-  public static readonly reviews: ReadonlyArray<string> = ['Male', 'Female', 'Other', 'Solo', 'Total']
+  public static readonly reviews: ReadonlyArray<string> = ['Male', 'Female', 'Other', 'Solo']
   public static readonly availability: ReadonlyArray<string> = ['Mixed', 'Female', 'Private', 'Guests']
+  public static readonly ageGroups: ReadonlyArray<string> = ['18-24', '25-30', '31-40', '41+']
 
   public static forType (metricType: MetricType): ReadonlyArray<string> {
-    return metricType === 'reviews' ? this.reviews : this.availability
+    switch (metricType) {
+      case 'reviews': return this.reviews
+      case 'availability': return this.availability
+      case 'ageGroups': return this.ageGroups
+    }
   }
 
   public static titleForType (metricType: MetricType): string {
-    return metricType === 'reviews' ? 'Reviews' : 'Availability'
+    switch (metricType) {
+      case 'reviews': return 'Reviews'
+      case 'availability': return 'Availability'
+      case 'ageGroups': return 'Age Groups'
+    }
   }
 }
 
 export class PropertyCardNotes {
-  public static readonly loading: string = '⏳ Loading property data...'
-  public static readonly processing: string = '🔄 Property data are being processed...'
+  public static readonly loading: string = '🔄 Property data are being processed...'
   public static readonly finalized: string = 'ℹ️ Data displayed here can take up to an hour to be refreshed.'
 }
 
@@ -44,7 +53,8 @@ export class PropertyCardViewDTOFactory {
     return {
       propertyId,
       reviews: undefined,
-      availability: undefined
+      availability: undefined,
+      ageGroups: undefined
     }
   }
 
@@ -52,7 +62,8 @@ export class PropertyCardViewDTOFactory {
     return {
       propertyId: property.getId(),
       reviews: this.reviewsRow(property.getReviewMetrics()),
-      availability: this.availabilityRow(property.getAvailabilityMetrics())
+      availability: this.availabilityRow(property.getAvailabilityMetrics()),
+      ageGroups: this.ageGroupsRow(property.getReviewMetrics())
     }
   }
 
@@ -60,11 +71,10 @@ export class PropertyCardViewDTOFactory {
     return {
       title: 'Reviews',
       items: [
-        { label: 'Male', value: `${metrics.getMale()} (${metrics.getMalePercentage()}%)` },
-        { label: 'Female', value: `${metrics.getFemale()} (${metrics.getFemalePercentage()}%)` },
-        { label: 'Other', value: `${metrics.getOther()} (${metrics.getOtherPercentage()}%)` },
-        { label: 'Solo', value: `${metrics.getSolo()} (${metrics.getSoloPercentage()}%)` },
-        { label: 'Total', value: String(metrics.getTotal()) }
+        { label: 'Male', value: `${metrics.getMale()}/${metrics.getTotal()} (${metrics.getMalePercentage()}%)` },
+        { label: 'Female', value: `${metrics.getFemale()}/${metrics.getTotal()} (${metrics.getFemalePercentage()}%)` },
+        { label: 'Other', value: `${metrics.getOther()}/${metrics.getTotal()} (${metrics.getOtherPercentage()}%)` },
+        { label: 'Solo', value: `${metrics.getSolo()}/${metrics.getTotal()} (${metrics.getSoloPercentage()}%)` },
       ]
     }
   }
@@ -91,6 +101,19 @@ export class PropertyCardViewDTOFactory {
           value: `${metrics.getGuests()}/${metrics.getMaxGuests()} (${metrics.getGuestsPercentage()}%)`
         }
       ]
+    }
+  }
+
+  public static ageGroupsRow (metrics: ReviewMetrics): MetricRowViewDTO {
+    const ages: Record<string, number> = metrics.getAges()
+    const total: number = metrics.getTotal()
+
+    return {
+      title: 'Age Groups',
+      items: PropertyCardLabels.ageGroups.map(bracket => ({
+        label: bracket,
+        value: `${ages[bracket] ?? 0}/${total} (${metrics.getAgePercentage(bracket)}%)`
+      }))
     }
   }
 }

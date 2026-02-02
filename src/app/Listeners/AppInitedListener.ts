@@ -14,7 +14,7 @@ export class AppInitedListener extends AbstractListener {
   public async handle (): Promise<void> {
     this.applyRequestInterceptors()
 
-    await Promise.all([
+    await Promise.allSettled([
       DevicePatcher.enforceMobile(),
       SearchPropertyListComponentPatcher.disableFeatured(),
       SearchPropertyListComponentPatcher.disablePagination()

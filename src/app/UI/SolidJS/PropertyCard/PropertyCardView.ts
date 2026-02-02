@@ -15,7 +15,8 @@ export class PropertyCardView implements ViewAdapterInterface<PropertyCardViewDT
   public mount (container: HTMLElement, viewDto: PropertyCardViewDTO): void {
     this.mountContainer(container, viewDto.propertyId, {
       reviews: viewDto.reviews,
-      availability: viewDto.availability
+      availability: viewDto.availability,
+      ageGroups: viewDto.ageGroups
     })
   }
 
@@ -31,6 +32,10 @@ export class PropertyCardView implements ViewAdapterInterface<PropertyCardViewDT
 
     if ('availability' in viewDto) {
       entry.setters.setAvailability(viewDto.availability)
+    }
+
+    if ('ageGroups' in viewDto) {
+      entry.setters.setAgeGroups(viewDto.ageGroups)
     }
   }
 
