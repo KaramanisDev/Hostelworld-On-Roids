@@ -31,7 +31,7 @@ export default {
       basePath('src/assets/styles/app.scss')
     ],
     worker: basePath('src/entries/worker.ts'),
-    content: basePath('src/entries/content.ts')
+    content: basePath('src/entries/content.ts'),
   },
   output: {
     filename: '[name].js',
@@ -39,7 +39,7 @@ export default {
   },
   resolve: {
     alias: aliases(),
-    extensions: ['.ts', '.js']
+    extensions: ['.tsx', '.ts', '.js']
   },
   cache: {
     type: 'filesystem'

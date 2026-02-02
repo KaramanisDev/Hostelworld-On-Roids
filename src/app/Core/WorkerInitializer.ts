@@ -1,7 +1,9 @@
 import { WorkerRPCEndpoint } from 'Communication/WorkerRPCEndpoint'
 import { WorkerTaskDispatcher } from 'WorkerTasks/WorkerTaskDispatcher'
 import type { WorkerTaskResult } from 'WorkerTasks/WorkerTaskDispatcher'
-import { ComposePropertyTask } from 'WorkerTasks/Tasks/ComposePropertyTask'
+import { FetchReviewsTask } from 'WorkerTasks/Tasks/FetchReviewsTask'
+import { FetchAvailabilityTask } from 'WorkerTasks/Tasks/FetchAvailabilityTask'
+import { FetchCountriesTask } from 'WorkerTasks/Tasks/FetchCountriesTask'
 
 export class WorkerInitializer {
   public static init (): void {
@@ -13,6 +15,8 @@ export class WorkerInitializer {
   }
 
   private static registerTasks (): void {
-    WorkerTaskDispatcher.register('compose:property', new ComposePropertyTask())
+    WorkerTaskDispatcher.register('fetch:reviews', new FetchReviewsTask())
+    WorkerTaskDispatcher.register('fetch:availability', new FetchAvailabilityTask())
+    WorkerTaskDispatcher.register('fetch:countries', new FetchCountriesTask())
   }
 }

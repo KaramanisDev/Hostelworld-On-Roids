@@ -8,6 +8,8 @@
     "paths": { "*": ["./src/app/*"] },
     "rootDir": "src",
     "outDir": "dist",
+    "jsx": "preserve",
+    "jsxImportSource": "solid-js",
     "strict": true,
     "allowJs": true,
     "sourceMap": true,
@@ -20,7 +22,7 @@
     "esModuleInterop": true,
     "isolatedModules": true,
     "resolveJsonModule": true,
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "experimentalDecorators": true,
     "forceConsistentCasingInFileNames": true
   },

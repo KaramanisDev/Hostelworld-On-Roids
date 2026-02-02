@@ -24,17 +24,23 @@ export default [
     'plugin:@typescript-eslint/recommended'
   ),
   {
-    files: ['**/*.{ts,js,mjs}'],
+    files: ['**/*.{ts,tsx,js,mjs}'],
     plugins: {
       unicorn
     },
     languageOptions: {
       globals: {
-        ...globals.node
+        ...globals.node,
+        ...globals.browser
       },
       parser: tsParser,
       ecmaVersion: 2023,
-      sourceType: 'module'
+      sourceType: 'module',
+      parserOptions: {
+        ecmaFeatures: {
+          jsx: true
+        }
+      }
     },
     rules: {
       'max-len': ['error', { code: 120 }],
