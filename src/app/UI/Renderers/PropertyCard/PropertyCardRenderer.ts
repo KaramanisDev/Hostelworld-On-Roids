@@ -73,7 +73,7 @@ export class PropertyCardRenderer {
     const propertyCards: NodeListOf<Element> = document.querySelectorAll('.property-card')
 
     for (const card of propertyCards) {
-      const containsId: boolean = card.innerHTML.includes(String(propertyId))
+      const containsId: boolean = new RegExp('\\b' + propertyId + '\\b').test(card.innerHTML)
       if (!containsId) continue
 
       if (!propertyName) return card as HTMLElement
