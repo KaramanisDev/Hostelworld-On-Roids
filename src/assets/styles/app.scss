@@ -63,6 +63,9 @@
     line-height: 1.2rem;
     grid-column: 1 / -1;
     grid-template-columns: fit-content(100%) repeat(4, auto);
+    contain: layout;
+    content-visibility: auto;
+    contain-intrinsic-size: auto 80px;
 
     .row {
       display: contents;
@@ -132,11 +135,6 @@
 
   contain: layout style;
 
-  .metrics-grid {
-    contain: layout;
-    content-visibility: auto;
-    contain-intrinsic-size: auto 80px;
-  }
 }
 
 @keyframes skeletonPulse {
