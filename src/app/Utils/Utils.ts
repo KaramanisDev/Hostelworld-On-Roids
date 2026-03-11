@@ -55,7 +55,7 @@ export async function waitForElement (
   }
 
   await delay(100)
-  return waitForElement(selector, maxTimeout - 100)
+  return waitForElement(selector, maxTimeout - 100, onElement)
 }
 
 export function objectPick (object: object, keys: string[]): object {
