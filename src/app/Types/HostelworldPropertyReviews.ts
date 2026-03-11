@@ -1,3 +1,5 @@
+import type { Image } from './HostelworldShared'
+
 type Age = '18-24' | '25-30' | '31-40' | '41+'
 
 type GroupTypeCode = 'FEMALE' | 'MALE' | 'COUPLE' | 'ALLMALEGROUP' | 'ALLFEMALEGROUP' | 'MIXEDGROUP'
@@ -9,11 +11,6 @@ type ID = 'Female' | 'Male'
 type Gender = {
   value: ID
   id: ID
-}
-
-type Image = {
-  prefix: string
-  suffix: string
 }
 
 type Nationality = {

@@ -1,7 +1,4 @@
-type FreeCancellation = {
-  label: string
-  description: string
-}
+import type { Image, FreeCancellation, Promotions } from './HostelworldShared'
 
 type LowestAverageDormPricePerNight = {
   value: string
@@ -26,11 +23,6 @@ type BasicType = 'Mixed Dorm' | 'Female Dorm' | 'Private' | 'Dbl Private'
 
 type Grade = 'Standard' | 'Superior' | 'Basic' | ''
 
-type Image = {
-  prefix: string
-  suffix: string
-}
-
 type PriceBreakdown = {
   ratePlan: number
   date: Date
@@ -47,11 +39,6 @@ type PaymentProcedure = {
   id: ID
   label: Label
   description: string
-}
-
-type Promotions = {
-  promotionsIds: number[]
-  totalDiscount: string
 }
 
 type RatePlan = {

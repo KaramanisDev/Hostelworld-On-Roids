@@ -1,3 +1,5 @@
+import type { Image, FreeCancellation, Promotions } from './HostelworldShared'
+
 type Currency = string
 
 type City = {
@@ -49,21 +51,6 @@ type Facility = {
   name: Name
   id: ID
   facilities: Region[]
-}
-
-type FreeCancellation = {
-  label: string
-  description: string
-}
-
-type Image = {
-  prefix: string
-  suffix: string
-}
-
-type Promotions = {
-  promotionsIds: number[]
-  totalDiscount: string
 }
 
 type OverallRating = {
