@@ -1,3 +1,4 @@
+import type { PropertyReviews } from 'Services/Hostelworld/Api/ReviewsClient'
 import { toPercent } from 'Utils'
 
 export class ReviewMetrics {
@@ -8,7 +9,7 @@ export class ReviewMetrics {
   private total!: number
   private ages!: Record<string, number>
 
-  constructor (attributes: Record<string, unknown>) {
+  constructor (attributes: PropertyReviews) {
     Object.assign(this, attributes)
   }
 

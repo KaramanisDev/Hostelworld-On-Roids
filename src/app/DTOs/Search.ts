@@ -1,11 +1,17 @@
 import { dateAddDays } from 'Utils'
 
+type SearchAttributes = {
+  to: Date
+  from: Date
+  cityId: string
+}
+
 export class Search {
   private to!: Date
   private from!: Date
   private cityId!: string
 
-  constructor (attributes: Record<string, Date | string>) {
+  constructor (attributes: SearchAttributes) {
     Object.assign(this, attributes)
   }
 

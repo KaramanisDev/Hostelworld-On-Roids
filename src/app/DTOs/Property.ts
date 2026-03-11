@@ -3,6 +3,15 @@ import type { ReviewMetrics } from 'DTOs/ReviewMetrics'
 import type { BookedCountry } from 'DTOs/BookedCountry'
 import type { PropertyBadge } from 'Services/PropertyBadgeService'
 
+type PropertyAttributes = {
+  id: number
+  name: string
+  reviewMetrics: ReviewMetrics
+  availabilityMetrics: AvailabilityMetrics
+  bookedCountries: BookedCountry[]
+  badges: PropertyBadge[]
+}
+
 export class Property {
   private id!: number
   private name!: string
@@ -11,7 +20,7 @@ export class Property {
   private bookedCountries!: BookedCountry[]
   private badges!: PropertyBadge[]
 
-  constructor (attributes: Record<string, unknown>) {
+  constructor (attributes: PropertyAttributes) {
     Object.assign(this, attributes)
   }
 
