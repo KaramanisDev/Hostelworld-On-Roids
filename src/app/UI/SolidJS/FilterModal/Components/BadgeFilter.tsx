@@ -12,13 +12,15 @@ type BadgeStyle = {
   'background-color': string
 }
 
-export const BadgeFilter = (properties: Properties): JSX.Element => {
-  const badgeStyle = (color: BadgeColor): BadgeStyle => ({
-    color: `var(--wds-color-${color})`,
-    'background-color': `var(--wds-color-${color}-lightest)`
-  })
+export function BadgeFilter (properties: Properties): JSX.Element {
+  function badgeStyle (color: BadgeColor): BadgeStyle {
+    return {
+      color: `var(--wds-color-${color})`,
+      'background-color': `var(--wds-color-${color}-lightest)`
+    }
+  }
 
-  const handleChange = (event: Event): void => {
+  function handleChange (event: Event): void {
     const target: HTMLInputElement = event.target as HTMLInputElement
     properties.onChange(properties.filter.key, target.checked)
   }

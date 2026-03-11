@@ -1,4 +1,4 @@
-import { createSignal, createMemo, type Setter } from 'solid-js'
+import { createSignal, createMemo, type Setter, type JSX } from 'solid-js'
 import type { MetricRowViewDTO } from 'UI/Renderers/PropertyCard/ViewDTOs'
 import { PropertyCardNotes } from 'UI/Renderers/PropertyCard/ViewDTOs'
 import { MetricsRow } from './MetricsRow'
@@ -22,7 +22,7 @@ type Properties = {
   onStateReady: (setters: CardStateSetters) => void
 }
 
-export const PropertyCardContainer = (properties: Properties) => {
+export function PropertyCardContainer (properties: Properties): JSX.Element {
   const [reviews, setReviews] = createSignal<MetricRowViewDTO | null | undefined>(
     properties.initialState.reviews
   )

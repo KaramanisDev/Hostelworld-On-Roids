@@ -10,7 +10,7 @@ type Properties = {
   onRangeMaxChange: (key: string, value: number) => void
 }
 
-export const FilterSection = (properties: Properties): JSX.Element => {
+export function FilterSection (properties: Properties): JSX.Element {
   return (
     <div class="filter-section">
       <h3 class="filter-section-title">{properties.section.title}</h3>

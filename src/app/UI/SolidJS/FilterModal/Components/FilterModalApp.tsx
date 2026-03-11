@@ -15,17 +15,17 @@ type Properties = {
   onStateReady: (setters: FilterModalStateSetters) => void
 }
 
-export const FilterModalApp = (properties: Properties): JSX.Element => {
+export function FilterModalApp (properties: Properties): JSX.Element {
   const [viewDto, setViewDto] = createSignal(properties.viewDto)
   let stateBeforeOpen: FilterModalViewDTO | null = null
 
   properties.onStateReady({ setViewDto })
 
-  const saveStateBeforeOpen = (): void => {
+  function saveStateBeforeOpen (): void {
     stateBeforeOpen = viewDto()
   }
 
-  const restoreStateBeforeOpen = (): void => {
+  function restoreStateBeforeOpen (): void {
     if (stateBeforeOpen) {
       setViewDto({ ...stateBeforeOpen, isOpen: false })
       stateBeforeOpen = null
@@ -35,20 +35,20 @@ export const FilterModalApp = (properties: Properties): JSX.Element => {
     setViewDto(previous => ({ ...previous, isOpen: false }))
   }
 
-  const commitChanges = (): void => {
+  function commitChanges (): void {
     stateBeforeOpen = null
   }
 
-  const handleOpen = (): void => {
+  function handleOpen (): void {
     saveStateBeforeOpen()
     setViewDto(previous => ({ ...previous, isOpen: true }))
   }
 
-  const handleClose = (): void => {
+  function handleClose (): void {
     restoreStateBeforeOpen()
   }
 
-  const enabledBadges = (sections: FilterModalViewDTO['sections']): FilterCriteria['badges'] => {
+  function enabledBadges (sections: FilterModalViewDTO['sections']): FilterCriteria['badges'] {
     const badges: FilterCriteria['badges'] = {}
 
     for (const section of sections) {
@@ -63,7 +63,7 @@ export const FilterModalApp = (properties: Properties): JSX.Element => {
     return badges
   }
 
-  const modifiedRanges = (sections: FilterModalViewDTO['sections']): FilterCriteria['ranges'] => {
+  function modifiedRanges (sections: FilterModalViewDTO['sections']): FilterCriteria['ranges'] {
     const ranges: FilterCriteria['ranges'] = {}
 
     for (const section of sections) {
@@ -78,7 +78,7 @@ export const FilterModalApp = (properties: Properties): JSX.Element => {
     return ranges
   }
 
-  const filterCriteria = (): FilterCriteria => {
+  function filterCriteria (): FilterCriteria {
     const sections: FilterModalViewDTO['sections'] = viewDto().sections
 
     return {
@@ -87,7 +87,7 @@ export const FilterModalApp = (properties: Properties): JSX.Element => {
     }
   }
 
-  const handleReset = (): void => {
+  function handleReset (): void {
     commitChanges()
     setViewDto(() => {
       const reset: FilterModalViewDTO = FilterModalViewDTOFactory.create()
@@ -96,7 +96,7 @@ export const FilterModalApp = (properties: Properties): JSX.Element => {
     properties.eventBus.emit('filter:applied', { badges: {}, ranges: {} })
   }
 
-  const handleApply = (): void => {
+  function handleApply (): void {
     commitChanges()
     setViewDto(previous => ({ ...previous, isOpen: false }))
 
@@ -104,7 +104,7 @@ export const FilterModalApp = (properties: Properties): JSX.Element => {
     properties.eventBus.emit('filter:applied', criteria)
   }
 
-  const handleBadgeChange = (key: string, enabled: boolean): void => {
+  function handleBadgeChange (key: string, enabled: boolean): void {
     setViewDto(previous => ({
       ...previous,
       sections: previous.sections.map(section => {
@@ -120,7 +120,7 @@ export const FilterModalApp = (properties: Properties): JSX.Element => {
     }))
   }
 
-  const handleRangeChange = (key: string, field: 'rangeMin' | 'rangeMax', value: number): void => {
+  function handleRangeChange (key: string, field: 'rangeMin' | 'rangeMax', value: number): void {
     setViewDto(previous => ({
       ...previous,
       sections: previous.sections.map(section => {
@@ -136,11 +136,11 @@ export const FilterModalApp = (properties: Properties): JSX.Element => {
     }))
   }
 
-  const handleRangeMinChange = (key: string, value: number): void => {
+  function handleRangeMinChange (key: string, value: number): void {
     handleRangeChange(key, 'rangeMin', value)
   }
 
-  const handleRangeMaxChange = (key: string, value: number): void => {
+  function handleRangeMaxChange (key: string, value: number): void {
     handleRangeChange(key, 'rangeMax', value)
   }
 

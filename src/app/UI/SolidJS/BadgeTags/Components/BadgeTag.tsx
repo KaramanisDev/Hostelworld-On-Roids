@@ -1,10 +1,11 @@
+import type { JSX } from 'solid-js'
 import type { PropertyBadge } from 'Services/PropertyBadgeService'
 
 type Properties = {
   badge: PropertyBadge
 }
 
-export const BadgeTag = (properties: Properties) => {
+export function BadgeTag (properties: Properties): JSX.Element {
   return (
     <div class="tag-overlay tag-wrapper tag-skew-right extension-tag-badge">
       <div

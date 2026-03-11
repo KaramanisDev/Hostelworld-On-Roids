@@ -5,7 +5,7 @@ type Properties = {
   logo: string
 }
 
-export const FilterButton = (properties: Properties): JSX.Element => {
+export function FilterButton (properties: Properties): JSX.Element {
   return (
     <button
       type="button"

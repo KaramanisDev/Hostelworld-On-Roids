@@ -16,8 +16,8 @@ type Properties = {
   onRangeMaxChange: (key: string, value: number) => void
 }
 
-export const FilterModal = (properties: Properties): JSX.Element => {
-  const handleOverlayClick = (event: MouseEvent): void => {
+export function FilterModal (properties: Properties): JSX.Element {
+  function handleOverlayClick (event: MouseEvent): void {
     if (event.target !== event.currentTarget) return
 
     properties.onClose()

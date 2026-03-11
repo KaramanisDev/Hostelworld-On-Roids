@@ -1,4 +1,4 @@
-import { Show, For } from 'solid-js'
+import { Show, For, type JSX } from 'solid-js'
 import type { MetricRowViewDTO, MetricType } from 'UI/Renderers/PropertyCard/ViewDTOs'
 import { PropertyCardLabels } from 'UI/Renderers/PropertyCard/ViewDTOs'
 
@@ -7,11 +7,11 @@ type Properties = {
   data?: MetricRowViewDTO | null
 }
 
-export const MetricsRow = (properties: Properties) => {
+export function MetricsRow (properties: Properties): JSX.Element {
   const title: string = PropertyCardLabels.titleForType(properties.metricType)
   const labels: ReadonlyArray<string> = PropertyCardLabels.forType(properties.metricType)
-  const isDisabled = (): boolean => properties.data === null
-  const isLoaded = (): boolean => properties.data !== null && properties.data !== undefined
+  function isDisabled (): boolean { return properties.data === null }
+  function isLoaded (): boolean { return properties.data !== null && properties.data !== undefined }
 
   return (
     <Show when={!isDisabled()}>

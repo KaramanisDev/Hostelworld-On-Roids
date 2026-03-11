@@ -1,9 +1,11 @@
+import type { JSX } from 'solid-js'
+
 type Properties = {
   message: string
   isLoading?: boolean
 }
 
-export const Note = (properties: Properties) => {
+export function Note (properties: Properties): JSX.Element {
   const className: string = properties.isLoading ? 'note loading' : 'note'
   const dataAttributes: Record<string, string> = properties.isLoading ? { 'data-note-type': 'loading' } : {}
 
