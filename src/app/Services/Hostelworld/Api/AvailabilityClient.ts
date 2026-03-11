@@ -44,11 +44,11 @@ export class AvailabilityClient {
 
       await delay(randomNumber(0, 5) * 100)
 
-      const metrics: Metrics = this.toMetrics(
-        this.adaptDormBedToMaxCapacity(
-          await this.request(propertyId, fromWithDaysAdded, toWithFromPlus3Days, 24 * 60)
-        )
+      const availability: HostelworldPropertyAvailability = await this.request(
+        propertyId, fromWithDaysAdded, toWithFromPlus3Days, 24 * 60
       )
+      this.adaptDormBedToMaxCapacity(availability)
+      const metrics: Metrics = this.toMetrics(availability)
 
       for (const key in metrics) {
         const metricsKey: keyof Metrics = key as keyof Metrics
@@ -88,15 +88,12 @@ export class AvailabilityClient {
 
   private static adaptDormBedToMaxCapacity (
     availability: HostelworldPropertyAvailability
-  ): HostelworldPropertyAvailability {
-    availability.rooms.dorms = availability.rooms.dorms.map(dorm => {
+  ): void {
+    for (const dorm of availability.rooms.dorms) {
       dorm.totalBedsAvailable = Math.ceil(
         dorm.totalBedsAvailable / Number(dorm.capacity)
       ) * Number(dorm.capacity)
-
-      return dorm
-    })
-    return availability
+    }
   }
 
   private static async request (

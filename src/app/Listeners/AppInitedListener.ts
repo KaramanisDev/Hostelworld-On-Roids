@@ -56,7 +56,7 @@ export class AppInitedListener extends AbstractListener {
   }
 
   private onSearchProperties (search: HostelworldSearch): HostelworldSearch {
-    const adapted: HostelworldSearch = SearchDataAdapter.stripPromotions(search)
+    const adapted: HostelworldSearch = SearchDataAdapter.withoutPromotions(search)
 
     this.emit('hostelworld:search:intercepted', adapted.properties)
 
