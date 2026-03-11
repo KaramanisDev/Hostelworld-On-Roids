@@ -1,3 +1,7 @@
+import type { InterceptionStage } from './RequestModifier'
+
+type InterceptCallback = (request: CustomXMLHttpRequest, stage: InterceptionStage | 'construct') => void
+
 type BackingProperties<T> = {
   -readonly [K in keyof T]?: unknown
 }
@@ -6,7 +10,7 @@ export class CustomXMLHttpRequest extends XMLHttpRequest {
   public url: string = ''
   public method: string = ''
   public backing: BackingProperties<this> = {}
-  private static interceptCallback?: Function
+  private static interceptCallback?: InterceptCallback
 
   constructor () {
     super()
@@ -26,7 +30,7 @@ export class CustomXMLHttpRequest extends XMLHttpRequest {
       : super.open(this.method, this.url, async, username, password)
   }
 
-  public static setInterceptCallback (callback: Function): void {
+  public static setInterceptCallback (callback: InterceptCallback): void {
     this.interceptCallback = callback
   }
 

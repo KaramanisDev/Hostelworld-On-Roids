@@ -43,7 +43,9 @@ export class XHRRequestInterceptor {
     return modifier
   }
 
-  private static interceptOn (request: CustomXMLHttpRequest, stage: InterceptionStage): void {
+  private static interceptOn (request: CustomXMLHttpRequest, stage: InterceptionStage | 'construct'): void {
+    if (stage === 'construct') return
+
     const interceptions: Interception[] = this.matchedInterceptionsFor(request)
 
     for (const { modifiers } of interceptions) {

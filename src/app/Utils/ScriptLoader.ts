@@ -2,7 +2,7 @@ import { hash } from './Utils'
 
 export class ScriptLoader {
   public static async inject (url: string): Promise<void> {
-    return new Promise((resolve: Function, reject: Function) => {
+    return new Promise((resolve: () => void, reject: (error: Error) => void) => {
       if (this.isLoaded(url)) return resolve()
 
       const script: HTMLScriptElement = this.createScriptElement(url)
