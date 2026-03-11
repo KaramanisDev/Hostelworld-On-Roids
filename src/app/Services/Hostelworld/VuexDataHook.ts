@@ -1,27 +1,24 @@
-import type { Property } from 'Types/HostelworldSearch'
-import { promiseFallback, waitForElement, waitForProperty } from 'Utils'
+import { VueComponentAccessor } from 'Services/Hostelworld/VueComponentAccessor'
+import type { VuePropertyListComponent } from 'Services/Hostelworld/VueComponentAccessor'
+import { promiseFallback, waitForProperty } from 'Utils'
 
 type VuexRouter = {
-  onReady: Function
-  afterEach: Function
-}
-
-type VuePropertyListComponent = {
-  $watch: Function
-  displayedProperties: Property[]
-  isDisplayedPropertiesWatched?: boolean
+  onReady: (callback: () => void) => void
+  afterEach: (callback: () => void) => void
 }
 
 export class VuexDataHook {
   public static async onPropertiesDisplayed (callback: (propertyIds: number[]) => void): Promise<void> {
     const onDisplayedPropertiesUpdate: () => Promise<void> = async (): Promise<void> => {
-      const component: VuePropertyListComponent | undefined = await promiseFallback(this.propertyListComponent())
+      const component: VuePropertyListComponent | undefined = await promiseFallback(
+        VueComponentAccessor.propertyListComponent()
+      )
       if (!component) return
 
       if (component.isDisplayedPropertiesWatched) return
       component.isDisplayedPropertiesWatched = true
 
-      component.$watch('displayedProperties', (properties: Property[]) => {
+      component.$watch('displayedProperties', (properties) => {
         if (!properties[0]) return
 
         callback(
@@ -40,11 +37,5 @@ export class VuexDataHook {
 
     router.onReady(callback.bind(this))
     router.afterEach(callback.bind(this))
-  }
-
-  private static async propertyListComponent (): Promise<VuePropertyListComponent> {
-    const propertyListElement: HTMLElement = await waitForElement('.search .property-list >div', 60 * 1000)
-
-    return waitForProperty(propertyListElement, '__vue__', 60 * 1000)
   }
 }

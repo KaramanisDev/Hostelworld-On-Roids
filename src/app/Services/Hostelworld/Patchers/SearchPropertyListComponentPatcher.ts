@@ -1,72 +1,19 @@
 import type { Property } from 'Types/HostelworldSearch'
 import { VuexDataHook } from 'Services/Hostelworld/VuexDataHook'
-import { emptyFunction, pluck, promiseFallback, waitForElement, waitForProperty } from 'Utils'
-
-type VueConstructor = {
-  util: {
-    defineReactive: (object: object, key: string, value: unknown) => void
-  }
-}
-
-type VueComputedWatcher = {
-  dirty: boolean
-}
-
-type VuePropertyListComponent = {
-  properties: Property[]
-  filteredProperties: Property[]
-  filteredHWProperties: Property[]
-  propertiesPerPage: number
-  displayFeaturedProperties: boolean
-  displayedProperties: Property[]
-  _filterVersion?: number
-  _computedWatchers?: Record<string, VueComputedWatcher>
-  $forceUpdate: () => void
-  $options: {
-    _base: VueConstructor
-  }
-}
-
-type HostelworldSearchServiceResult = {
-  properties: Property[],
-  location: unknown
-}
-
-interface HostelworldSearchService {
-  search (
-    cityId: string,
-    fromDate: string | null,
-    toDate: string | null,
-    guests: number,
-    options: Record<string, unknown>
-  ): Promise<HostelworldSearchServiceResult>
-}
+import { VueComponentAccessor } from 'Services/Hostelworld/VueComponentAccessor'
+import type { VuePropertyListComponent, VuexStore } from 'Services/Hostelworld/VueComponentAccessor'
+import { emptyFunction, pluck, promiseFallback, waitForElement } from 'Utils'
 
 export type PropertyFilterPredicate = (propertyId: number) => boolean
-
-type HostelworldState = {
-  search: {
-    city: number | null,
-    properties: Property[]
-  }
-}
-
-type VuexStoreCommit = (type: string, payload: unknown) => Promise<void>
-
-type VuexStore = {
-  state: HostelworldState,
-  commit: VuexStoreCommit,
-  $services: {
-    search: () => Promise<HostelworldSearchService>
-  }
-}
 
 export class SearchPropertyListComponentPatcher {
   private static filterPredicate: PropertyFilterPredicate | null = null
 
   public static async disablePagination (): Promise<void> {
     const showAllPropertiesInSearch: () => Promise<void> = async (): Promise<void> => {
-      const component: VuePropertyListComponent | undefined = await promiseFallback(this.propertyListComponent())
+      const component: VuePropertyListComponent | undefined = await promiseFallback(
+        VueComponentAccessor.propertyListComponent()
+      )
       if (!component) return
 
       const maxPossiblePropertiesFromRequest: number = 1100
@@ -84,7 +31,9 @@ export class SearchPropertyListComponentPatcher {
 
   public static async disableFeatured (): Promise<void> {
     const disableFeaturedProperties: () => Promise<void> = async (): Promise<void> => {
-      const component: VuePropertyListComponent | undefined = await promiseFallback(this.propertyListComponent())
+      const component: VuePropertyListComponent | undefined = await promiseFallback(
+        VueComponentAccessor.propertyListComponent()
+      )
       if (!component) return
 
       const displayFeaturedProperties: boolean = false
@@ -102,7 +51,9 @@ export class SearchPropertyListComponentPatcher {
 
   public static async installPropertiesFilter (): Promise<void> {
     const hijackFilteredProperties: () => Promise<void> = async (): Promise<void> => {
-      const component: VuePropertyListComponent | undefined = await promiseFallback(this.propertyListComponent())
+      const component: VuePropertyListComponent | undefined = await promiseFallback(
+        VueComponentAccessor.propertyListComponent()
+      )
       if (!component) return
 
       this.setReactiveTrigger(component)
@@ -117,10 +68,10 @@ export class SearchPropertyListComponentPatcher {
   }
 
   public static async loadAllForCity (cityId: string): Promise<void> {
-    const store: VuexStore | undefined = await promiseFallback(this.hostelworldStore())
+    const store: VuexStore | undefined = await promiseFallback(VueComponentAccessor.hostelworldStore())
     if (!store) return
 
-    const service: HostelworldSearchService = await store.$services.search()
+    const service: Awaited<ReturnType<VuexStore['$services']['search']>> = await store.$services.search()
     const { properties } = await service.search(cityId, null, null, 1, {})
 
     await waitForElement('.property-card .property-card-container')
@@ -150,7 +101,9 @@ export class SearchPropertyListComponentPatcher {
   }
 
   public static async refreshProperties (): Promise<void> {
-    const component: VuePropertyListComponent | undefined = await promiseFallback(this.propertyListComponent())
+    const component: VuePropertyListComponent | undefined = await promiseFallback(
+      VueComponentAccessor.propertyListComponent()
+    )
     if (!component) return
 
     if (this.filterPredicate && component._filterVersion) {
@@ -159,7 +112,7 @@ export class SearchPropertyListComponentPatcher {
       return
     }
 
-    const computedWatchers: Record<string, VueComputedWatcher> | undefined = component._computedWatchers
+    const computedWatchers: VuePropertyListComponent['_computedWatchers'] = component._computedWatchers
     if (computedWatchers) {
       for (const watcher of Object.values(computedWatchers)) {
         watcher.dirty = true
@@ -223,24 +176,16 @@ export class SearchPropertyListComponentPatcher {
   }
 
   private static async triggerFilterChange (): Promise<void> {
-    const component: VuePropertyListComponent | undefined = await promiseFallback(this.propertyListComponent())
+    const component: VuePropertyListComponent | undefined = await promiseFallback(
+      VueComponentAccessor.propertyListComponent()
+    )
     if (!component || !component._filterVersion) return
 
-    const store: VuexStore | undefined = await promiseFallback(this.hostelworldStore())
+    const store: VuexStore | undefined = await promiseFallback(VueComponentAccessor.hostelworldStore())
     if (store) {
       void store.commit('search/setPage', 1)
     }
 
     component._filterVersion++
-  }
-
-  private static async hostelworldStore (): Promise<VuexStore> {
-    return await waitForProperty(window, '$nuxt.$store', 60 * 1000)
-  }
-
-  private static async propertyListComponent (): Promise<VuePropertyListComponent> {
-    const propertyListElement: HTMLElement = await waitForElement('.search .property-list >div', 60 * 1000)
-
-    return waitForProperty(propertyListElement, '__vue__', 60 * 1000)
   }
 }
