@@ -29,7 +29,12 @@ export class Search {
 
     const from: Date = new Date(<string>parameters.get('date-start'))
     const daysToAdd: number = Number(parameters.get('num-nights'))
-    const [, cityId]: [string, string] = url.toString().match(/cities\/(\d+)\/properties\//) as [string, string]
+
+    const match: RegExpMatchArray | null = url.toString().match(/cities\/(\d+)\/properties\//)
+    if (!match) {
+      throw new Error('Not a hostelworld search url.')
+    }
+    const [, cityId]: [string, string] = match as [string, string]
 
     return new this({
       cityId, from, to: dateAddDays(from, daysToAdd)
