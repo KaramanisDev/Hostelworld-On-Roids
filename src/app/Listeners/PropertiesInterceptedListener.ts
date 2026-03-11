@@ -7,6 +7,8 @@ import { PropertyCardRenderer } from 'UI/Renderers/PropertyCard/PropertyCardRend
 @Subscribe('hostelworld:search:intercepted')
 export class PropertiesInterceptedListener extends AbstractListener {
   public async handle (properties: Property[]): Promise<void> {
+    this.emit('property:composition:reset')
+
     const search: Search | undefined = this.latestSearchInSession()
     if (!search) throw new Error('There is no search in session to properly compose the properties.')
 
