@@ -8,6 +8,7 @@ import { SearchApiRequestsInterceptor } from 'Services/Hostelworld/SearchApiRequ
 import { AppDiscountInterceptor } from 'Services/Hostelworld/AppDiscountInterceptor'
 import { VuexDataHook } from 'Services/Hostelworld/VuexDataHook'
 import type { HostelworldSearch } from 'Types/HostelworldSearch'
+import { FilterModalRenderer } from 'UI/Renderers/FilterModal'
 
 @Subscribe('app:inited')
 export class AppInitedListener extends AbstractListener {
@@ -15,12 +16,14 @@ export class AppInitedListener extends AbstractListener {
     this.applyRequestInterceptors()
 
     await Promise.allSettled([
+      FilterModalRenderer.render(),
       DevicePatcher.enforceMobile(),
       SearchPropertyListComponentPatcher.disableFeatured(),
-      SearchPropertyListComponentPatcher.disablePagination()
+      SearchPropertyListComponentPatcher.disablePagination(),
+      SearchPropertyListComponentPatcher.installPropertiesFilter()
     ])
 
-    const renderProperties: Function = (propertyIds: number[]) => {
+    const renderProperties: (propertyIds: number[]) => void = (propertyIds: number[]) => {
       for (const propertyId of propertyIds) {
         this.emit('property:render', propertyId)
       }

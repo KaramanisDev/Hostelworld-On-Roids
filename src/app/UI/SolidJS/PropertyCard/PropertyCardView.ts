@@ -1,6 +1,6 @@
 import { render } from 'solid-js/web'
-import type { ViewAdapterInterface } from '../../ViewAdapterInterface'
-import type { PropertyCardViewDTO } from '../../Renderers/PropertyCard/ViewDTOs'
+import type { ViewAdapterInterface } from 'UI/ViewAdapterInterface'
+import type { PropertyCardViewDTO } from 'UI/Renderers/PropertyCard/ViewDTOs'
 import { PropertyCardContainer, type CardState, type CardStateSetters } from './Components/PropertyCardContainer'
 
 type CardEntry = {

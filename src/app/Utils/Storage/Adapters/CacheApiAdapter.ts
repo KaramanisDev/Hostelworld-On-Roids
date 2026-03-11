@@ -16,7 +16,7 @@ export class CacheApiAdapter implements StorageAdapterInterface {
     const cache: Cache = await this.getCache()
     const response: Response | undefined = await cache.match(this.key(key))
 
-    if (!response) return undefined
+    if (!response) return
 
     return await response.json()
   }

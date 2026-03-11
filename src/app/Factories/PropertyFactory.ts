@@ -5,6 +5,7 @@ import type { PropertyReviews } from 'Services/Hostelworld/Api/ReviewsClient'
 import type { PropertyGuestsCountries } from 'Services/Hostelworld/Api/VisitorsCountryClient'
 import { ReviewMetrics } from 'DTOs/ReviewMetrics'
 import { BookedCountry } from 'DTOs/BookedCountry'
+import { PropertyBadgeService, type PropertyBadge, type PropertyMetrics } from 'Services/PropertyBadgeService'
 
 export class PropertyFactory {
   public static create (
@@ -14,12 +15,19 @@ export class PropertyFactory {
     availability: PropertyAvailability,
     countries: PropertyGuestsCountries
   ): Property {
+    const reviewMetrics: ReviewMetrics = new ReviewMetrics(reviews)
+    const availabilityMetrics: AvailabilityMetrics = new AvailabilityMetrics(availability)
+    const bookedCountries: BookedCountry[] = countries.map(country => new BookedCountry(country))
+    const metrics: PropertyMetrics = { reviews: reviewMetrics, availability: availabilityMetrics }
+    const badges: PropertyBadge[] = PropertyBadgeService.badgesFor(metrics)
+
     return new Property({
       id,
       name,
-      reviewMetrics: new ReviewMetrics(reviews),
-      availabilityMetrics: new AvailabilityMetrics(availability),
-      bookedCountries: countries.map(country => new BookedCountry(country))
+      reviewMetrics,
+      availabilityMetrics,
+      bookedCountries,
+      badges
     })
   }
 }

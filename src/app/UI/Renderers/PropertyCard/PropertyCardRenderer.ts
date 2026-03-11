@@ -1,7 +1,6 @@
 import type { Property } from 'DTOs/Property'
 import type { ReviewMetrics } from 'DTOs/ReviewMetrics'
 import type { AvailabilityMetrics } from 'DTOs/AvailabilityMetrics'
-import type { PropertyBadge } from 'Services/PropertyBadgeService'
 import type { ViewAdapterInterface } from 'UI/ViewAdapterInterface'
 import { PropertyCardView } from 'UI/SolidJS/PropertyCard/PropertyCardView'
 import type { PropertyCardViewDTO } from './ViewDTOs'
@@ -26,7 +25,7 @@ export class PropertyCardRenderer {
     this.view.mount(container, viewDto)
   }
 
-  public static async renderWithData (property: Property, badges: PropertyBadge[]): Promise<void> {
+  public static async renderWithData (property: Property): Promise<void> {
     await waitForElement('.property-card .property-card-container')
 
     const container: HTMLElement | null = this.findContainer(property.getId(), property.getName())
@@ -40,11 +39,11 @@ export class PropertyCardRenderer {
       property.getBookedCountries()
     )
 
-    this.badgeTagsView.mount(container, { propertyId: property.getId(), badges })
+    this.badgeTagsView.mount(container, { propertyId: property.getId(), badges: property.getBadges() })
   }
 
   public static updateReviewMetrics (propertyId: number, metrics: ReviewMetrics): void {
-    this.view.update({
+    this.view.update?.({
       propertyId,
       reviews: PropertyCardViewDTOFactory.reviewsRow(metrics),
       ageGroups: PropertyCardViewDTOFactory.ageGroupsRow(metrics)
@@ -52,7 +51,7 @@ export class PropertyCardRenderer {
   }
 
   public static updateAvailabilityMetrics (propertyId: number, metrics: AvailabilityMetrics): void {
-    this.view.update({
+    this.view.update?.({
       propertyId,
       availability: PropertyCardViewDTOFactory.availabilityRow(metrics)
     })

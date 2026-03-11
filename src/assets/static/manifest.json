@@ -2,6 +2,7 @@
   "name": "Hostelworld on Roids (H.O.R)",
   "version": "0.0.0",
   "description": "Take your Hostelworld hunt from “meh” to “marvelous” — your secret weapon for hostel-hunting!",
+  "homepage_url": "https://github.com/KaramanisDev/Hostelworld-On-Roids",
   "manifest_version": 3,
   "icons": {
     "16": "icons/icon16.png",
@@ -34,7 +35,8 @@
   "web_accessible_resources": [
     {
       "resources": [
-        "roids.js"
+        "roids.js",
+        "icons/icon32.png"
       ],
       "matches": [
         "https://hostelworld.com/*",

@@ -1,33 +1,41 @@
 import type { ReviewMetrics } from 'DTOs/ReviewMetrics'
 import type { AvailabilityMetrics } from 'DTOs/AvailabilityMetrics'
-import { Property } from 'DTOs/Property'
 
 export type BadgeColor = 'purple' | 'pink' | 'orange' | 'blue' | 'red' | 'teal'
 
+export type BadgeId = 'greatForSolo' | 'femaleFriendly' | 'youngCrowd' | 'midAgeCrowd' | 'matureCrowd' | 'closedDown'
+
 export type PropertyBadge = {
+  id: BadgeId
   label: string
   color: BadgeColor
 }
 
-type PropertyMetrics = {
+export type PropertyMetrics = {
   reviews: ReviewMetrics
   availability: AvailabilityMetrics
 }
 
-type BadgeDefinition = {
+export type BadgeMetadata = {
+  id: BadgeId
   label: string
   color: BadgeColor
+}
+
+export type BadgeDefinition = BadgeMetadata & {
   condition: (metrics: PropertyMetrics) => boolean
 }
 
 export class PropertyBadgeService {
   private static readonly badges: BadgeDefinition[] = [
     {
+      id: 'greatForSolo',
       label: 'Great for Solo',
       color: 'purple',
       condition: (metrics: PropertyMetrics): boolean => metrics.reviews.getSoloPercentage() > 90
     },
     {
+      id: 'femaleFriendly',
       label: 'Female Friendly',
       color: 'pink',
       condition: (metrics: PropertyMetrics): boolean => {
@@ -38,16 +46,19 @@ export class PropertyBadgeService {
       }
     },
     {
+      id: 'youngCrowd',
       label: 'Young Crowd',
       color: 'orange',
       condition: (metrics: PropertyMetrics): boolean => metrics.reviews.getAgePercentage('18-24') > 40
     },
     {
+      id: 'midAgeCrowd',
       label: 'Mid-Age Crowd',
       color: 'teal',
       condition: (metrics: PropertyMetrics): boolean => metrics.reviews.getAgePercentage('18-24') < 30
     },
     {
+      id: 'matureCrowd',
       label: 'Mature Crowd',
       color: 'blue',
       condition: (metrics: PropertyMetrics): boolean => {
@@ -57,23 +68,28 @@ export class PropertyBadgeService {
       }
     },
     {
+      id: 'closedDown',
       label: 'Closed Down',
       color: 'red',
       condition: (metrics: PropertyMetrics): boolean => !metrics.availability.getMaxGuests()
     }
   ]
 
-  public static calculateFor (property: Property): PropertyBadge[] {
-    const reviews: ReviewMetrics = property.getReviewMetrics()
-    const availability: AvailabilityMetrics = property.getAvailabilityMetrics()
-    const metrics: PropertyMetrics = { reviews, availability }
+  public static badgeMetadata (): BadgeMetadata[] {
+    return this.badges.map(badge => ({
+      id: badge.id,
+      label: badge.label,
+      color: badge.color
+    }))
+  }
 
+  public static badgesFor (metrics: PropertyMetrics): PropertyBadge[] {
     const result: PropertyBadge[] = []
 
     for (const badge of this.badges) {
       if (!badge.condition(metrics)) continue
 
-      result.push({ label: badge.label, color: badge.color })
+      result.push({ id: badge.id, label: badge.label, color: badge.color })
     }
 
     return result

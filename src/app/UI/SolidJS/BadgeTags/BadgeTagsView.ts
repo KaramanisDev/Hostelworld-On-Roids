@@ -23,7 +23,7 @@ export class BadgeTagsView implements ViewAdapterInterface<BadgeTagsViewDTO> {
 
     this.disposeEntry(viewDto.propertyId)
 
-    if (viewDto.badges.length === 0) return
+    if (!viewDto.badges.length) return
 
     const wrapper: HTMLSpanElement = document.createElement('span')
     wrapper.className = this.wrapperClass
@@ -36,11 +36,6 @@ export class BadgeTagsView implements ViewAdapterInterface<BadgeTagsViewDTO> {
     )
 
     this.entries.set(viewDto.propertyId, { disposer, wrapper })
-  }
-
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  public update (viewDto: Partial<BadgeTagsViewDTO>): void {
-    // Badges are static per render, no update needed
   }
 
   public dispose (): void {

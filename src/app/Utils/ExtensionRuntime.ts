@@ -10,10 +10,22 @@ type MessageSender = Runtime.MessageSender
 type OnMessageHandler<TPayload> = (event: string, payload: TPayload) => void
 
 export class ExtensionRuntime {
-  static contentScriptTabs: Set<number> = new Set()
+  private static contentScriptTabs: Set<number> = new Set()
 
   public static assetUrl (filename: string): string {
     return Extension.runtime.getURL(filename)
+  }
+
+  public static manifestVersion (): string {
+    return Extension.runtime.getManifest().version
+  }
+
+  public static manifestHomepage (): string {
+    return Extension.runtime.getManifest().homepage_url as string
+  }
+
+  public static manifestName (): string {
+    return Extension.runtime.getManifest().name
   }
 
   public static isWithinServiceWorker (): boolean {
