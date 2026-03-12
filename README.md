@@ -18,7 +18,6 @@ hostel.
 Here's what it does:
 
 * Removes featured/promoted property statue obstructions from search results.
-* Loads all properties on a single page — no more paginating through results.
 * Surfaces mobile-exclusive deals that are normally reserved only for the mobile app.
 * Displays guest-origin stats per property, showing where upcoming guests are arriving from.
 * Shows the gender split (male, female, solo travelers) and age group distribution of past guests.
