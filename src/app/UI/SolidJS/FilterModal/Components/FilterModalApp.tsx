@@ -3,7 +3,6 @@ import type { FilterModalViewDTO, FilterCriteria } from 'UI/Renderers/FilterModa
 import { FilterModalViewDTOFactory } from 'UI/Renderers/FilterModal/ViewDTOs'
 import { FilterButton } from './FilterButton'
 import { FilterModal } from './FilterModal'
-import { EventBus } from 'Core/EventBus'
 
 export type FilterModalStateSetters = {
   setViewDto: Setter<FilterModalViewDTO>
@@ -11,7 +10,7 @@ export type FilterModalStateSetters = {
 
 type Properties = {
   viewDto: FilterModalViewDTO
-  eventBus: typeof EventBus
+  onFilterApplied: (criteria: FilterCriteria) => void
   onStateReady: (setters: FilterModalStateSetters) => void
 }
 
@@ -93,7 +92,7 @@ export function FilterModalApp (properties: Properties): JSX.Element {
       const reset: FilterModalViewDTO = FilterModalViewDTOFactory.create()
       return { ...reset, isOpen: false }
     })
-    properties.eventBus.emit('filter:applied', { badges: {}, ranges: {} })
+    properties.onFilterApplied({ badges: {}, ranges: {} })
   }
 
   function handleApply (): void {
@@ -101,7 +100,7 @@ export function FilterModalApp (properties: Properties): JSX.Element {
     setViewDto(previous => ({ ...previous, isOpen: false }))
 
     const criteria: FilterCriteria = filterCriteria()
-    properties.eventBus.emit('filter:applied', criteria)
+    properties.onFilterApplied(criteria)
   }
 
   function handleBadgeChange (key: string, enabled: boolean): void {

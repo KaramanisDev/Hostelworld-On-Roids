@@ -1,8 +1,7 @@
 import { render } from 'solid-js/web'
 import type { ViewAdapterInterface } from 'UI/ViewAdapterInterface'
-import type { FilterModalViewDTO } from 'UI/Renderers/FilterModal/ViewDTOs'
+import type { FilterModalViewDTO, FilterCriteria } from 'UI/Renderers/FilterModal/ViewDTOs'
 import { FilterModalApp, type FilterModalStateSetters } from './Components/FilterModalApp'
-import { EventBus } from 'Core/EventBus'
 
 type MountedComponent = {
   disposer: () => void
@@ -11,6 +10,11 @@ type MountedComponent = {
 
 export class FilterModalView implements ViewAdapterInterface<FilterModalViewDTO> {
   private mounted: MountedComponent | null = null
+  private onFilterApplied: ((criteria: FilterCriteria) => void) | null = null
+
+  public onFilter (callback: (criteria: FilterCriteria) => void): void {
+    this.onFilterApplied = callback
+  }
 
   public mount (container: HTMLElement, viewDto: FilterModalViewDTO): void {
     this.dispose()
@@ -20,7 +24,7 @@ export class FilterModalView implements ViewAdapterInterface<FilterModalViewDTO>
     const disposer: () => void = render(
       () => FilterModalApp({
         viewDto,
-        eventBus: EventBus,
+        onFilterApplied: (criteria: FilterCriteria) => this.onFilterApplied?.(criteria),
         onStateReady: (setters: FilterModalStateSetters) => {
           capturedSetters = setters
         }

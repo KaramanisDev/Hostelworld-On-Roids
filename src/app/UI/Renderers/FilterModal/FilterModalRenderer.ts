@@ -1,8 +1,8 @@
-import type { ViewAdapterInterface } from 'UI/ViewAdapterInterface'
 import { FilterModalView } from 'UI/SolidJS/FilterModal/FilterModalView'
 import type { FilterModalViewDTO } from './ViewDTOs'
 import { FilterModalViewDTOFactory } from './ViewDTOs'
 import { waitForElement } from 'Utils'
+import { EventBus } from 'Core/EventBus'
 
 export class FilterModalRenderer {
   private static readonly wrapperClassName: string = 'extension-filter-modal-wrapper'
@@ -10,10 +10,12 @@ export class FilterModalRenderer {
 
   private static wrapper: HTMLDivElement | null = null
   private static observer: MutationObserver | null = null
-  private static readonly view: ViewAdapterInterface<FilterModalViewDTO> = new FilterModalView()
+  private static readonly view: FilterModalView = new FilterModalView()
 
   public static async render (): Promise<void> {
     if (this.observer) return
+
+    this.view.onFilter(criteria => EventBus.emit('filter:applied', criteria))
 
     await waitForElement(this.shareButtonSelector)
 
