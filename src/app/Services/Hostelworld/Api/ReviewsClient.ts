@@ -39,7 +39,7 @@ export class ReviewsClient {
       Array
         .from({ length: leftOverPages }, (_, index) => index + 2)
         .map(async page => {
-          await delay(randomNumber(1, 8) * 100)
+          await delay(randomNumber(1, 5) * 100)
           const { reviews } = await this.request(propertyId, page)
 
           return reviews

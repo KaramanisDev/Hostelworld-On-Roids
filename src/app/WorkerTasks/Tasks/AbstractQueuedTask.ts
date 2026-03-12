@@ -13,8 +13,8 @@ type Job<TArgs, TResult> = {
 
 export abstract class AbstractQueuedTask<TArgs, TResult> implements WorkerTask {
   private isProcessing: boolean = false
-  private readonly maxConcurrency: number = 3
-  private readonly delayBetweenBatches: number = 360
+  private readonly maxConcurrency: number = 4
+  private readonly delayBetweenBatches: number = 200
   private readonly queue: Map<JobId, Job<TArgs, TResult>> = new Map()
 
   protected abstract jobId (args: TArgs): JobId

@@ -19,8 +19,12 @@ export class AvailabilityClient {
     'properties/{property}/availability/?date-start={from}&num-nights={nights}'
 
   public static async fetch (propertyId: number, from: Date, to: Date): Promise<PropertyAvailability> {
-    const current: Metrics = await this.currentCapacity(propertyId, from, to)
-    const max: Metrics = await this.possibleMaxCapacity(propertyId, from, current)
+    const [current, sampledMax]: [Metrics, Metrics] = await Promise.all([
+      this.currentCapacity(propertyId, from, to),
+      this.possibleMaxCapacity(propertyId, from)
+    ])
+
+    const max: Metrics = this.highestMetrics(current, sampledMax)
 
     return { current, max }
   }
@@ -31,9 +35,12 @@ export class AvailabilityClient {
     return this.toMetrics(availability)
   }
 
-  private static async possibleMaxCapacity (propertyId: number, from: Date, current: Metrics): Promise<Metrics> {
+  private static async possibleMaxCapacity (propertyId: number, from: Date): Promise<Metrics> {
     const maxMetrics: Metrics = {
-      ...current
+      mixed: 0,
+      female: 0,
+      private: 0,
+      total: 0
     }
 
     const daysAfterToCheck: number[] = [10, 20, 30, 45, 60, 70, randomNumber(80, 90)]
@@ -42,7 +49,7 @@ export class AvailabilityClient {
       const fromWithDaysAdded: Date = dateAddDays(from, days)
       const toWithFromPlus3Days: Date = dateAddDays(fromWithDaysAdded, 2)
 
-      await delay(randomNumber(0, 5) * 100)
+      await delay(randomNumber(0, 3) * 100)
 
       const availability: HostelworldPropertyAvailability = await this.request(
         propertyId, fromWithDaysAdded, toWithFromPlus3Days, 24 * 60
@@ -84,6 +91,21 @@ export class AvailabilityClient {
     }
 
     return metrics
+  }
+
+  private static highestMetrics (...sources: Metrics[]): Metrics {
+    const result: Metrics = { mixed: 0, female: 0, private: 0, total: 0 }
+
+    for (const source of sources) {
+      for (const key in result) {
+        const metricsKey: keyof Metrics = key as keyof Metrics
+
+        if (source[metricsKey] <= result[metricsKey]) continue
+        result[metricsKey] = source[metricsKey]
+      }
+    }
+
+    return result
   }
 
   private static adaptDormBedToMaxCapacity (
