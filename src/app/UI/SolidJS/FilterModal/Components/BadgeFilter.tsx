@@ -26,13 +26,13 @@ export function BadgeFilter (properties: Properties): JSX.Element {
   }
 
   return (
-    <label class="badge-filter">
+    <label class="hor-badge-filter">
       <input
         type="checkbox"
         checked={properties.filter.enabled}
         onChange={handleChange}
       />
-      <span class="badge-indicator" style={badgeStyle(properties.filter.color)}>
+      <span class="hor-badge-indicator" style={badgeStyle(properties.filter.color)}>
         {properties.filter.label}
       </span>
     </label>

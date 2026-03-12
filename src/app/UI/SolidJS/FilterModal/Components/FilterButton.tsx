@@ -9,7 +9,7 @@ export function FilterButton (properties: Properties): JSX.Element {
   return (
     <button
       type="button"
-      class="extension-filter-button"
+      class="hor-filter-button"
       onClick={properties.onClick}
       aria-label="Extension Filters"
     >

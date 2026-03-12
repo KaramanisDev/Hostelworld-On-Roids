@@ -15,17 +15,17 @@ export function MetricsRow (properties: Properties): JSX.Element {
 
   return (
     <Show when={!isDisabled()}>
-      <div class={`row${isLoaded() ? ' loaded' : ''}`} data-metric={properties.metricType}>
-        <div class="title">
+      <div class={`hor-row${isLoaded() ? ' hor-loaded' : ''}`} data-metric={properties.metricType}>
+        <div class="hor-title">
           <span>{title}</span>
           <span>→</span>
         </div>
         <For each={[...labels]}>
           {(label, index) => (
-            <div class="item">
-              <div class="label">{label}</div>
-              <div class="value">
-                <Show when={isLoaded()} fallback={<div class="skeleton-pulse" />}>
+            <div class="hor-item">
+              <div class="hor-label">{label}</div>
+              <div class="hor-value">
+                <Show when={isLoaded()} fallback={<div class="hor-skeleton-pulse" />}>
                   {properties.data?.items[index()]?.value ?? ''}
                 </Show>
               </div>

@@ -24,13 +24,13 @@ export function FilterModal (properties: Properties): JSX.Element {
   }
 
   return (
-    <div class="filter-modal-overlay" onClick={handleOverlayClick}>
-      <div class="filter-modal">
-        <header class="filter-modal-header">
-          <h2 class="filter-modal-title">{properties.title}</h2>
+    <div class="hor-filter-modal-overlay" onClick={handleOverlayClick}>
+      <div class="hor-filter-modal">
+        <header class="hor-filter-modal-header">
+          <h2 class="hor-filter-modal-title">{properties.title}</h2>
           <button
             type="button"
-            class="filter-modal-close"
+            class="hor-filter-modal-close"
             onClick={properties.onClose}
           >
             <svg
@@ -49,7 +49,7 @@ export function FilterModal (properties: Properties): JSX.Element {
             </svg>
           </button>
         </header>
-        <main class="filter-modal-content">
+        <main class="hor-filter-modal-content">
           <For each={properties.sections}>
             {section => (
               <FilterSection
@@ -61,12 +61,12 @@ export function FilterModal (properties: Properties): JSX.Element {
             )}
           </For>
         </main>
-        <footer class="filter-modal-footer">
-          <div class="filter-modal-info">
-            <span class="filter-modal-info-name">{properties.extensionName}</span>
-            <span class="filter-modal-info-version">v{properties.version}</span>
+        <footer class="hor-filter-modal-footer">
+          <div class="hor-filter-modal-info">
+            <span class="hor-hor-filter-modal-info-name">{properties.extensionName}</span>
+            <span class="hor-hor-filter-modal-info-version">v{properties.version}</span>
           </div>
-          <div class="filter-modal-links">
+          <div class="hor-filter-modal-links">
             <a
               href={properties.homepage}
               target="_blank"
@@ -74,7 +74,7 @@ export function FilterModal (properties: Properties): JSX.Element {
             >
               GitHub
             </a>
-            <span class="filter-modal-separator">•</span>
+            <span class="hor-filter-modal-separator">•</span>
             <a
               href={`${properties.homepage}/issues`}
               target="_blank"
@@ -83,17 +83,17 @@ export function FilterModal (properties: Properties): JSX.Element {
               Report Issue
             </a>
           </div>
-          <div class="filter-modal-actions">
+          <div class="hor-filter-modal-actions">
             <button
               type="button"
-              class="filter-modal-button filter-modal-button-reset"
+              class="hor-filter-modal-button hor-filter-modal-button-reset"
               onClick={properties.onReset}
             >
               Reset
             </button>
             <button
               type="button"
-              class="filter-modal-button filter-modal-button-apply"
+              class="hor-filter-modal-button hor-filter-modal-button-apply"
               onClick={properties.onApply}
             >
               Apply

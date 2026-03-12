@@ -7,9 +7,9 @@ type Properties = {
 
 export function BadgeTag (properties: Properties): JSX.Element {
   return (
-    <div class="tag-overlay tag-wrapper tag-skew-right extension-tag-badge">
+    <div class="tag-overlay tag-wrapper tag-skew-right hor-tag-badge">
       <div
-        class="tag-text"
+        class="hor-tag-text"
         style={{
           color: `var(--wds-color-${properties.badge.color})`,
           'background-color': `var(--wds-color-${properties.badge.color}-lightest)`

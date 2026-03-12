@@ -43,7 +43,7 @@ export function PropertyCardContainer (properties: Properties): JSX.Element {
 
   return (
     <>
-      <div class="metrics-grid" data-property-id={properties.propertyId}>
+      <div class="hor-metrics-grid" data-property-id={properties.propertyId}>
         <MetricsRow metricType="reviews" data={reviews()} />
         <MetricsRow metricType="ageGroups" data={ageGroups()} />
         <MetricsRow metricType="availability" data={availability()} />

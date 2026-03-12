@@ -5,7 +5,7 @@ import { waitForElement } from 'Utils'
 import { EventBus } from 'Core/EventBus'
 
 export class FilterModalRenderer {
-  private static readonly wrapperClassName: string = 'extension-filter-modal-wrapper'
+  private static readonly wrapperClassName: string = 'hor-filter-modal-wrapper'
   private static readonly shareButtonSelector: string = '.search .property-share.share-button-container'
 
   private static wrapper: HTMLDivElement | null = null

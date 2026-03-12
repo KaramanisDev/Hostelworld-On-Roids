@@ -12,11 +12,11 @@ type Properties = {
 
 export function FilterSection (properties: Properties): JSX.Element {
   return (
-    <div class="filter-section">
-      <h3 class="filter-section-title">{properties.section.title}</h3>
-      <div class="filter-section-content">
+    <div class="hor-filter-section">
+      <h3 class="hor-filter-section-title">{properties.section.title}</h3>
+      <div class="hor-filter-section-content">
         <Show when={properties.section.badgeFilters}>
-          <div class="badge-filters">
+          <div class="hor-badge-filters">
             <For each={properties.section.badgeFilters}>
               {filter => (
                 <BadgeFilter
@@ -28,7 +28,7 @@ export function FilterSection (properties: Properties): JSX.Element {
           </div>
         </Show>
         <Show when={properties.section.rangeFilters}>
-          <div class="range-filters">
+          <div class="hor-range-filters">
             <For each={properties.section.rangeFilters}>
               {filter => (
                 <RangeFilter

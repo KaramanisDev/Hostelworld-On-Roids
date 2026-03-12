@@ -6,7 +6,7 @@ type Properties = {
 }
 
 export function Note (properties: Properties): JSX.Element {
-  const className: string = properties.isLoading ? 'note loading' : 'note'
+  const className: string = properties.isLoading ? 'hor-note hor-loading' : 'hor-note'
   const dataAttributes: Record<string, string> = properties.isLoading ? { 'data-note-type': 'loading' } : {}
 
   return (

@@ -54,17 +54,17 @@ export function RangeFilter (properties: Properties): JSX.Element {
   }
 
   return (
-    <div class="range-filter">
-      <div class="range-filter-header">
-        <label class="range-filter-label">{properties.filter.label}</label>
-        <span class="range-filter-values">
+    <div class="hor-range-filter">
+      <div class="hor-range-filter-header">
+        <label class="hor-range-filter-label">{properties.filter.label}</label>
+        <span class="hor-range-filter-values">
           {localMin()}% - {localMax()}%
         </span>
       </div>
-      <div class="range-filter-sliders">
+      <div class="hor-range-filter-sliders">
         <input
           type="range"
-          class="range-slider range-slider-min"
+          class="hor-range-slider hor-range-slider-min"
           min={properties.filter.min}
           max={properties.filter.max}
           value={localMin()}
@@ -73,7 +73,7 @@ export function RangeFilter (properties: Properties): JSX.Element {
         />
         <input
           type="range"
-          class="range-slider range-slider-max"
+          class="hor-range-slider hor-range-slider-max"
           min={properties.filter.min}
           max={properties.filter.max}
           value={localMax()}

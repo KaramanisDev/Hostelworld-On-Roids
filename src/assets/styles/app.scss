@@ -6,13 +6,13 @@
   .tags-container {
     flex-direction: column;
 
-    .extension-tag-badge {
+    .hor-tag-badge {
       margin-bottom: 0.5rem;
       display: flex;
       width: fit-content;
       clip-path: polygon(0 0, 100% 0, calc(100% - 4px) 100%, 0 100%);
 
-      .tag-text {
+      .hor-tag-text {
         font-family: Inter, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Helvetica, Arial, sans-serif;
         font-size: 0.75rem;
         font-weight: 700;
@@ -57,7 +57,7 @@
     }
   }
 
-  .metrics-grid {
+  .hor-metrics-grid {
     width: 100%;
     display: grid;
     line-height: 1.2rem;
@@ -67,31 +67,31 @@
     content-visibility: auto;
     contain-intrinsic-size: auto 80px;
 
-    .row {
+    .hor-row {
       display: contents;
 
-      .title,
-      .item {
+      .hor-title,
+      .hor-item {
         padding: 5px;
         display: flex;
         align-items: center;
         flex-direction: column;
         justify-content: space-between;
 
-        &.title {
+        &.hor-title {
           font-size: 0.85rem;
           grid-column: 1;
           color: var(--wds-color-ink-darker);
         }
 
-        &.item {
+        &.hor-item {
           font-size: 0.8rem;
 
-          .label {
+          .hor-label {
             color: var(--wds-color-ink-darker);
           }
 
-          .value {
+          .hor-value {
             white-space: nowrap;
             color: var(--wds-color-ink);
           }
@@ -99,27 +99,27 @@
       }
 
       &:not(:last-child) {
-        .title,
-        .item {
+        .hor-title,
+        .hor-item {
           border-bottom: 0.0625rem solid var(--wds-color-ink-lighter);
         }
       }
     }
   }
 
-  .note {
+  .hor-note {
     text-align: center;
     font-size: 0.8rem;
     padding: 0.2rem;
     color: var(--wds-color-ink);
     border-top: 0.0625rem solid var(--wds-color-ink-lighter);
 
-    &.loading {
+    &.hor-loading {
       color: var(--wds-color-ink-light);
     }
   }
 
-  .skeleton-pulse {
+  .hor-skeleton-pulse {
     height: 1rem;
     width: 3rem;
     margin: 0 auto;
@@ -129,7 +129,7 @@
     border-radius: 4px;
   }
 
-  .row.loaded {
+  .hor-row.hor-loaded {
     animation: fadeInSlide 0.3s ease-out;
   }
 
@@ -155,23 +155,23 @@
 }
 
 @media (max-width: 520px) {
-  .property-card .metrics-grid .row .title,
-  .property-card .metrics-grid .row .item {
+  .property-card .hor-metrics-grid .hor-row .hor-title,
+  .property-card .hor-metrics-grid .hor-row .hor-item {
     font-size: calc(100% - 5%);
   }
 
-  .property-card .metrics-grid .row .item .value {
+  .property-card .hor-metrics-grid .hor-row .hor-item .hor-value {
     font-size: calc(100% - 40%);
   }
 }
 
-.extension-filter-modal-wrapper {
+.hor-filter-modal-wrapper {
   display: inline-flex;
   align-items: center;
   margin-right: 8px;
 }
 
-.extension-filter-button {
+.hor-filter-button {
   align-items: center;
   background: #fff;
   border: 0;
@@ -196,7 +196,7 @@
   }
 }
 
-.filter-modal-overlay {
+.hor-filter-modal-overlay {
   position: fixed;
   inset: 0;
   z-index: 9999;
@@ -207,7 +207,7 @@
   backdrop-filter: blur(2px);
 }
 
-.filter-modal {
+.hor-filter-modal {
   width: 560px;
   max-width: calc(100vw - 32px);
   max-height: calc(100vh - 64px);
@@ -219,7 +219,7 @@
   overflow: hidden;
 }
 
-.filter-modal-header {
+.hor-filter-modal-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -228,13 +228,13 @@
   color: #fff;
 }
 
-.filter-modal-title {
+.hor-filter-modal-title {
   font-size: 16px;
   font-weight: 600;
   margin: 0;
 }
 
-.filter-modal-close {
+.hor-filter-modal-close {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -252,13 +252,13 @@
   }
 }
 
-.filter-modal-content {
+.hor-filter-modal-content {
   flex: 1;
   padding: 12px;
   overflow-y: auto;
 }
 
-.filter-section {
+.hor-filter-section {
   background: #f9fafb;
   border-radius: 8px;
   margin-bottom: 12px;
@@ -268,7 +268,7 @@
   }
 }
 
-.filter-section-title {
+.hor-filter-section-title {
   font-size: 12px;
   font-weight: 600;
   text-transform: uppercase;
@@ -278,17 +278,17 @@
   margin: 0;
 }
 
-.filter-section-content {
+.hor-filter-section-content {
   padding: 0 12px 12px;
 }
 
-.badge-filters {
+.hor-badge-filters {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
 }
 
-.badge-filter {
+.hor-badge-filter {
   display: flex;
   align-items: center;
   cursor: pointer;
@@ -297,7 +297,7 @@
     display: none;
   }
 
-  .badge-indicator {
+  .hor-badge-indicator {
     padding: 4px 10px;
     border-radius: 4px;
     font-size: 12px;
@@ -307,51 +307,51 @@
     opacity: 0.6;
   }
 
-  input:checked + .badge-indicator {
+  input:checked + .hor-badge-indicator {
     border-color: currentColor;
     opacity: 1;
   }
 
-  &:hover .badge-indicator {
+  &:hover .hor-badge-indicator {
     opacity: 1;
   }
 }
 
-.range-filters {
+.hor-range-filters {
   display: flex;
   flex-direction: column;
   gap: 12px;
 }
 
-.range-filter {
+.hor-range-filter {
   display: flex;
   flex-direction: column;
   gap: 4px;
 }
 
-.range-filter-header {
+.hor-range-filter-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
-.range-filter-label {
+.hor-range-filter-label {
   font-size: 13px;
   font-weight: 500;
   color: #1a1a2e;
 }
 
-.range-filter-values {
+.hor-range-filter-values {
   font-size: 12px;
   font-weight: 600;
   color: var(--wds-color-orange);
 }
 
-.range-filter-sliders {
+.hor-range-filter-sliders {
   position: relative;
   height: 20px;
 
-  .range-slider {
+  .hor-range-slider {
     position: absolute;
     width: 100%;
     height: 4px;
@@ -383,11 +383,11 @@
       }
     }
 
-    &.range-slider-min {
+    &.hor-range-slider-min {
       z-index: 1;
     }
 
-    &.range-slider-max {
+    &.hor-range-slider-max {
       z-index: 2;
 
       &::-webkit-slider-runnable-track {
@@ -397,7 +397,7 @@
   }
 }
 
-.filter-modal-footer {
+.hor-filter-modal-footer {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -406,7 +406,7 @@
   border-top: 1px solid #e5e7eb;
 }
 
-.filter-modal-links {
+.hor-filter-modal-links {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -423,16 +423,16 @@
   }
 }
 
-.filter-modal-separator {
+.hor-filter-modal-separator {
   color: #d1d5db;
 }
 
-.filter-modal-actions {
+.hor-filter-modal-actions {
   display: flex;
   gap: 8px;
 }
 
-.filter-modal-button {
+.hor-filter-modal-button {
   padding: 8px 16px;
   border-radius: 6px;
   font-size: 13px;
@@ -441,7 +441,7 @@
   transition: background 0.2s ease, color 0.2s ease;
 }
 
-.filter-modal-button-reset {
+.hor-filter-modal-button-reset {
   background: transparent;
   border: 1px solid #e5e7eb;
   color: #6b7280;
@@ -452,7 +452,7 @@
   }
 }
 
-.filter-modal-button-apply {
+.hor-filter-modal-button-apply {
   background: var(--wds-color-orange);
   border: 0;
   color: #fff;
@@ -462,7 +462,7 @@
   }
 }
 
-.filter-modal-info {
+.hor-filter-modal-info {
   display: flex;
   align-items: center;
   gap: 6px;
@@ -470,11 +470,11 @@
   color: #9ca3af;
 }
 
-.filter-modal-info-name {
+.hor-filter-modal-info-name {
   font-weight: 500;
 }
 
-.filter-modal-info-version {
+.hor-filter-modal-info-version {
   font-weight: 400;
   opacity: 0.8;
 }
@@ -486,56 +486,56 @@
     max-height: calc(100vh - 32px);
   }
 
-  .filter-modal-header {
+  .hor-filter-modal-header {
     padding: 12px;
   }
 
-  .filter-modal-title {
+  .hor-filter-modal-title {
     font-size: 14px;
   }
 
-  .filter-modal-content {
+  .hor-filter-modal-content {
     padding: 8px;
   }
 
-  .filter-section-content {
+  .hor-filter-section-content {
     padding: 0 8px 8px;
   }
 
-  .badge-filters {
+  .hor-badge-filters {
     gap: 6px;
   }
 
-  .badge-filter .badge-indicator {
+  .badge-filter .hor-badge-indicator {
     padding: 3px 8px;
     font-size: 11px;
   }
 
-  .range-filters {
+  .hor-range-filters {
     gap: 10px;
   }
 
-  .filter-modal-footer {
+  .hor-filter-modal-footer {
     flex-direction: column;
     gap: 10px;
     padding: 10px 12px;
   }
 
-  .filter-modal-links {
+  .hor-filter-modal-links {
     order: 2;
   }
 
-  .filter-modal-actions {
+  .hor-filter-modal-actions {
     order: 1;
     width: 100%;
     justify-content: stretch;
 
-    .filter-modal-button {
+    .hor-filter-modal-button {
       flex: 1;
     }
   }
 
-  .filter-modal-info {
+  .hor-filter-modal-info {
     order: 3;
     justify-content: center;
     width: 100%;
