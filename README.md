@@ -31,6 +31,14 @@ range of good ones. It proved & continues to prove useful during my travels, ass
 place to stay depending on my mood, whether I was looking for some busy or quieter place to stay at. :)
 
 
+## Support
+
+If you find this extension useful, consider buying me a coffee! It helps keep the project alive and motivates
+further development.
+
+[![Buy Me a Coffee](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-ffdd00?style=for-the-badge&logo=buy-me-a-coffee&logoColor=black)](https://buymeacoffee.com/karamanisdev)
+
+
 ## Installation
 
 [![Chrome Web Store Version](https://img.shields.io/chrome-web-store/v/dfilmjjmeegkakfmnadkimgflocnnnbg.svg?style=for-the-badge)](https://chrome.google.com/webstore/detail/dfilmjjmeegkakfmnadkimgflocnnnbg)

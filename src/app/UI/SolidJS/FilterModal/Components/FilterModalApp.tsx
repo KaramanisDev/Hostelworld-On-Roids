@@ -145,6 +145,63 @@ export function FilterModalApp (properties: Properties): JSX.Element {
 
   return (
     <>
+      <a
+        class="hor-donate-button"
+        href={viewDto().donateUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="Buy Me a Coffee"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="32"
+          height="32"
+          viewBox="0 0 24 24"
+          fill="none"
+        >
+          <path
+            d={[
+              'M12 21.35l-1.45-1.32C5.4 15.36',
+              '2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74',
+              '0 3.41.81 4.5 2.09C13.09 3.81 14.76 3',
+              '16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4',
+              '6.86-8.55 11.54L12 21.35z'
+            ].join(' ')}
+            fill="#e74c6f"
+          />
+          <g transform="translate(5.5, 5) scale(0.55)">
+            <path
+              d="M17 8h1a4 4 0 110 8h-1"
+              stroke="#fff"
+              stroke-width="2.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+            <path
+              d="M3 8h14v9a4 4 0 01-4 4H7a4 4 0 01-4-4V8z"
+              stroke="#fff"
+              stroke-width="2.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+            <line
+              x1="6" y1="2" x2="6" y2="4"
+              stroke="#fff" stroke-width="2.5"
+              stroke-linecap="round"
+            />
+            <line
+              x1="10" y1="2" x2="10" y2="4"
+              stroke="#fff" stroke-width="2.5"
+              stroke-linecap="round"
+            />
+            <line
+              x1="14" y1="2" x2="14" y2="4"
+              stroke="#fff" stroke-width="2.5"
+              stroke-linecap="round"
+            />
+          </g>
+        </svg>
+      </a>
       <FilterButton onClick={handleOpen} logo={viewDto().logo} />
       <Show when={viewDto().isOpen}>
         <FilterModal
@@ -152,6 +209,7 @@ export function FilterModalApp (properties: Properties): JSX.Element {
           extensionName={viewDto().extensionName}
           version={viewDto().version}
           homepage={viewDto().homepage}
+          donateUrl={viewDto().donateUrl}
           sections={viewDto().sections}
           onClose={handleClose}
           onReset={handleReset}

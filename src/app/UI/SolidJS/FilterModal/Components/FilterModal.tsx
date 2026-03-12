@@ -7,6 +7,7 @@ type Properties = {
   extensionName: string
   version: string
   homepage: string
+  donateUrl: string
   sections: FilterSectionViewDTO[]
   onClose: () => void
   onReset: () => void
@@ -50,6 +51,47 @@ export function FilterModal (properties: Properties): JSX.Element {
           </button>
         </header>
         <main class="hor-filter-modal-content">
+          <a
+            class="hor-donate-banner"
+            href={properties.donateUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M17 8h1a4 4 0 110 8h-1" />
+              <path d="M3 8h14v9a4 4 0 01-4 4H7a4 4 0 01-4-4V8z" />
+              <line x1="6" y1="2" x2="6" y2="4" />
+              <line x1="10" y1="2" x2="10" y2="4" />
+              <line x1="14" y1="2" x2="14" y2="4" />
+            </svg>
+            <span>Enjoying H.O.R? Buy me a coffee!</span>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="12"
+              height="12"
+              viewBox="0 0 24 24"
+              fill="#e74c6f"
+              stroke="none"
+            >
+              <path d={[
+                'M12 21.35l-1.45-1.32C5.4 15.36',
+                '2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74',
+                '0 3.41.81 4.5 2.09C13.09 3.81 14.76 3',
+                '16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4',
+                '6.86-8.55 11.54L12 21.35z'
+              ].join(' ')} />
+            </svg>
+          </a>
           <For each={properties.sections}>
             {section => (
               <FilterSection

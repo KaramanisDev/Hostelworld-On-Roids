@@ -32,6 +32,7 @@ export type FilterModalViewDTO = {
   title: string
   version: string
   homepage: string
+  donateUrl: string
   sections: FilterSectionViewDTO[]
 }
 
@@ -69,6 +70,7 @@ export class FilterModalViewDTOFactory {
       title: 'Filter Properties',
       version: ExtensionConfig.version(),
       homepage: ExtensionConfig.homepage(),
+      donateUrl: 'https://buymeacoffee.com/karamanisdev',
       logo: ExtensionConfig.asset('icon'),
       extensionName: ExtensionConfig.extensionName(),
       sections: [
