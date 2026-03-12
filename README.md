@@ -4,16 +4,27 @@
 
 ## Introduction
 
-Hostelworld on Roids (H.O.R) is a browser extension designed to enhance your experience while searching and selecting
-hostels.
+Hostelworld on Roids (H.O.R) is an open source browser extension designed to enhance your experience
+while searching and selecting hostels.
 
-It eliminates obstructions from featured/promoted properties and unlocks hidden native features on hostelworld, such as
-displaying guest-origin stats per property and searched cities. Moreover, it lists some properties which may be
-unavailable due to scheduling conflicts, but would have been more ideal for you if your travel dates were more flexible.
+It eliminates obstructions from featured/promoted properties and unlocks hidden native features on Hostelworld. Moreover,
+it lists some properties which may be unavailable due to scheduling conflicts, but would have been more ideal for you if
+your travel dates were more flexible.
 
-In addition, the extension provides extra metrics by analyzing the availability and reviews per property, presenting
+In a nutshell, the extension provides extra metrics by analyzing the availability and reviews per property, presenting
 this data directly on the property card. This might help to facilitate your decision-making process when selecting a
 hostel.
+
+Here's what it does:
+
+* Removes featured/promoted property statue obstructions from search results.
+* Loads all properties on a single page — no more paginating through results.
+* Surfaces mobile-exclusive deals that are normally reserved only for the mobile app.
+* Displays guest-origin stats per property, showing where upcoming guests are arriving from.
+* Shows the gender split (male, female, solo travelers) and age group distribution of past guests.
+* Checks room availability by type (mixed dorms, female-only dorms, private rooms) and their capacity.
+* Assigns demographic badges like "Great for Solo", "Female Friendly", "Young Crowd", and more.
+* Offers a custom filter system to narrow down properties by badge, demographics, and age groups.
 
 H.O.R was developed as a personal side project to simplify the process of selecting the "best" hostel from an extensive
 range of good ones. It proved & continues to prove useful during my travels, assisting me in finding the most suitable
