@@ -5,7 +5,7 @@ export class AvailabilityMetrics {
   private max!: Metrics
   private current!: Metrics
 
-  constructor (attributes: Record<string, Metrics>) {
+  constructor (attributes: { max: Metrics; current: Metrics }) {
     Object.assign(this, attributes)
   }
 

@@ -1,5 +1,5 @@
 import type { InterceptionStage } from './RequestModifier'
-import { objectsAreEqual } from 'Utils'
+import { shallowEqual } from 'Utils'
 import { RequestModifier } from './RequestModifier'
 import { CustomXMLHttpRequest } from './CustomXMLHttpRequest'
 
@@ -31,7 +31,7 @@ export class XHRRequestInterceptor {
   public static intercept (query: RequestQuery): RequestModifier {
     const modifier: RequestModifier = new RequestModifier()
     const interception: Interception | undefined = this.interceptions.find(
-      interception => objectsAreEqual(interception.query, query)
+      interception => shallowEqual(interception.query, query)
     )
 
     if (interception) {

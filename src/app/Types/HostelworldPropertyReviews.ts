@@ -6,11 +6,11 @@ type GroupTypeCode = 'FEMALE' | 'MALE' | 'COUPLE' | 'ALLMALEGROUP' | 'ALLFEMALEG
 
 type TripTypeCode = 'RTWTRIP' | 'GAPYEAR' | 'REGULARVACATION' | 'WEEKENDAWAY' | 'COLLEGEBREAK' | 'OTHER'
 
-type ID = 'Female' | 'Male'
+type GenderId = 'Female' | 'Male'
 
 type Gender = {
-  value: ID
-  id: ID
+  value: GenderId
+  id: GenderId
 }
 
 type Nationality = {
@@ -46,7 +46,7 @@ type ReviewStatistics = {
   groupsPercentage: number
 }
 
-type Pagination = {
+type ReviewPagination = {
   prev?: null
   next: string
   numberOfPages: number
@@ -77,5 +77,5 @@ export type Review = {
 export type HostelworldPropertyReviews = {
   reviews: Review[]
   reviewStatistics: ReviewStatistics | null
-  pagination: Pagination
+  pagination: ReviewPagination
 }

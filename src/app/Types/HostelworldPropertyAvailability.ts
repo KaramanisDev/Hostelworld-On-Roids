@@ -29,14 +29,14 @@ type PriceBreakdown = {
   price: LowestAverageDormPricePerNight
 }
 
-type ID = 'depositPayable' | 'nonRefundable'
+type PaymentProcedureId = 'depositPayable' | 'nonRefundable'
 
 type Label = 'Deposit only' | 'Non-refundable'
 
 type RatePlanType = 'STANDARD' | 'BED_AND_BREAKFAST'
 
 type PaymentProcedure = {
-  id: ID
+  id: PaymentProcedureId
   label: Label
   description: string
 }
@@ -61,11 +61,11 @@ type Dorm = {
   basicType: BasicType
   extendedType: string
   grade: Grade
-  bathroomFacilities: never[]
+  bathroomFacilities: unknown[]
   mealPlan: string
   view: string
-  bedTypes: never[]
-  facilities: never[]
+  bedTypes: unknown[]
+  facilities: unknown[]
   images: Image[]
   totalBedsAvailable: number
   totalRoomsAvailable: number | null
@@ -74,7 +74,7 @@ type Dorm = {
   averagePricePerNight: AveragePricePerNight[]
   lowestPricePerNight: LowestAverageDormPricePerNight
   stp: LowestAverageDormPricePerNight | null
-  conditions: never[]
+  conditions: unknown[]
   totalPrice: AveragePricePerNight[]
   priceBreakdown: PriceBreakdown[]
 }
@@ -100,5 +100,5 @@ export type HostelworldPropertyAvailability = {
   freeCancellationAvailable: boolean
   freeCancellationAvailableUntil: Date
   promotions: Promotion[]
-  stayRuleViolations: never[]
+  stayRuleViolations: unknown[]
 }

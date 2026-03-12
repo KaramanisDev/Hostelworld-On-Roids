@@ -19,7 +19,7 @@ type Location = {
   region: Region
 }
 
-type Pagination = {
+type SearchPagination = {
   next: string
   prev: string
   numberOfPages: number
@@ -38,7 +38,7 @@ type District = {
   name: string
 }
 
-type ID =
+type FacilityCategoryId =
   'FACILITYCATEGORYFREE'
   | 'FACILITYCATEGORYGENERAL'
   | 'FACILITYCATEGORYSERVICES'
@@ -49,7 +49,7 @@ type Name = 'Free' | 'General' | 'Services' | 'Food & Drink' | 'Entertainment'
 
 type Facility = {
   name: Name
-  id: ID
+  id: FacilityCategoryId
   facilities: Region[]
 }
 
@@ -124,7 +124,7 @@ type Dorm = {
   extendedType: ExtendedType
   averagePrice: HighestPricePerNight
   stp: null
-  conditions: never[]
+  conditions: unknown[]
 }
 
 type Rooms = {
@@ -166,7 +166,7 @@ export type Property = {
   hwExtra: null
   fabSort: { [key: string]: number }
   promotions: Promotion[]
-  stayRuleViolations: never[]
+  stayRuleViolations: unknown[]
   veryPopular?: boolean
   rooms: Rooms
   images: Image[]
@@ -180,5 +180,5 @@ export type HostelworldSearch = {
   locationEn: Location
   filterData: FilterData
   sortOrder: null
-  pagination: Pagination
+  pagination: SearchPagination
 }

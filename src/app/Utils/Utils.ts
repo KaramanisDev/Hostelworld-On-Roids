@@ -58,15 +58,15 @@ export async function waitForElement (
   return waitForElement(selector, maxTimeout - 100, onElement)
 }
 
-export function objectPick (object: object, keys: string[]): object {
+export function objectPick<T extends Record<string, unknown>, K extends keyof T> (object: T, keys: K[]): Pick<T, K> {
   return Object.fromEntries(
     Object
       .entries(object)
-      .filter(([key]) => keys.includes(key))
-  )
+      .filter(([key]) => (keys as string[]).includes(key))
+  ) as Pick<T, K>
 }
 
-export function objectsAreEqual (object1: Record<string, unknown>, object2: Record<string, unknown>): boolean {
+export function shallowEqual (object1: Record<string, unknown>, object2: Record<string, unknown>): boolean {
   const object1Keys: string[] = Object.keys(object1)
   const object2Keys: string[] = Object.keys(object2)
 
@@ -114,16 +114,18 @@ export function dateAddDays (date: Date, days: number): Date {
   return newDate
 }
 
-export async function promiseFallback<T = unknown> (promise: Promise<T>, fallback?: T): Promise<T> {
+export async function promiseFallback<T> (promise: Promise<T>, fallback: T): Promise<T>
+export async function promiseFallback<T> (promise: Promise<T>): Promise<T | undefined>
+export async function promiseFallback<T> (promise: Promise<T>, fallback?: T): Promise<T | undefined> {
   try {
     return await promise
   } catch {
-    return fallback as T
+    return fallback
   }
 }
 
-export async function promisesFulfillSequentially (promiseFactories: (() => Promise<void>)[]): Promise<unknown[]> {
-  const outputs: unknown[] = []
+export async function promisesFulfillSequentially (promiseFactories: (() => Promise<void>)[]): Promise<void[]> {
+  const outputs: void[] = []
 
   for (const factory of promiseFactories) {
     outputs.push(await factory())

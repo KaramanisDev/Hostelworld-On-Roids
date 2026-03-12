@@ -27,7 +27,7 @@ export class Search {
     return this.cityId
   }
 
-  public static createFromHostelworldSearchUrl (url: URL): typeof this.prototype {
+  public static createFromHostelworldSearchUrl (url: URL): Search {
     const parameters: URLSearchParams = url.searchParams
     if (!parameters.has('date-start') || !parameters.has('num-nights')) {
       throw new Error('Not a hostelworld search url.')

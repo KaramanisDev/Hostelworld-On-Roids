@@ -1,5 +1,5 @@
 type Callback<T> = (value: T) => T
-type ClassConstructor<T = unknown> = new (...args?: unknown[]) => T
+type ClassConstructor<T = unknown> = new (...args: unknown[]) => T
 
 interface Window {
   $nuxt: object

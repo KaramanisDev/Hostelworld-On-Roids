@@ -97,7 +97,7 @@ export class RequestModifier {
 
     Object.defineProperty(request, property, {
       get: () => {
-        request.backing[property] = value || request.backing[property]
+        request.backing[property] = value ?? request.backing[property]
 
         return request.backing[property]
       },
