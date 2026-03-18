@@ -112,9 +112,12 @@ export class AvailabilityClient {
     availability: HostelworldPropertyAvailability
   ): void {
     for (const dorm of availability.rooms.dorms) {
+      const capacity: number = Number(dorm.capacity)
+      if (!capacity) continue
+
       dorm.totalBedsAvailable = Math.ceil(
-        dorm.totalBedsAvailable / Number(dorm.capacity)
-      ) * Number(dorm.capacity)
+        dorm.totalBedsAvailable / capacity
+      ) * capacity
     }
   }
 
