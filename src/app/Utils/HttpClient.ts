@@ -61,7 +61,7 @@ export class HttpClient {
     const hasNotExpired: boolean = await this.storage.hasNotExpired(cacheKey)
     if (hasNotExpired) return
 
-    const content: string = await response.text()
+    const content: string = await response.clone().text()
     const cacheTimeInMs: number = (cacheInMinutes ?? this.defaultCacheTimeInMinutes) * 60 * 1000
 
     return this.storage.put(cacheKey, content, cacheTimeInMs)
