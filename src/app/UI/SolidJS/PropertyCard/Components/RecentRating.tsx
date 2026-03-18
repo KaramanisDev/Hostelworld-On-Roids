@@ -26,7 +26,6 @@ export function RecentRating (properties: Properties): JSX.Element {
       <div class={`hor-row hor-rating-row${isLoaded() ? ' hor-loaded' : ''}`}>
         <div class="hor-title">
           <span>{title}</span>
-          <span>→</span>
         </div>
         <For each={[...labels]}>
           {(label, index) => (

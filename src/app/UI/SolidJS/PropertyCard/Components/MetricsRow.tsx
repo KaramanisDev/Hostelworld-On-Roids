@@ -18,7 +18,6 @@ export function MetricsRow (properties: Properties): JSX.Element {
       <div class={`hor-row${isLoaded() ? ' hor-loaded' : ''}`} data-metric={properties.metricType}>
         <div class="hor-title">
           <span>{title}</span>
-          <span>→</span>
         </div>
         <For each={[...labels]}>
           {(label, index) => (
