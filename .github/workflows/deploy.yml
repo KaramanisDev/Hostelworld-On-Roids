@@ -92,7 +92,7 @@ jobs:
         run: |
           VERSION=$(git describe --tags --abbrev=0)
 
-          TAG_MESSAGE=$(git tag -l --format='%(contents)' "$VERSION")
+          TAG_MESSAGE=$(git tag -l --format='%(contents)' "$VERSION" | sed '/-----BEGIN PGP SIGNATURE-----/,$d')
 
           if [ -n "$TAG_MESSAGE" ]; then
             TAG_VERSION=$(echo "$TAG_MESSAGE" | head -1 | sed 's/Release //' | sed 's/^[[:space:]]*//')
