@@ -9,6 +9,9 @@ export type PropertyReviews = {
   solo: number
   total: number
   ages: Record<string, number>
+  recentOverallRating: number | null
+  recentReviewCount: number
+  overallRating: number | null
 }
 
 export class ReviewsClient {
@@ -16,38 +19,56 @@ export class ReviewsClient {
     'properties/{property}/reviews/?page={page}&sort=newest&allLanguages=true&monthCount=72&per-page=50'
 
   private static readonly ageBrackets: string[] = ['18-24', '25-30', '31-40', '41+']
+  private static readonly recentMonthsWindow: number = 12
+  private static readonly recentReviewsLimit: number = 25
 
-  public static async fetch (propertyId: number): Promise<PropertyReviews> {
-    const metrics: PropertyReviews = {
+  public static async fetch (propertyId: number, overallRating: number | null): Promise<PropertyReviews> {
+    const { reviews, reviewStatistics, pagination } = await this.request(propertyId, 1)
+    const remainingReviews: Review[] = await this.fetchRemainingPages(propertyId, pagination.numberOfPages)
+    const allReviews: Review[] = [...reviews, ...remainingReviews]
+
+    const metrics: PropertyReviews = this.emptyMetrics(overallRating)
+    metrics.total = pagination.totalNumberOfItems
+    metrics.solo = Math.round(metrics.total * ((reviewStatistics?.soloPercentage ?? 0) / 100))
+
+    this.collectDemographics(allReviews, metrics)
+    this.collectRecentRating(allReviews, metrics)
+
+    return metrics
+  }
+
+  private static emptyMetrics (overallRating: number | null): PropertyReviews {
+    return {
       male: 0,
       female: 0,
       other: 0,
       solo: 0,
       total: 0,
-      ages: Object.fromEntries(
-        this.ageBrackets.map(bracket => [bracket, 0])
-      )
+      ages: Object.fromEntries(this.ageBrackets.map(bracket => [bracket, 0])),
+      recentOverallRating: null,
+      recentReviewCount: 0,
+      overallRating
     }
+  }
 
-    const { reviews: firstPageReviews, reviewStatistics, pagination } = await this.request(propertyId, 1)
+  private static async fetchRemainingPages (propertyId: number, totalPages: number): Promise<Review[]> {
+    const remainingPages: number = totalPages - 1
 
-    metrics.total = pagination.totalNumberOfItems
-    metrics.solo = Math.round(metrics.total * ((reviewStatistics?.soloPercentage ?? 0) / 100))
-
-    const leftOverPages: number = pagination.numberOfPages - 1
-    const restOfPagesReviews: Review[] = Array.from(await Promise.all(
+    const pages: Review[][] = await Promise.all(
       Array
-        .from({ length: leftOverPages }, (_, index) => index + 2)
+        .from({ length: remainingPages }, (_, index) => index + 2)
         .map(async page => {
           await delay(randomNumber(1, 5) * 100)
           const { reviews } = await this.request(propertyId, page)
 
           return reviews
         })
-    )).flat()
+    )
 
-    const reviews: Review[] = [...firstPageReviews, ...restOfPagesReviews]
+    return pages.flat()
+  }
 
+  private static collectDemographics (reviews: Review[], metrics: PropertyReviews): void {
     for (const review of reviews) {
       metrics.male += Number(['MALE', 'ALLMALEGROUP'].includes(review.groupInformation.groupTypeCode))
       metrics.female += Number(['FEMALE', 'ALLFEMALEGROUP'].includes(review.groupInformation.groupTypeCode))
@@ -56,8 +77,27 @@ export class ReviewsClient {
       const age: string = review.groupInformation.age
       metrics.ages[age] = (metrics.ages[age] ?? 0) + 1
     }
+  }
 
-    return metrics
+  private static collectRecentRating (reviews: Review[], metrics: PropertyReviews): void {
+    const cutoffDate: Date = new Date()
+    cutoffDate.setMonth(cutoffDate.getMonth() - this.recentMonthsWindow)
+    const cutoffTimestamp: number = cutoffDate.getTime()
+    let ratingSum: number = 0
+
+    for (const review of reviews) {
+      if (metrics.recentReviewCount >= this.recentReviewsLimit) break
+
+      const reviewTimestamp: number = new Date(review.date).getTime()
+      if (reviewTimestamp < cutoffTimestamp) break
+
+      ratingSum += review.rating.overall
+      metrics.recentReviewCount++
+    }
+
+    if (metrics.recentReviewCount > 0) {
+      metrics.recentOverallRating = Number((ratingSum / metrics.recentReviewCount / 10).toFixed(1))
+    }
   }
 
   private static async request (propertyId: number, page: number): Promise<HostelworldPropertyReviews> {

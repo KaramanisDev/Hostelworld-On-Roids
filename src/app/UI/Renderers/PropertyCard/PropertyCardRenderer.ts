@@ -46,7 +46,8 @@ export class PropertyCardRenderer {
     this.view.update?.({
       propertyId,
       reviews: PropertyCardViewDTOFactory.reviewsRow(metrics),
-      ageGroups: PropertyCardViewDTOFactory.ageGroupsRow(metrics)
+      ageGroups: PropertyCardViewDTOFactory.ageGroupsRow(metrics),
+      recentRating: PropertyCardViewDTOFactory.recentRatingRow(metrics)
     })
   }
 

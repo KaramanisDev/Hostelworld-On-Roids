@@ -18,7 +18,11 @@ export class PropertiesInterceptedListener extends AbstractListener {
     for (const property of properties) {
       await PropertyCardRenderer.render(property.id, property.name)
 
-      this.emit('worker:task:dispatch', 'fetch:reviews', property.id, property.name)
+      const overallRating: number | null = property.overallRating
+        ? Number((property.overallRating.overall / 10).toFixed(1))
+        : null
+
+      this.emit('worker:task:dispatch', 'fetch:reviews', property.id, property.name, overallRating)
       this.emit('worker:task:dispatch', 'fetch:availability', property.id, property.name, from, to)
       this.emit('worker:task:dispatch', 'fetch:countries', property.id, property.name, from, to)
     }

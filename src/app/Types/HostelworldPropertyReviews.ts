@@ -61,7 +61,7 @@ type GroupInformation = {
 
 export type Review = {
   id: string
-  date: Date
+  date: string
   notes: string
   isMachineTranslated: boolean
   languageCode: string

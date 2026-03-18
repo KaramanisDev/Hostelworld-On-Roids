@@ -8,6 +8,9 @@ export class ReviewMetrics {
   private solo!: number
   private total!: number
   private ages!: Record<string, number>
+  private recentOverallRating!: number | null
+  private recentReviewCount!: number
+  private overallRating!: number | null
 
   constructor (attributes: PropertyReviews) {
     Object.assign(this, attributes)
@@ -55,5 +58,17 @@ export class ReviewMetrics {
 
   public getAgePercentage (age: string): number {
     return toPercent(this.ages[age] ?? 0, this.getTotal())
+  }
+
+  public getRecentOverallRating (): number | null {
+    return this.recentOverallRating
+  }
+
+  public getRecentReviewCount (): number {
+    return this.recentReviewCount
+  }
+
+  public getOverallRating (): number | null {
+    return this.overallRating
   }
 }

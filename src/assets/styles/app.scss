@@ -104,6 +104,21 @@
           border-bottom: 0.0625rem solid var(--wds-color-ink-lighter);
         }
       }
+
+      &.hor-rating-row {
+        .hor-rating-score {
+          font-weight: 700;
+          color: var(--wds-color-ink-darker);
+        }
+
+        .hor-trend {
+          font-weight: 600;
+
+          &.hor-trend-up { color: #16a34a; }
+          &.hor-trend-down { color: #dc2626; }
+          &.hor-trend-flat { color: var(--wds-color-ink); }
+        }
+      }
     }
   }
 

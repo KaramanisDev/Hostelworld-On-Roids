@@ -22,6 +22,7 @@ Here's what it does:
 * Displays guest-origin stats per property, showing where upcoming guests are arriving from.
 * Shows the gender split (male, female, solo travelers) and age group distribution of past guests.
 * Checks room availability by type (mixed dorms, female-only dorms, private rooms) and their capacity.
+* Tracks recent rating trends, comparing a property's recent review score against its all-time average.
 * Assigns demographic badges like "Great for Solo", "Female Friendly", "Young Crowd", and more.
 * Offers a custom filter system to narrow down properties by badge, demographics, and age groups.
 
