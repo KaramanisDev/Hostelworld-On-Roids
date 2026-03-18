@@ -16,6 +16,17 @@
   "content_scripts": [
     {
       "js": [
+        "roids.js"
+      ],
+      "run_at": "document_start",
+      "matches": [
+        "https://hostelworld.com/*",
+        "https://www.hostelworld.com/*"
+      ],
+      "world": "MAIN"
+    },
+    {
+      "js": [
         "content.js"
       ],
       "css": [
