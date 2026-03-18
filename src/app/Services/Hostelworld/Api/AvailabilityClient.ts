@@ -47,7 +47,7 @@ export class AvailabilityClient {
 
     await Promise.all(daysAfterToCheck.map(async days => {
       const fromWithDaysAdded: Date = dateAddDays(from, days)
-      const toWithFromPlus3Days: Date = dateAddDays(fromWithDaysAdded, 2)
+      const toWithFromPlus3Days: Date = dateAddDays(fromWithDaysAdded, 3)
 
       await delay(randomNumber(0, 3) * 100)
 
