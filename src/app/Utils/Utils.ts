@@ -73,9 +73,15 @@ export function shallowEqual (object1: Record<string, unknown>, object2: Record<
   if (object1Keys.length !== object2Keys.length) return false
 
   for (const key of object1Keys) {
-    if (object2Keys.includes(key) && object1[key] === object2[key]) continue
+    if (!object2Keys.includes(key)) return false
 
-    return false
+    const value1: unknown = object1[key]
+    const value2: unknown = object2[key]
+
+    if (value1 instanceof RegExp && value2 instanceof RegExp &&
+      value1.source === value2.source && value1.flags === value2.flags) continue
+
+    if (value1 !== value2) return false
   }
 
   return true
