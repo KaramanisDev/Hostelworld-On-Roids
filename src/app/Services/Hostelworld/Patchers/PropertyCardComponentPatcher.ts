@@ -50,7 +50,7 @@ export class PropertyCardComponentPatcher {
     Object.defineProperty(component.__vue__, 'stayingAvatars', {
       configurable: true,
       get: () => staying,
-      set: () => emptyFunction
+      set: emptyFunction
     })
   }
 }

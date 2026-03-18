@@ -20,7 +20,7 @@ export class SearchPropertyListComponentPatcher {
       Object.defineProperty(component, 'propertiesPerPage', {
         configurable: true,
         get: () => maxPossiblePropertiesFromRequest,
-        set: () => emptyFunction
+        set: emptyFunction
       })
     }
 
@@ -40,7 +40,7 @@ export class SearchPropertyListComponentPatcher {
       Object.defineProperty(component, 'displayFeaturedProperties', {
         configurable: true,
         get: () => displayFeaturedProperties,
-        set: () => emptyFunction
+        set: emptyFunction
       })
     }
 
