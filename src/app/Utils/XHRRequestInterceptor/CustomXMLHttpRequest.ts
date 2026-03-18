@@ -38,7 +38,7 @@ export class CustomXMLHttpRequest extends XMLHttpRequest {
     return super.onloadend
   }
 
-  set onloadend (callback: (event: ProgressEvent) => void | null) {
+  set onloadend (callback: ((event: ProgressEvent) => void) | null) {
     super.onloadend = event => {
       CustomXMLHttpRequest.interceptCallback?.(this, 'loadend')
       callback?.(event)
