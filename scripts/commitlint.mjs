@@ -6,9 +6,9 @@ import { logSuccess, logError } from './utils.mjs'
 async function main () {
   try {
     const options = parseArguments()
-    const currentBranch = getCurrentBranch(options.branch)
+    const fromRevision = options.from ?? `origin/${getCurrentBranch(options.branch)}`
 
-    lintCommits(currentBranch, options.verbose)
+    lintCommits(fromRevision)
 
     logSuccess('All commits passed the linting rules.')
   } catch (error) {
@@ -28,10 +28,16 @@ function parseArguments () {
       description: 'Branch to lint commits against',
       type: 'string'
     })
+    .option('from', {
+      alias: 'f',
+      description: 'Commit to lint after (takes precedence over --branch)',
+      type: 'string'
+    })
     .help()
     .alias('help', 'h')
     .example('$0', 'Lint commits on current branch against origin')
     .example('$0 --branch master', 'Lint commits against origin/master')
+    .example('$0 --from 1a2b3c4', 'Lint commits after 1a2b3c4')
     .argv
 }
 
@@ -49,9 +55,8 @@ function getCurrentBranch (providedBranch) {
   }
 }
 
-function lintCommits (branch) {
-  const remoteBranch = `origin/${branch}`
-  const command = `yarn commitlint --from="${remoteBranch}" --to=HEAD`
+function lintCommits (fromRevision) {
+  const command = `yarn commitlint --from="${fromRevision}" --to=HEAD`
 
   execSync(command, { stdio: 'inherit' })
 }

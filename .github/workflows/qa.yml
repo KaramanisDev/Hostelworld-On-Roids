@@ -19,7 +19,14 @@ jobs:
       - run: yarn lint:tsc
       - run: yarn lint:eslint
       - run: yarn lint:scss
-      - run: yarn lint:commit --branch "${{ github.head_ref || github.ref_name }}"
+      - run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            yarn lint:commit --branch "${{ github.base_ref }}"
+          elif git cat-file -e "${{ github.event.before }}^{commit}" 2>/dev/null; then
+            yarn lint:commit --from "${{ github.event.before }}"
+          else
+            yarn lint:commit --branch master
+          fi
 
   audit:
     name: Run Audit
