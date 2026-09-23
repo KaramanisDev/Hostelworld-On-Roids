@@ -1,5 +1,5 @@
 import type { WorkerTask, WorkerTaskResult } from './WorkerTask'
-import { delay, promiseFallback } from 'Utils'
+import { delay } from 'Utils'
 
 type JobId = string | number
 
@@ -12,9 +12,9 @@ type Job<TArgs, TResult> = {
 }
 
 export abstract class AbstractQueuedTask<TArgs, TResult> implements WorkerTask {
-  private isProcessing: boolean = false
+  private runningJobs: number = 0
   private readonly maxConcurrency: number = 4
-  private readonly delayBetweenBatches: number = 200
+  private readonly pauseAfterJobInMs: number = 200
   private readonly queue: Map<JobId, Job<TArgs, TResult>> = new Map()
 
   protected abstract jobId (args: TArgs): JobId
@@ -35,38 +35,31 @@ export abstract class AbstractQueuedTask<TArgs, TResult> implements WorkerTask {
     })
 
     this.queue.set(id, { id, args: typedArgs, promise, resolve: resolvePromise, reject: rejectPromise })
-    void promiseFallback(this.processQueue())
+    this.startQueuedJobs()
 
     return promise
   }
 
-  private async processQueue (): Promise<void> {
-    if (this.isProcessing) return
-    this.isProcessing = true
+  private startQueuedJobs (): void {
+    while (this.runningJobs < this.maxConcurrency && this.queue.size > 0) {
+      const [id, job]: [JobId, Job<TArgs, TResult>] = this.queue.entries().next().value!
+      this.queue.delete(id)
+      this.runningJobs++
 
+      void this.runJob(job)
+    }
+  }
+
+  private async runJob (job: Job<TArgs, TResult>): Promise<void> {
     try {
-      while (this.queue.size > 0) {
-        const batch: Job<TArgs, TResult>[] = []
-
-        for (let index: number = 0; index < this.maxConcurrency && this.queue.size > 0; index++) {
-          const [id, job]: [JobId, Job<TArgs, TResult>] = this.queue.entries().next().value!
-          this.queue.delete(id)
-          batch.push(job)
-        }
-
-        await Promise.all(batch.map(async (job: Job<TArgs, TResult>): Promise<void> => {
-          try {
-            const result: TResult = await this.execute(job.args)
-            job.resolve(result)
-          } catch (error) {
-            job.reject(error)
-          }
-        }))
-
-        await delay(this.delayBetweenBatches)
-      }
+      const result: TResult = await this.execute(job.args)
+      job.resolve(result)
+    } catch (error) {
+      job.reject(error)
     } finally {
-      this.isProcessing = false
+      await delay(this.pauseAfterJobInMs)
+      this.runningJobs--
+      this.startQueuedJobs()
     }
   }
 }
