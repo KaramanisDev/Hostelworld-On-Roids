@@ -168,6 +168,7 @@ export type Property = {
   promotions: Promotion[]
   stayRuleViolations: unknown[]
   veryPopular?: boolean
+  is3PIProperty?: boolean
   rooms: Rooms
   images: Image[]
   imagesGallery: Image[]

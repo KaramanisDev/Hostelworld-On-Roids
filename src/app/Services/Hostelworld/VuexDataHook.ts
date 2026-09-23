@@ -22,7 +22,9 @@ export class VuexDataHook {
         if (!properties[0]) return
 
         callback(
-          properties.map(property => property.id)
+          properties
+            .filter(property => !property.is3PIProperty)
+            .map(property => property.id)
         )
       })
     }

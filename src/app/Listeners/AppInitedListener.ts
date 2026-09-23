@@ -20,6 +20,7 @@ export class AppInitedListener extends AbstractListener {
       FilterModalRenderer.render(),
       DevicePatcher.enforceMobile(),
       SearchPropertyListComponentPatcher.disableFeatured(),
+      SearchPropertyListComponentPatcher.disableThirdPartyProperties(),
       SearchPropertyListComponentPatcher.installPropertiesFilter()
     ])
 

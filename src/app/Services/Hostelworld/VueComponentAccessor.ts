@@ -33,6 +33,11 @@ type HostelworldState = {
   }
 }
 
+export type VueSearchPageComponent = {
+  isCityEnabled3PI?: boolean
+  reset3PIState?: () => void
+}
+
 export type VuePropertyListComponent = {
   properties: Property[]
   filteredProperties: Property[]
@@ -45,6 +50,7 @@ export type VuePropertyListComponent = {
   isDisplayedPropertiesWatched?: boolean
   $watch: (property: string, callback: (properties: Property[]) => void) => void
   $forceUpdate: () => void
+  $parent: VueSearchPageComponent
   $options: {
     _base: VueConstructor
   }

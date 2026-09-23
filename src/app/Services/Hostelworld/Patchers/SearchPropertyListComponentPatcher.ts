@@ -1,7 +1,11 @@
 import type { Property } from 'Types/HostelworldSearch'
 import { VuexDataHook } from 'Services/Hostelworld/VuexDataHook'
 import { VueComponentAccessor } from 'Services/Hostelworld/VueComponentAccessor'
-import type { VuePropertyListComponent, VuexStore } from 'Services/Hostelworld/VueComponentAccessor'
+import type {
+  VuePropertyListComponent,
+  VueSearchPageComponent,
+  VuexStore
+} from 'Services/Hostelworld/VueComponentAccessor'
 import { emptyFunction, pluck, promiseFallback, waitForElement } from 'Utils'
 
 export type PropertyFilterPredicate = (propertyId: number) => boolean
@@ -46,6 +50,29 @@ export class SearchPropertyListComponentPatcher {
 
     return VuexDataHook.onRouteChanged(
       disableFeaturedProperties.bind(this)
+    )
+  }
+
+  public static async disableThirdPartyProperties (): Promise<void> {
+    const disableThirdPartyInventory: () => Promise<void> = async (): Promise<void> => {
+      const component: VuePropertyListComponent | undefined = await promiseFallback(
+        VueComponentAccessor.propertyListComponent()
+      )
+      const searchPage: VueSearchPageComponent | undefined = component?.$parent
+      if (!searchPage || !('isCityEnabled3PI' in searchPage)) return
+
+      const isCityEnabled3PI: boolean = false
+      Object.defineProperty(searchPage, 'isCityEnabled3PI', {
+        configurable: true,
+        get: () => isCityEnabled3PI,
+        set: emptyFunction
+      })
+
+      searchPage.reset3PIState?.()
+    }
+
+    return VuexDataHook.onRouteChanged(
+      disableThirdPartyInventory.bind(this)
     )
   }
 
