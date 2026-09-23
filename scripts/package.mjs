@@ -1,6 +1,7 @@
 import fs from 'fs'
 import path from 'path'
-import archiver from 'archiver'
+import { constants } from 'zlib'
+import { ZipArchive } from 'archiver'
 import yargs from 'yargs'
 import { hideBin } from 'yargs/helpers'
 import crx3 from 'crx3'
@@ -74,7 +75,7 @@ async function createZipPackage () {
 
   return new Promise((resolve, reject) => {
     const output = fs.createWriteStream(outputPath)
-    const archive = archiver('zip', { zlib: { level: 9 } })
+    const archive = new ZipArchive({ zlib: { level: constants.Z_BEST_COMPRESSION } })
 
     output.on('close', () => {
       resolve({

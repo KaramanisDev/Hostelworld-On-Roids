@@ -38,7 +38,7 @@
     "@types/webpack-env": "^1.18.8",
     "@typescript-eslint/eslint-plugin": "^8.70.1",
     "@typescript-eslint/parser": "^8.70.1",
-    "archiver": "^7.0.1",
+    "archiver": "^8.0.0",
     "babel-loader": "^10.1.1",
     "babel-preset-solid": "^1.9.15",
     "chalk": "^6.0.0",
