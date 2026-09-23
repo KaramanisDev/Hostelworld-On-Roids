@@ -27,21 +27,21 @@ export class WorkerRPCEndpoint {
   }
 
   public static onRequest<TPayload, TResponse> (callback: OnRequestHandler<TPayload, TResponse>): void {
-    ExtensionRuntime.onMessage<string>((event: string, payload: string): void => {
-      if (!event.endsWith(':request')) return
+    ExtensionRuntime.onMessage<string>((event: string, payload: string, tabId?: number): void => {
+      if (!event.endsWith(':request') || !tabId) return
 
       const originalEvent: string = event.replace(':request', '')
       const response: TResponse = callback(originalEvent, deserialize<TPayload>(payload))
 
       if (response instanceof Promise) {
         void response.then(
-          response => ExtensionRuntime.sendMessage(`${originalEvent}:response`, serialize(response))
+          response => ExtensionRuntime.sendMessageToTab(tabId, `${originalEvent}:response`, serialize(response))
         )
 
         return
       }
 
-      ExtensionRuntime.sendMessage(`${originalEvent}:response`, serialize(response))
+      ExtensionRuntime.sendMessageToTab(tabId, `${originalEvent}:response`, serialize(response))
     })
   }
 }
