@@ -12,7 +12,7 @@ async function main () {
 
     logSuccess('All commits passed the linting rules.')
   } catch (error) {
-    if (error.message && error.message.includes('npx commitlint')) {
+    if (error.message && error.message.includes('yarn commitlint')) {
       logError('Commit linting has failed. Please address the issues above.')
     } else {
       logError(`Unexpected error: ${error.message}`)
@@ -51,7 +51,7 @@ function getCurrentBranch (providedBranch) {
 
 function lintCommits (branch) {
   const remoteBranch = `origin/${branch}`
-  const command = `npx commitlint --from="${remoteBranch}" --to=HEAD`
+  const command = `yarn commitlint --from="${remoteBranch}" --to=HEAD`
 
   execSync(command, { stdio: 'inherit' })
 }
