@@ -115,11 +115,6 @@
       }
 
       &.hor-rating-row {
-        .hor-rating-score {
-          font-weight: 700;
-          color: var(--wds-color-ink-darker);
-        }
-
         .hor-trend {
           &.hor-trend-up { color: #16a34a; }
           &.hor-trend-down { color: #dc2626; }

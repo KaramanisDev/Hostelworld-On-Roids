@@ -3,7 +3,7 @@ import { emptyFunction, objectPick } from '..'
 
 type Modifier = (request: CustomXMLHttpRequest) => void
 
-type ModifierName = 'withUrl' | 'withTimeout' | 'withResponse' | 'shouldNotFailOpen' | 'shouldNotFailLoadEnd'
+type ModifierName = 'withUrl' | 'withResponse'
 type Stages = {
   open: ModifierName[]
   loadend: ModifierName[]
@@ -20,8 +20,8 @@ export type InterceptionStage = keyof Stages
 export class RequestModifier {
   private readonly modifiers: Modifiers = {}
   private readonly stages: Stages = {
-    open: ['withUrl', 'withTimeout', 'shouldNotFailOpen'],
-    loadend: ['withResponse', 'shouldNotFailLoadEnd']
+    open: ['withUrl'],
+    loadend: ['withResponse']
   }
 
   public withUrl (urlOrCallback: string | Callback<string>): this {
@@ -50,33 +50,6 @@ export class RequestModifier {
     return this
   }
 
-  public withTimeout (newTimeout: number): this {
-    this.modifiers.withTimeout = (request: CustomXMLHttpRequest): void => {
-      this.onPropertyEnforce(request, 'timeout', newTimeout)
-    }
-
-    return this
-  }
-
-  public shouldNotFail (respondWithIfFailed?: string): this {
-    this.modifiers.shouldNotFailOpen = (request: CustomXMLHttpRequest): void => {
-      this.onPropertyEnforce(request, 'onabort', emptyFunction)
-      this.onPropertyEnforce(request, 'onerror', emptyFunction)
-      this.onPropertyEnforce(request, 'ontimeout', emptyFunction)
-    }
-
-    this.modifiers.shouldNotFailLoadEnd = (request: CustomXMLHttpRequest): void => {
-      if (request.status === 200) return
-
-      this.onPropertyEnforce(request, 'status', 200)
-
-      if (!respondWithIfFailed) return
-      this.onPropertyEnforce(request, 'responseText', respondWithIfFailed)
-    }
-
-    return this
-  }
-
   public applyTo (request: CustomXMLHttpRequest, stage: InterceptionStage): void {
     const modifiers: Modifier[] = Object.values(
       objectPick(this.modifiers, this.stages[stage] || [])
@@ -90,8 +63,7 @@ export class RequestModifier {
   private onPropertyEnforce (
     request: CustomXMLHttpRequest,
     property: RequestProperty,
-    value: unknown,
-    disallowSet: boolean = true
+    value: unknown
   ): void {
     request.backing[property] = request[property]
 
@@ -101,11 +73,7 @@ export class RequestModifier {
 
         return request.backing[property]
       },
-      set: (newValue: unknown) => {
-        if (disallowSet) return
-
-        request.backing[property] = newValue
-      },
+      set: emptyFunction,
       configurable: true
     })
   }

@@ -130,16 +130,6 @@ export async function promiseFallback<T> (promise: Promise<T>, fallback?: T): Pr
   }
 }
 
-export async function promisesFulfillSequentially (promiseFactories: (() => Promise<void>)[]): Promise<void[]> {
-  const outputs: void[] = []
-
-  for (const factory of promiseFactories) {
-    outputs.push(await factory())
-  }
-
-  return outputs
-}
-
 export function pluck<T extends object, K extends keyof T> (arrayOfObjects: T[], property: K): T[K][] {
   return arrayOfObjects.map(
     item => item[property]

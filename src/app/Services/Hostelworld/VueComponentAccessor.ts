@@ -42,7 +42,6 @@ export type VuePropertyListComponent = {
   properties: Property[]
   filteredProperties: Property[]
   filteredHWProperties: Property[]
-  propertiesPerPage: number
   displayFeaturedProperties: boolean
   displayedProperties: Property[]
   _filterVersion?: number

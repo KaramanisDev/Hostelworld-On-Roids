@@ -13,26 +13,6 @@ export type PropertyFilterPredicate = (propertyId: number) => boolean
 export class SearchPropertyListComponentPatcher {
   private static filterPredicate: PropertyFilterPredicate | null = null
 
-  public static async disablePagination (): Promise<void> {
-    const showAllPropertiesInSearch: () => Promise<void> = async (): Promise<void> => {
-      const component: VuePropertyListComponent | undefined = await promiseFallback(
-        VueComponentAccessor.propertyListComponent()
-      )
-      if (!component) return
-
-      const maxPossiblePropertiesFromRequest: number = 1100
-      Object.defineProperty(component, 'propertiesPerPage', {
-        configurable: true,
-        get: () => maxPossiblePropertiesFromRequest,
-        set: emptyFunction
-      })
-    }
-
-    return VuexDataHook.onRouteChanged(
-      showAllPropertiesInSearch.bind(this)
-    )
-  }
-
   public static async disableFeatured (): Promise<void> {
     const disableFeaturedProperties: () => Promise<void> = async (): Promise<void> => {
       const component: VuePropertyListComponent | undefined = await promiseFallback(
