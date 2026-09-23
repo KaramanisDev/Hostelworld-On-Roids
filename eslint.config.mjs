@@ -53,9 +53,13 @@ export default [
       'unicorn/no-nested-ternary': 0,
       'unicorn/explicit-length-check': 0,
       'unicorn/prefer-add-event-listener': 0,
-      'unicorn/prevent-abbreviations': ['error', {
+      'unicorn/name-replacements': ['error', {
         replacements: {
+          application: false,
+          applications: false,
           args: false,
+          configuration: false,
+          repository: false,
           utils: false
         }
       }],
