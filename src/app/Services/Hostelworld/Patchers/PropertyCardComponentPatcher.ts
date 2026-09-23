@@ -14,7 +14,7 @@ type StayingAvatars = {
 }
 
 type VuePropertyCardComponent = HTMLElement & {
-  __vue__: {
+  __vue__?: {
     stayingAvatars: StayingAvatars
   }
 }
@@ -24,7 +24,7 @@ export class PropertyCardComponentPatcher {
     const component: VuePropertyCardComponent | undefined = <VuePropertyCardComponent>
       await promiseFallback(waitForElement('.nuxt-link >a', 10 * 1000, property))
 
-    if (!component || !countries.length) return
+    if (!component?.__vue__ || !countries.length) return
 
     const avatars: Avatar[] = countries
       .sort((a: BookedCountry, b: BookedCountry) => b.getCount() - a.getCount())
