@@ -44,12 +44,15 @@ export type VuePropertyListComponent = {
   filteredHWProperties: Property[]
   displayFeaturedProperties: boolean
   displayedProperties: Property[]
-  _filterVersion?: number
   _computedWatchers?: Record<string, VueComputedWatcher>
   isDisplayedPropertiesWatched?: boolean
   $watch: (property: string, callback: (properties: Property[]) => void) => void
   $forceUpdate: () => void
   $parent: VueSearchPageComponent
+}
+
+export type VuexStoreViewModel = {
+  isPropertiesFilterInstalled?: boolean
   $options: {
     _base: VueConstructor
   }
@@ -61,6 +64,7 @@ export type VuexStore = {
   $services: {
     search: () => Promise<HostelworldSearchService>
   }
+  _vm: VuexStoreViewModel
 }
 
 export class VueComponentAccessor {
