@@ -14,7 +14,7 @@ config({ quiet: true })
 async function main () {
   try {
     const options = parseArguments()
-    const keyPath = options.keyPath || getCrxKeyPath()
+    const keyPath = options.path ? basePath(options.path) : getCrxKeyPath()
 
     createOrDisplayCrxKey(keyPath, options.recreate)
 
