@@ -20,7 +20,6 @@
     "lint:scss": "stylelint \"src/**/*.scss\"",
     "lint:commit": "node scripts/commitlint.mjs",
     "crx:key": "node scripts/crx-key.mjs",
-    "upload": "node scripts/upload.mjs",
     "package:zip": "node scripts/package.mjs --type zip",
     "package:crx": "node scripts/package.mjs --type crx",
     "extension:upload": "node scripts/deploy.mjs --upload",
