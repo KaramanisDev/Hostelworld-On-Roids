@@ -68,7 +68,7 @@
     "typescript": "^5.9.3",
     "webextension-polyfill": "^0.12.0",
     "webpack": "^5.111.1",
-    "webpack-cli": "^6.0.1",
+    "webpack-cli": "^7.2.3",
     "webpack-ext-reloader": "^1.1.13",
     "yargs": "^18.2.0"
   },
