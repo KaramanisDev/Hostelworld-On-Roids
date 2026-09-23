@@ -561,7 +561,7 @@
 }
 
 @media (max-width: 600px) {
-  .filter-modal {
+  .hor-filter-modal {
     width: 100%;
     max-width: calc(100vw - 16px);
     max-height: calc(100vh - 32px);
@@ -587,7 +587,7 @@
     gap: 6px;
   }
 
-  .badge-filter .hor-badge-indicator {
+  .hor-badge-filter .hor-badge-indicator {
     padding: 3px 8px;
     font-size: 11px;
   }
