@@ -105,8 +105,8 @@ export function FilterModal (properties: Properties): JSX.Element {
         </main>
         <footer class="hor-filter-modal-footer">
           <div class="hor-filter-modal-info">
-            <span class="hor-hor-filter-modal-info-name">{properties.extensionName}</span>
-            <span class="hor-hor-filter-modal-info-version">v{properties.version}</span>
+            <span class="hor-filter-modal-info-name">{properties.extensionName}</span>
+            <span class="hor-filter-modal-info-version">v{properties.version}</span>
           </div>
           <div class="hor-filter-modal-links">
             <a
