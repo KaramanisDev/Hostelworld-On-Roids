@@ -20,25 +20,25 @@ async function main () {
       throw new Error('At least one of --upload or --publish must be specified')
     }
 
+    if (!options.upload) {
+      await publishExtension()
+      logSuccess('Extension submitted for review successfully.')
+      return
+    }
+
     const version = latestGitTag()
     const packagePath = getPackagePath(version)
 
     validateFileExists(packagePath, `Package file for version ${version}`)
 
-    if (options.upload && options.publish) {
+    if (options.publish) {
       await deployExtension(packagePath, version)
       logSuccess('Extension uploaded and submitted for review successfully.')
       return
     }
 
-    if (options.upload) {
-      await uploadExtension(packagePath, version)
-      logSuccess('Extension uploaded successfully.')
-      return
-    }
-
-    await publishExtension()
-    logSuccess('Extension submitted for review successfully.')
+    await uploadExtension(packagePath, version)
+    logSuccess('Extension uploaded successfully.')
   } catch (error) {
     logError(`Deploy failed: ${error.message}`)
     process.exit(1)
