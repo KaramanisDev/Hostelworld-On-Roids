@@ -67,12 +67,7 @@ export default {
         use: [
           MiniCssExtractPlugin.loader,
           'css-loader',
-          {
-            loader: 'sass-loader',
-            options: {
-              api: 'modern-compiler'
-            }
-          }
+          'sass-loader'
         ]
       }
     ]
