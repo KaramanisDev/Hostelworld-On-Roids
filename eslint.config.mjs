@@ -42,6 +42,17 @@ export default [
         }
       }
     },
+    settings: {
+      'import/parsers': {
+        '@typescript-eslint/parser': ['.ts', '.tsx']
+      },
+      'import/resolver': {
+        node: {
+          paths: [path.join(__dirname, 'src/app')],
+          extensions: ['.ts', '.tsx', '.js', '.mjs']
+        }
+      }
+    },
     rules: {
       'max-len': ['error', { code: 120 }],
       'no-void': 'off',
