@@ -4,7 +4,7 @@ module.exports = (api) => {
   api.cache(true)
 
   return {
-    targets: '> 1%, not dead',
+    targets: 'chrome >= 111',
     presets: ['@babel/preset-env'],
     plugins: [
       ['babel-plugin-polyfill-corejs3', { method: 'usage-global' }]
