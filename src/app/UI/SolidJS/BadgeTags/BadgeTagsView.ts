@@ -15,7 +15,7 @@ type BadgeEntry = {
 
 export class BadgeTagsView implements ViewAdapterInterface<BadgeTagsViewDTO> {
   private readonly entries: Map<number, BadgeEntry> = new Map()
-  private readonly wrapperClass: string = 'extension-badge-tags-wrapper'
+  private readonly wrapperClass: string = 'hor-badge-tags-wrapper'
 
   public mount (container: HTMLElement, viewDto: BadgeTagsViewDTO): void {
     const tagsContainer: HTMLElement | null = container.querySelector('.tags-container')

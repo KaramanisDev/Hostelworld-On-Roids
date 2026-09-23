@@ -63,7 +63,7 @@ export class PropertyCardView implements ViewAdapterInterface<PropertyCardViewDT
     this.disposeEntry(propertyId)
 
     const wrapper: HTMLDivElement = document.createElement('div')
-    wrapper.className = 'property-card-wrapper'
+    wrapper.className = 'hor-property-card-wrapper'
     wrapper.dataset.propertyId = String(propertyId)
     container.appendChild(wrapper)
 
