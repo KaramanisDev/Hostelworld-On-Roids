@@ -5,10 +5,10 @@ type Args = [propertyId: number, propertyName: string, from: string, to: string]
 type Result = { propertyId: number; propertyName: string; data: PropertyGuestsCountries }
 
 export class FetchCountriesTask extends AbstractQueuedTask<Args, Result> {
-  protected jobId (args: Args): number {
-    const [propertyId]: Args = args
+  protected jobId (args: Args): string {
+    const [propertyId, , from, to]: Args = args
 
-    return propertyId
+    return `${propertyId}:${from}:${to}`
   }
 
   protected async execute (args: Args): Promise<Result> {
