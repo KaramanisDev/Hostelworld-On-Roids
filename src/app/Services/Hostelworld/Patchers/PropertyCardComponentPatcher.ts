@@ -30,9 +30,11 @@ export class PropertyCardComponentPatcher {
       .sort((a: BookedCountry, b: BookedCountry) => b.getCount() - a.getCount())
       .reduce(
         (carry: Avatar[], country: BookedCountry) => {
+          const guests: string = country.getCount() === 1 ? '1 person is' : `${country.getCount()} people are`
+
           carry.push({
             flag: `https://dummyimage.com/50x50/fff/000.jpg&text=${country.getCount()}`,
-            name: `${country.getCount()} people are coming from ${country.getName()}.`,
+            name: `${guests} coming from ${country.getName()}.`,
             picture: `https://a.hwstatic.com/hw/flags/${country.getCode()}.svg`
           })
 
