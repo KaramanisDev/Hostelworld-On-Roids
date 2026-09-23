@@ -56,6 +56,8 @@ export class HttpClient {
     response: Response,
     cacheInMinutes?: number
   ): Promise<void> {
+    if (!response.ok) return
+
     const cacheKey: string = this.cacheKey(request)
 
     const hasNotExpired: boolean = await this.storage.hasNotExpired(cacheKey)
