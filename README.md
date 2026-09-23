@@ -78,7 +78,7 @@ Once build, head over to your Chrome browser and:
 Congratulations, the extension should now be installed in your browser! Please note that in some cases, you may need to
 `reload` the extension for the changes to take effect.
 
-Additional `build` & `lint` commands can be found at the [scripts section](/package.json#L9-L24) of the `package.json`.
+Additional `build` & `lint` commands can be found at the [scripts section](/package.json#L14-L27) of the `package.json`.
 
 
 ## Packaging & Deployment
