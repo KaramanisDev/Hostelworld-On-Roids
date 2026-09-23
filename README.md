@@ -50,7 +50,7 @@ Install the extension directly from the [Chrome Web Store](https://chrome.google
 
 ## Supported platforms
 
-Currently, the extension is developed to run on **Chrome version 88** and newer versions. While it is likely to function
+Currently, the extension is developed to run on **Chrome version 111** and newer versions. While it is likely to function
 on other browsers, it has not been officially tested and confirmed yet.
 
 This section will be updated when additional browsers are supported.
