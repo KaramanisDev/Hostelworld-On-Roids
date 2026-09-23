@@ -7,8 +7,9 @@ import { DevicePatcher } from 'Services/Hostelworld/Patchers/DevicePatcher'
 import { SearchApiRequestsInterceptor } from 'Services/Hostelworld/SearchApiRequestsInterceptor'
 import { AppDiscountInterceptor } from 'Services/Hostelworld/AppDiscountInterceptor'
 import { VuexDataHook } from 'Services/Hostelworld/VuexDataHook'
-import type { HostelworldSearch } from 'Types/HostelworldSearch'
+import type { HostelworldSearch, Property } from 'Types/HostelworldSearch'
 import { FilterModalRenderer } from 'UI/Renderers/FilterModal'
+import { pluck } from 'Utils'
 
 @Subscribe('app:inited')
 export class AppInitedListener extends AbstractListener {
@@ -41,7 +42,7 @@ export class AppInitedListener extends AbstractListener {
         this.onSearchProperties.bind(this)
       )
       .interceptSearchAll(
-        this.onSearchProperties.bind(this)
+        SearchDataAdapter.withoutPromotions.bind(SearchDataAdapter)
       )
   }
 
@@ -49,16 +50,28 @@ export class AppInitedListener extends AbstractListener {
     const search: Search = Search.createFromHostelworldSearchUrl(url)
     this.persistSearchInSession(search)
 
-    void SearchPropertyListComponentPatcher.loadAllForCity(search.getCityId())
-
     return url
   }
 
   private onSearchProperties (search: HostelworldSearch): HostelworldSearch {
     const adapted: HostelworldSearch = SearchDataAdapter.withoutPromotions(search)
 
+    this.emit('property:composition:reset')
     this.emit('hostelworld:search:intercepted', adapted.properties)
 
+    const latestSearch: Search | undefined = this.latestSearchInSession()
+    if (!latestSearch) return adapted
+
+    void SearchPropertyListComponentPatcher.loadAllForCity(
+      latestSearch.getCityId(),
+      pluck(adapted.properties, 'id'),
+      this.onUnavailableProperties.bind(this)
+    )
+
     return adapted
+  }
+
+  private onUnavailableProperties (properties: Property[]): void {
+    this.emit('hostelworld:search:intercepted', properties)
   }
 }

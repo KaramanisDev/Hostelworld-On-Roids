@@ -67,25 +67,33 @@ export class SearchPropertyListComponentPatcher {
     )
   }
 
-  public static async loadAllForCity (cityId: string): Promise<void> {
+  public static async loadAllForCity (
+    cityId: string,
+    availablePropertyIds: number[],
+    callback: (properties: Property[]) => void
+  ): Promise<void> {
     const store: VuexStore | undefined = await promiseFallback(VueComponentAccessor.hostelworldStore())
     if (!store) return
 
     const service: Awaited<ReturnType<VuexStore['$services']['search']>> = await store.$services.search()
     const { properties } = await service.search(cityId, null, null, 1, {})
+    const cityProperties: Property[] = [...properties]
 
     await waitForElement('.property-card .property-card-container')
 
     const loaded: Property[] = store.state.search.properties
     const loadedPropertyIds: number[] = pluck(loaded, 'id')
 
-    const unavailable: Property[] = [...properties].filter(property => !loadedPropertyIds.includes(property.id))
     const allProperties: Property[] = [
       ...loaded,
-      ...unavailable
+      ...cityProperties.filter(property => !loadedPropertyIds.includes(property.id))
     ]
 
     await store.commit('search/setProperties', allProperties)
+
+    callback(
+      cityProperties.filter(property => !availablePropertyIds.includes(property.id))
+    )
   }
 
   public static applyPropertyFilter (predicate: PropertyFilterPredicate): void {
