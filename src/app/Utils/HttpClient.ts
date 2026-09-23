@@ -1,4 +1,4 @@
-import type { KyResponse, NormalizedOptions, Options } from 'ky'
+import type { AfterResponseState, BeforeRequestState, KyResponse, Options } from 'ky'
 import { default as KyClient } from 'ky'
 import { CacheStorage } from 'Utils/Storage/CacheStorage'
 import { hash } from 'Utils/index'
@@ -29,10 +29,10 @@ export class HttpClient {
         ...kyOptions,
         hooks: {
           beforeRequest: [
-            async (request: Request): Promise<Request | Response> => this.beforeRequestHook(request)
+            async ({ request }: BeforeRequestState): Promise<Request | Response> => this.beforeRequestHook(request)
           ],
           afterResponse: [
-            (request: Request, _: NormalizedOptions, response: Response): Promise<void> =>
+            ({ request, response }: AfterResponseState): Promise<void> =>
               this.afterResponseHook(request, response, options?.cacheInMinutes)
           ]
         }
