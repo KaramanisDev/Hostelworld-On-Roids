@@ -1,7 +1,7 @@
 import type { AfterResponseState, BeforeRequestState, KyResponse, Options } from 'ky'
 import { default as KyClient } from 'ky'
 import { CacheStorage } from 'Utils/Storage/CacheStorage'
-import { hash } from 'Utils/index'
+import { hash, promiseFallback } from 'Utils/index'
 import type { StorageInterface } from 'Utils/Storage/StorageInterface'
 
 export type HttpClientOptions = {
@@ -43,8 +43,8 @@ export class HttpClient {
   }
 
   private static async beforeRequestHook (request: Request): Promise<Request | Response> {
-    const cachedContent: string | undefined = await this.storage.get(
-      this.cacheKey(request)
+    const cachedContent: string | undefined = await promiseFallback(
+      this.storage.get(this.cacheKey(request))
     )
     if (!cachedContent) return request
 
@@ -60,13 +60,13 @@ export class HttpClient {
 
     const cacheKey: string = this.cacheKey(request)
 
-    const hasNotExpired: boolean = await this.storage.hasNotExpired(cacheKey)
+    const hasNotExpired: boolean = await promiseFallback(this.storage.hasNotExpired(cacheKey), false)
     if (hasNotExpired) return
 
     const content: string = await response.clone().text()
     const cacheTimeInMs: number = (cacheInMinutes ?? this.defaultCacheTimeInMinutes) * 60 * 1000
 
-    return this.storage.put(cacheKey, content, cacheTimeInMs)
+    return promiseFallback(this.storage.put(cacheKey, content, cacheTimeInMs))
   }
 
   private static cacheKey (request: Request): string {
