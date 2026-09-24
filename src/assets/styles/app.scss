@@ -338,7 +338,12 @@
       font-size: 1.5rem;
       line-height: 2rem;
     }
+  }
+}
 
+@media (max-width: 640px) {
+  .property-card,
+  .hor-property-insights {
     .hor-metrics-grid {
       grid-template-columns: repeat(4, minmax(0, 1fr));
 
@@ -349,6 +354,33 @@
             grid-column: 1 / -1;
             flex-direction: row;
             justify-content: flex-start;
+          }
+
+          &.hor-item .hor-value {
+            text-align: center;
+            white-space: normal;
+          }
+        }
+      }
+    }
+  }
+
+  .property-card .hor-metrics-grid .hor-row {
+    .hor-title,
+    .hor-item {
+      &.hor-title {
+        padding: 0.25rem 0.625rem;
+        background: var(--wds-color-ink-lightest);
+      }
+    }
+  }
+
+  .hor-property-insights {
+    .hor-metrics-grid {
+      .hor-row {
+        .hor-title,
+        .hor-item {
+          &.hor-title {
             padding: 0.5rem 0.875rem;
             font-size: 0.6875rem;
           }
@@ -359,11 +391,6 @@
 
             .hor-label {
               font-size: 0.625rem;
-            }
-
-            .hor-value {
-              text-align: center;
-              white-space: normal;
             }
           }
         }
