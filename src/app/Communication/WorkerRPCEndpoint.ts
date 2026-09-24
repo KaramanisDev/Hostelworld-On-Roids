@@ -1,15 +1,15 @@
 import { ExtensionRuntime } from 'Utils/ExtensionRuntime'
-import { RPCRequest, RPCResult } from './RPCTypesContract'
+import type { RPCRequest, RPCRequestPayload, RPCResponsePayload, RPCResult } from './RPCTypesContract'
 import { deserialize, serialize } from 'Utils'
 
 type OnRequestHandler<TPayload = unknown, TResponse = unknown> = (event: string, payload: TPayload) => TResponse
 
 export class WorkerRPCEndpoint {
   public static listen (): void {
-    ExtensionRuntime.onMessage((event: string, payload: string): void => {
+    ExtensionRuntime.onMessage((event: string, payload: RPCResponsePayload): void => {
       if (!event.endsWith(':response')) return
 
-      const result: RPCResult = { task: event.replace(':response', ''), result: payload }
+      const result: RPCResult<string> = { id: payload.id, task: event.replace(':response', ''), result: payload.result }
 
       window.dispatchEvent(
         new CustomEvent('rpc:result', { detail: result })
@@ -19,29 +19,33 @@ export class WorkerRPCEndpoint {
     window.addEventListener('rpc:call', async (eventInit: CustomEventInit<RPCRequest<string>>): Promise<void> => {
       if (!eventInit.detail) return
 
-      const { task, args } = eventInit.detail
+      const { id, task, args } = eventInit.detail
       const dispatchEvent = `${task}:request`
+      const payload: RPCRequestPayload = { id, args }
 
-      ExtensionRuntime.sendMessage(dispatchEvent, args)
+      ExtensionRuntime.sendMessage(dispatchEvent, payload)
     })
   }
 
   public static onRequest<TPayload, TResponse> (callback: OnRequestHandler<TPayload, TResponse>): void {
-    ExtensionRuntime.onMessage<string>((event: string, payload: string, tabId?: number): void => {
+    ExtensionRuntime.onMessage<RPCRequestPayload>((event: string, payload: RPCRequestPayload, tabId?: number): void => {
       if (!event.endsWith(':request') || !tabId) return
 
       const originalEvent: string = event.replace(':request', '')
-      const response: TResponse = callback(originalEvent, deserialize<TPayload>(payload))
+      const response: TResponse = callback(originalEvent, deserialize<TPayload>(payload.args))
+      const respond: (result: TResponse) => void = (result: TResponse): void => {
+        const responsePayload: RPCResponsePayload = { id: payload.id, result: serialize(result) }
+
+        ExtensionRuntime.sendMessageToTab(tabId, `${originalEvent}:response`, responsePayload)
+      }
 
       if (response instanceof Promise) {
-        void response.then(
-          response => ExtensionRuntime.sendMessageToTab(tabId, `${originalEvent}:response`, serialize(response))
-        )
+        void response.then(respond)
 
         return
       }
 
-      ExtensionRuntime.sendMessageToTab(tabId, `${originalEvent}:response`, serialize(response))
+      respond(response)
     })
   }
 }

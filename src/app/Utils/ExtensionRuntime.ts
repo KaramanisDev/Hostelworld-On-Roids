@@ -26,6 +26,10 @@ export class ExtensionRuntime {
     return Extension.runtime.getManifest().name
   }
 
+  public static platformInfo (): Promise<Runtime.PlatformInfo> {
+    return Extension.runtime.getPlatformInfo()
+  }
+
   public static sendMessage (event: string, payload: unknown): void {
     void promiseFallback(Extension.runtime.sendMessage({ event, payload }))
   }
