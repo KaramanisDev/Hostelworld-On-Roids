@@ -13,9 +13,7 @@ type CountriesPayload = {
 @Subscribe('worker:result:fetch:countries')
 export class CountriesReadyListener extends AbstractListener {
   public handle (payload: CountriesPayload): void {
-    void PropertyCardRenderer.updateCountries(
-      payload.propertyId, payload.propertyName, payload.data
-    )
+    void PropertyCardRenderer.updateCountries(payload.propertyId, payload.data)
     PropertyInsightsRenderer.updateCountries(payload.propertyId, payload.data)
 
     this.emit('property:metric:collected', 'countries', payload)

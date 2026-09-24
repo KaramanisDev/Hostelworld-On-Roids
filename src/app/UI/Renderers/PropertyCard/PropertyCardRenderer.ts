@@ -14,11 +14,12 @@ import type { PropertyGuestsCountries } from 'Services/Hostelworld/Api/VisitorsC
 export class PropertyCardRenderer {
   private static readonly view: ViewAdapterInterface<PropertyCardViewDTO> = new PropertyCardView()
   private static readonly badgeTagsView: BadgeTagsView = new BadgeTagsView()
+  private static readonly propertyLinkRegex: RegExp = /hosteldetails\.php\/[^/]+\/[^/]+\/(\d+)/
 
-  public static async render (propertyId: number, propertyName?: string): Promise<void> {
+  public static async render (propertyId: number): Promise<void> {
     if (!await this.hasPropertyCards()) return
 
-    const container: HTMLElement | null = this.findContainer(propertyId, propertyName)
+    const container: HTMLElement | null = this.findContainer(propertyId)
     if (!container) return
 
     const viewDto: PropertyCardViewDTO = PropertyCardViewDTOFactory.loading(propertyId)
@@ -28,7 +29,7 @@ export class PropertyCardRenderer {
   public static async renderWithData (property: Property): Promise<void> {
     if (!await this.hasPropertyCards()) return
 
-    const container: HTMLElement | null = this.findContainer(property.getId(), property.getName())
+    const container: HTMLElement | null = this.findContainer(property.getId())
     if (!container) return
 
     const viewDto: PropertyCardViewDTO = PropertyCardViewDTOFactory.loaded(property)
@@ -58,12 +59,8 @@ export class PropertyCardRenderer {
     })
   }
 
-  public static async updateCountries (
-    propertyId: number,
-    propertyName: string,
-    countries: PropertyGuestsCountries
-  ): Promise<void> {
-    const container: HTMLElement | null = this.findContainer(propertyId, propertyName)
+  public static async updateCountries (propertyId: number, countries: PropertyGuestsCountries): Promise<void> {
+    const container: HTMLElement | null = this.findContainer(propertyId)
     if (!container) return
 
     const bookedCountries: BookedCountry[] = countries.map(country => new BookedCountry(country))
@@ -74,26 +71,22 @@ export class PropertyCardRenderer {
     return Boolean(await promiseFallback(waitForElement('.property-card .property-card-container')))
   }
 
-  private static findContainer (propertyId: number, propertyName?: string): HTMLElement | null {
+  private static findContainer (propertyId: number): HTMLElement | null {
     const propertyCards: NodeListOf<Element> = document.querySelectorAll('.property-card')
 
     for (const card of propertyCards) {
-      const containsId: boolean = new RegExp('\\b' + propertyId + '\\b').test(card.innerHTML)
-      if (!containsId) continue
-
-      if (!propertyName) return card as HTMLElement
-
-      const containsName: boolean = card.innerHTML.includes(this.htmlEncode(propertyName))
-      if (containsName) return card as HTMLElement
+      if (this.cardPropertyId(card) === propertyId) return card as HTMLElement
     }
 
     return null
   }
 
-  private static htmlEncode (value: string): string {
-    const element: HTMLDivElement = document.createElement('div')
-    element.textContent = value
+  private static cardPropertyId (card: Element): number | null {
+    const match: RegExpMatchArray | null | undefined = card
+      .querySelector('a[href*="hosteldetails.php"]')
+      ?.getAttribute('href')
+      ?.match(this.propertyLinkRegex)
 
-    return element.innerHTML
+    return match ? Number(match[1]) : null
   }
 }

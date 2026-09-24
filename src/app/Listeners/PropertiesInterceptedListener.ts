@@ -14,7 +14,7 @@ export class PropertiesInterceptedListener extends AbstractListener {
     const to: string = search.getTo().toISOString()
 
     await Promise.allSettled(
-      properties.map(property => PropertyCardRenderer.render(property.id, property.name))
+      properties.map(property => PropertyCardRenderer.render(property.id))
     )
 
     for (const property of properties) {
