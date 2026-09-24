@@ -97,7 +97,7 @@ export class SearchPropertyListComponentPatcher {
     const { properties } = await service.search(cityId, null, null, 1, {})
     const cityProperties: Property[] = [...properties]
 
-    await waitForElement('.property-card .property-card-container')
+    if (!await promiseFallback(waitForElement('.property-card .property-card-container'))) return
 
     const loaded: Property[] = store.state.search.properties
     const loadedPropertyIds: number[] = pluck(loaded, 'id')

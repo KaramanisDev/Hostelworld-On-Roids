@@ -13,9 +13,11 @@ export class PropertiesInterceptedListener extends AbstractListener {
     const from: string = search.getFrom().toISOString()
     const to: string = search.getTo().toISOString()
 
-    for (const property of properties) {
-      await PropertyCardRenderer.render(property.id, property.name)
+    await Promise.allSettled(
+      properties.map(property => PropertyCardRenderer.render(property.id, property.name))
+    )
 
+    for (const property of properties) {
       const overallRating: number | null = property.overallRating
         ? Number((property.overallRating.overall / 10).toFixed(1))
         : null

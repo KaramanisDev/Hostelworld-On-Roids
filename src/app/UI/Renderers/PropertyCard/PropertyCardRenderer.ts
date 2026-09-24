@@ -5,7 +5,7 @@ import type { ViewAdapterInterface } from 'UI/ViewAdapterInterface'
 import { PropertyCardView } from 'UI/SolidJS/PropertyCard/PropertyCardView'
 import type { PropertyCardViewDTO } from './ViewDTOs'
 import { PropertyCardViewDTOFactory } from './ViewDTOs'
-import { waitForElement } from 'Utils'
+import { promiseFallback, waitForElement } from 'Utils'
 import { PropertyCardComponentPatcher } from 'Services/Hostelworld/Patchers/PropertyCardComponentPatcher'
 import { BadgeTagsView } from 'UI/SolidJS/BadgeTags/BadgeTagsView'
 import { BookedCountry } from 'DTOs/BookedCountry'
@@ -16,7 +16,7 @@ export class PropertyCardRenderer {
   private static readonly badgeTagsView: BadgeTagsView = new BadgeTagsView()
 
   public static async render (propertyId: number, propertyName?: string): Promise<void> {
-    await waitForElement('.property-card .property-card-container')
+    if (!await this.hasPropertyCards()) return
 
     const container: HTMLElement | null = this.findContainer(propertyId, propertyName)
     if (!container) return
@@ -26,7 +26,7 @@ export class PropertyCardRenderer {
   }
 
   public static async renderWithData (property: Property): Promise<void> {
-    await waitForElement('.property-card .property-card-container')
+    if (!await this.hasPropertyCards()) return
 
     const container: HTMLElement | null = this.findContainer(property.getId(), property.getName())
     if (!container) return
@@ -68,6 +68,10 @@ export class PropertyCardRenderer {
 
     const bookedCountries: BookedCountry[] = countries.map(country => new BookedCountry(country))
     await PropertyCardComponentPatcher.injectBookedCountries(container, bookedCountries)
+  }
+
+  private static async hasPropertyCards (): Promise<boolean> {
+    return Boolean(await promiseFallback(waitForElement('.property-card .property-card-container')))
   }
 
   private static findContainer (propertyId: number, propertyName?: string): HTMLElement | null {
