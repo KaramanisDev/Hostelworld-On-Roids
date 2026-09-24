@@ -1,6 +1,7 @@
 import { VueComponentAccessor } from 'Services/Hostelworld/VueComponentAccessor'
 import type { HostelworldPropertyDetails, VuePropertyListComponent } from 'Services/Hostelworld/VueComponentAccessor'
 import { PropertyPage } from 'DTOs/PropertyPage'
+import type { Property } from 'Types/HostelworldSearch'
 import { promiseFallback, waitForProperty } from 'Utils'
 
 type VuexRoute = {
@@ -36,7 +37,7 @@ export class VuexDataHook {
       if (component.isDisplayedPropertiesWatched) return
       component.isDisplayedPropertiesWatched = true
 
-      component.$watch('displayedProperties', (properties) => {
+      const onDisplayedProperties: (properties: Property[]) => void = (properties: Property[]): void => {
         if (!properties[0]) return
 
         callback(
@@ -44,6 +45,11 @@ export class VuexDataHook {
             .filter(property => !property.is3PIProperty)
             .map(property => property.id)
         )
+      }
+
+      component.$watch<Property[]>('displayedProperties', onDisplayedProperties)
+      component.$watch('cardComponent', () => {
+        component.$nextTick(() => onDisplayedProperties(component.displayedProperties))
       })
     }
 

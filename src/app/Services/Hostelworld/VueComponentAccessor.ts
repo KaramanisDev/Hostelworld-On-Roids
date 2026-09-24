@@ -57,7 +57,8 @@ export type VuePropertyListComponent = {
   displayedProperties: Property[]
   _computedWatchers?: Record<string, VueComputedWatcher>
   isDisplayedPropertiesWatched?: boolean
-  $watch: (property: string, callback: (properties: Property[]) => void) => void
+  $watch: <T>(property: string, callback: (value: T) => void) => void
+  $nextTick: (callback: () => void) => void
   $forceUpdate: () => void
   $parent: VueSearchPageComponent
 }
