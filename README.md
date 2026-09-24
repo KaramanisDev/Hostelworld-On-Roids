@@ -12,19 +12,22 @@ it lists some properties which may be unavailable due to scheduling conflicts, b
 your travel dates were more flexible.
 
 In a nutshell, the extension provides extra metrics by analyzing the availability and reviews per property, presenting
-this data directly on the property card. This might help to facilitate your decision-making process when selecting a
-hostel.
+this data directly on the property cards and on each property's page. This might help to facilitate your
+decision-making process when selecting a hostel.
 
 Here's what it does:
 
-* Removes featured/promoted property statue obstructions from search results.
+* Removes featured/promoted property status obstructions from search results.
 * Surfaces mobile-exclusive deals that are normally reserved only for the mobile app.
+* Lists the properties that are unavailable for your dates alongside the available ones.
+* Hides third-party listings from search results.
 * Displays guest-origin stats per property, showing where upcoming guests are arriving from.
 * Shows the gender split (male, female, solo travelers) and age group distribution of past guests.
 * Checks room availability by type (mixed dorms, female-only dorms, private rooms) and their capacity.
 * Tracks recent rating trends, comparing a property's recent review score against its all-time average.
 * Assigns demographic badges like "Great for Solo", "Female Friendly", "Young Crowd", and more.
 * Offers a custom filter system to narrow down properties by badge, demographics, and age groups.
+* Shows the same insights on each property's own page.
 
 H.O.R was developed as a personal side project to simplify the process of selecting the "best" hostel from an extensive
 range of good ones. It proved & continues to prove useful during my travels, assisting me in finding the most suitable
