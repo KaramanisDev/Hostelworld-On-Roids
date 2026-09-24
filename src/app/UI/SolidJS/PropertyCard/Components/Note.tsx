@@ -6,11 +6,10 @@ type Properties = {
 }
 
 export function Note (properties: Properties): JSX.Element {
-  const className: string = properties.isLoading ? 'hor-note hor-loading' : 'hor-note'
-  const dataAttributes: Record<string, string> = properties.isLoading ? { 'data-note-type': 'loading' } : {}
+  function noteClass (): string { return properties.isLoading ? 'hor-note hor-loading' : 'hor-note' }
 
   return (
-    <div class={className} {...dataAttributes}>
+    <div class={noteClass()}>
       {properties.message}
     </div>
   )
