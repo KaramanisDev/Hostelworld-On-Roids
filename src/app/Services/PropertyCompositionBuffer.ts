@@ -1,11 +1,16 @@
 import type { PropertyReviews } from 'Services/Hostelworld/Api/ReviewsClient'
 import type { PropertyAvailability } from 'Services/Hostelworld/Api/AvailabilityClient'
 import type { PropertyGuestsCountries } from 'Services/Hostelworld/Api/VisitorsCountryClient'
+import { stayKey } from 'Utils'
 
-type PendingProperty = {
+export type StayEntry = {
   id: number
   name: string
-  reviews?: PropertyReviews
+  from: Date
+  to: Date
+}
+
+type PendingStay = StayEntry & {
   availability?: PropertyAvailability
   countries?: PropertyGuestsCountries
 }
@@ -13,6 +18,8 @@ type PendingProperty = {
 export type CompletedProperty = {
   id: number
   name: string
+  from: Date
+  to: Date
   reviews: PropertyReviews
   availability: PropertyAvailability
   countries: PropertyGuestsCountries
@@ -20,38 +27,52 @@ export type CompletedProperty = {
 
 export type MetricData = PropertyReviews | PropertyAvailability | PropertyGuestsCountries
 
-export type Metric = 'reviews' | 'availability' | 'countries'
+export type StayMetric = 'availability' | 'countries'
+
+export type Metric = 'reviews' | StayMetric
 
 export class PropertyCompositionBuffer {
-  private static entries: Map<number, PendingProperty> = new Map()
+  private static reviews: Map<number, PropertyReviews> = new Map()
+  private static stays: Map<string, PendingStay> = new Map()
 
-  public static register (id: number, name: string): void {
-    if (this.entries.has(id)) return
-
-    this.entries.set(id, { id, name })
+  public static collectReviews (id: number, reviews: PropertyReviews): void {
+    this.reviews.set(id, reviews)
   }
 
-  public static collect (id: number, metric: Metric, data: MetricData): void {
-    const entry: PendingProperty | undefined = this.entries.get(id)
-    if (!entry) return
+  public static collectStayMetric (stay: StayEntry, metric: StayMetric, data: MetricData): void {
+    const key: string = this.key(stay.id, stay.from, stay.to)
+    const pendingStay: PendingStay = this.stays.get(key) ?? { ...stay }
 
-    if (metric === 'reviews') entry.reviews = data as PropertyReviews
-    if (metric === 'availability') entry.availability = data as PropertyAvailability
-    if (metric === 'countries') entry.countries = data as PropertyGuestsCountries
+    if (metric === 'availability') pendingStay.availability = data as PropertyAvailability
+    if (metric === 'countries') pendingStay.countries = data as PropertyGuestsCountries
+
+    this.stays.set(key, pendingStay)
   }
 
-  public static completedEntry (id: number): CompletedProperty | undefined {
-    const entry: PendingProperty | undefined = this.entries.get(id)
-    if (!entry?.reviews || !entry?.availability || !entry?.countries) return undefined
+  public static completedEntries (id: number): CompletedProperty[] {
+    const reviews: PropertyReviews | undefined = this.reviews.get(id)
+    if (!reviews) return []
 
-    return entry as CompletedProperty
+    const completed: CompletedProperty[] = []
+    for (const stay of this.stays.values()) {
+      if (stay.id !== id || !stay.availability || !stay.countries) continue
+
+      completed.push({ ...stay, reviews, availability: stay.availability, countries: stay.countries })
+    }
+
+    return completed
   }
 
-  public static remove (id: number): void {
-    this.entries.delete(id)
+  public static remove (entry: CompletedProperty): void {
+    this.stays.delete(this.key(entry.id, entry.from, entry.to))
   }
 
   public static clear (): void {
-    this.entries.clear()
+    this.reviews.clear()
+    this.stays.clear()
+  }
+
+  private static key (id: number, from: Date, to: Date): string {
+    return `${id}|${stayKey(from, to)}`
   }
 }

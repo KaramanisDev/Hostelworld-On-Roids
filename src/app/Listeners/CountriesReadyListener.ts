@@ -7,14 +7,21 @@ import type { PropertyGuestsCountries } from 'Services/Hostelworld/Api/VisitorsC
 type CountriesPayload = {
   propertyId: number
   propertyName: string
+  from: string
+  to: string
   data: PropertyGuestsCountries
 }
 
 @Subscribe('worker:result:fetch:countries')
 export class CountriesReadyListener extends AbstractListener {
   public handle (payload: CountriesPayload): void {
-    void PropertyCardRenderer.updateCountries(payload.propertyId, payload.data)
-    PropertyInsightsRenderer.updateCountries(payload.propertyId, payload.data)
+    const from: Date = new Date(payload.from)
+    const to: Date = new Date(payload.to)
+
+    if (this.isLatestSearchStay(from, to)) {
+      void PropertyCardRenderer.updateCountries(payload.propertyId, payload.data)
+    }
+    PropertyInsightsRenderer.updateCountries(payload.propertyId, from, to, payload.data)
 
     this.emit('property:metric:collected', 'countries', payload)
   }

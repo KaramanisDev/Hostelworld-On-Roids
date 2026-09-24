@@ -6,6 +6,8 @@ import type { PropertyBadge } from 'Services/PropertyBadgeService'
 type PropertyAttributes = {
   id: number
   name: string
+  from: Date
+  to: Date
   reviewMetrics: ReviewMetrics
   availabilityMetrics: AvailabilityMetrics
   bookedCountries: BookedCountry[]
@@ -15,6 +17,8 @@ type PropertyAttributes = {
 export class Property {
   private id!: number
   private name!: string
+  private from!: Date
+  private to!: Date
   private reviewMetrics!: ReviewMetrics
   private availabilityMetrics!: AvailabilityMetrics
   private bookedCountries!: BookedCountry[]
@@ -30,6 +34,14 @@ export class Property {
 
   public getName (): string {
     return this.name
+  }
+
+  public getFrom (): Date {
+    return this.from
+  }
+
+  public getTo (): Date {
+    return this.to
   }
 
   public getReviewMetrics (): ReviewMetrics {

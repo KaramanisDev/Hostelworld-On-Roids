@@ -2,7 +2,7 @@ import { AbstractQueuedTask } from './AbstractQueuedTask'
 import { AvailabilityClient, type PropertyAvailability } from 'Services/Hostelworld/Api/AvailabilityClient'
 
 type Args = [propertyId: number, propertyName: string, from: string, to: string]
-type Result = { propertyId: number; propertyName: string; data: PropertyAvailability }
+type Result = { propertyId: number; propertyName: string; from: string; to: string; data: PropertyAvailability }
 
 export class FetchAvailabilityTask extends AbstractQueuedTask<Args, Result> {
   protected jobId (args: Args): string {
@@ -20,6 +20,6 @@ export class FetchAvailabilityTask extends AbstractQueuedTask<Args, Result> {
       new Date(to)
     )
 
-    return { propertyId, propertyName, data }
+    return { propertyId, propertyName, from, to, data }
   }
 }

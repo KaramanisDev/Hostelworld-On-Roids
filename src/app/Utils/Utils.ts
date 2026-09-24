@@ -109,12 +109,12 @@ export function toPercent (value: number, max: number): number {
 
 export function dateFormat (date: Date, format: string = 'yyyy-mm-dd'): string {
   const replacements: Record<string, string | number> = {
-    yyyy: date.getFullYear(),
-    mm: String(date.getMonth() + 1).padStart(2, '0'),
-    dd: String(date.getDate()).padStart(2, '0'),
-    YY: String(date.getFullYear()).slice(-2),
-    M: date.getMonth() + 1,
-    D: date.getDate()
+    yyyy: date.getUTCFullYear(),
+    mm: String(date.getUTCMonth() + 1).padStart(2, '0'),
+    dd: String(date.getUTCDate()).padStart(2, '0'),
+    YY: String(date.getUTCFullYear()).slice(-2),
+    M: date.getUTCMonth() + 1,
+    D: date.getUTCDate()
   }
 
   return format.replaceAll(/yyyy|mm|dd|YY|M|D/g, match => String(replacements[match]))
@@ -123,9 +123,13 @@ export function dateFormat (date: Date, format: string = 'yyyy-mm-dd'): string {
 export function dateAddDays (date: Date, days: number): Date {
   const newDate = new Date(date)
 
-  newDate.setDate(newDate.getDate() + days)
+  newDate.setUTCDate(newDate.getUTCDate() + days)
 
   return newDate
+}
+
+export function stayKey (from: Date, to: Date): string {
+  return `${dateFormat(from)}|${dateFormat(to)}`
 }
 
 export async function promiseFallback<T> (promise: Promise<T>, fallback: T): Promise<T>

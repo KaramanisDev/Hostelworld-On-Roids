@@ -20,6 +20,8 @@ export class PropertyRenderListener extends AbstractListener {
     if (!propertyToRender) return
 
     PropertyInsightsRenderer.renderWithData(propertyToRender)
+    if (!this.isLatestSearchStay(propertyToRender.getFrom(), propertyToRender.getTo())) return
+
     await PropertyCardRenderer.renderWithData(propertyToRender)
   }
 }
