@@ -12,11 +12,15 @@ export type GuestCountry = {
 export type PropertyGuestsCountries = GuestCountry[]
 
 export class VisitorsCountryClient {
-  private static apiKey: string = 'cvFkm2A4AAefXoupLsChH4jL2mA2VGSyEA0MkRUrqz8Z8x5H'
-  private static endpoint: string = 'https://prod.apigee.hostelworld.com/socialcues-service/api/v1/' +
+  private static readonly apiKey: string = 'cvFkm2A4AAefXoupLsChH4jL2mA2VGSyEA0MkRUrqz8Z8x5H'
+  private static readonly endpoint: string = 'https://prod.apigee.hostelworld.com/socialcues-service/api/v1/' +
     'properties/{property}/other-guests?from={from}&to={to}'
 
-  static async fetch (propertyId: number, from: Date, to: Date): Promise<PropertyGuestsCountries> {
+  public static async fetch (propertyId: number, from: Date, to: Date): Promise<PropertyGuestsCountries> {
+    return await promiseFallback(this.countries(propertyId, from, to), [])
+  }
+
+  private static async countries (propertyId: number, from: Date, to: Date): Promise<PropertyGuestsCountries> {
     const guests: HostelworldPropertyGuests = await this.request(propertyId, from, to)
 
     return guests.data

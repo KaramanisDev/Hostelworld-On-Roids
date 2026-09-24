@@ -23,6 +23,10 @@ export class ReviewsClient {
   private static readonly recentReviewsLimit: number = 25
 
   public static async fetch (propertyId: number, overallRating: number | null): Promise<PropertyReviews> {
+    return await promiseFallback(this.reviewMetrics(propertyId, overallRating), this.emptyMetrics(overallRating))
+  }
+
+  private static async reviewMetrics (propertyId: number, overallRating: number | null): Promise<PropertyReviews> {
     const { reviews, reviewStatistics, pagination } = await this.request(propertyId, 1)
     const remainingReviews: Review[] = await this.fetchRemainingPages(propertyId, pagination.numberOfPages)
     const allReviews: Review[] = [...reviews, ...remainingReviews]
@@ -107,23 +111,6 @@ export class ReviewsClient {
 
     const cacheTimeInDays: number = [1, 2].includes(page) ? 1 : 3
 
-    return await promiseFallback(
-      HttpClient.getJson(endpoint, { cacheInMinutes: cacheTimeInDays * 24 * 60 }),
-      this.requestFallback()
-    )
-  }
-
-  private static requestFallback (): HostelworldPropertyReviews {
-    return {
-      reviews: [],
-      pagination: { totalNumberOfItems: 0, numberOfPages: 1, next: '' },
-      reviewStatistics: {
-        positiveCount: 0,
-        negativeCount: 0,
-        soloPercentage: 0,
-        groupsPercentage: 0,
-        couplesPercentage: 0
-      }
-    }
+    return await HttpClient.getJson(endpoint, { cacheInMinutes: cacheTimeInDays * 24 * 60 })
   }
 }

@@ -19,6 +19,13 @@ export class AvailabilityClient {
     'properties/{property}/availability/?date-start={from}&num-nights={nights}'
 
   public static async fetch (propertyId: number, from: Date, to: Date): Promise<PropertyAvailability> {
+    return await promiseFallback(
+      this.availability(propertyId, from, to),
+      { current: this.emptyMetrics(), max: this.emptyMetrics() }
+    )
+  }
+
+  private static async availability (propertyId: number, from: Date, to: Date): Promise<PropertyAvailability> {
     const [current, sampledMax]: [Metrics, Metrics] = await Promise.all([
       this.currentCapacity(propertyId, from, to),
       this.possibleMaxCapacity(propertyId, from)
@@ -29,6 +36,10 @@ export class AvailabilityClient {
     return { current, max }
   }
 
+  private static emptyMetrics (): Metrics {
+    return { mixed: 0, female: 0, private: 0, total: 0 }
+  }
+
   private static async currentCapacity (propertyId: number, from: Date, to: Date): Promise<Metrics> {
     const availability: HostelworldPropertyAvailability = await this.request(propertyId, from, to, 30)
 
@@ -36,12 +47,7 @@ export class AvailabilityClient {
   }
 
   private static async possibleMaxCapacity (propertyId: number, from: Date): Promise<Metrics> {
-    const maxMetrics: Metrics = {
-      mixed: 0,
-      female: 0,
-      private: 0,
-      total: 0
-    }
+    const maxMetrics: Metrics = this.emptyMetrics()
 
     const daysAfterToCheck: number[] = [10, 20, 30, 45, 60, 70, randomNumber(80, 90)]
 
@@ -69,12 +75,7 @@ export class AvailabilityClient {
   }
 
   private static toMetrics (availability: HostelworldPropertyAvailability): Metrics {
-    const metrics: Metrics = {
-      mixed: 0,
-      female: 0,
-      private: 0,
-      total: 0
-    }
+    const metrics: Metrics = this.emptyMetrics()
 
     const { dorms, privates } = availability.rooms
 
@@ -94,7 +95,7 @@ export class AvailabilityClient {
   }
 
   private static highestMetrics (...sources: Metrics[]): Metrics {
-    const result: Metrics = { mixed: 0, female: 0, private: 0, total: 0 }
+    const result: Metrics = this.emptyMetrics()
 
     for (const source of sources) {
       for (const key in result) {
