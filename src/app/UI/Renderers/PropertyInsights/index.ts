@@ -1,0 +1,1 @@
+export { PropertyInsightsRenderer } from './PropertyInsightsRenderer'

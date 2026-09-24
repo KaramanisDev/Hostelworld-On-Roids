@@ -1,5 +1,5 @@
 import type { Property } from 'Types/HostelworldSearch'
-import { waitForElement, waitForProperty } from 'Utils'
+import { waitFor, waitForElement, waitForProperty } from 'Utils'
 
 type VueConstructor = {
   util: {
@@ -26,10 +26,21 @@ interface HostelworldSearchService {
   ): Promise<HostelworldSearchServiceResult>
 }
 
+export type HostelworldPropertyDetails = {
+  id: string
+  name: string
+  rating: {
+    total: number
+  } | null
+}
+
 type HostelworldState = {
   search: {
     city: number | null
     properties: Property[]
+  }
+  property: {
+    property: HostelworldPropertyDetails | null
   }
 }
 
@@ -76,5 +87,19 @@ export class VueComponentAccessor {
 
   public static async hostelworldStore (): Promise<VuexStore> {
     return await waitForProperty(window, '$nuxt.$store', 60 * 1000)
+  }
+
+  public static async propertyDetails (propertyId: number): Promise<HostelworldPropertyDetails> {
+    const store: VuexStore = await this.hostelworldStore()
+
+    return waitFor(
+      (): HostelworldPropertyDetails | undefined => {
+        const details: HostelworldPropertyDetails | null = store.state.property.property
+
+        return details && Number(details.id) === propertyId ? details : undefined
+      },
+      30 * 1000,
+      `Details of property ${propertyId} are not available within the specified time.`
+    )
   }
 }

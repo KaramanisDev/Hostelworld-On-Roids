@@ -23,6 +23,7 @@ type Properties = {
   propertyId: number
   initialState: CardState
   onStateReady: (setters: CardStateSetters) => void
+  children?: JSX.Element
 }
 
 export function PropertyCardContainer (properties: Properties): JSX.Element {
@@ -56,6 +57,8 @@ export function PropertyCardContainer (properties: Properties): JSX.Element {
         <MetricsRow metricType="ageGroups" data={ageGroups()} />
         <MetricsRow metricType="availability" data={availability()} />
       </div>
+
+      {properties.children}
 
       <Note message={note()} isLoading={isLoading()} />
     </>

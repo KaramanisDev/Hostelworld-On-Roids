@@ -2,6 +2,7 @@ import type { Property } from 'DTOs/Property'
 import { Subscribe } from 'Core/EventBus'
 import { AbstractListener } from 'Listeners/AbstractListener'
 import { PropertyCardRenderer } from 'UI/Renderers/PropertyCard'
+import { PropertyInsightsRenderer } from 'UI/Renderers/PropertyInsights'
 
 @Subscribe('property:render')
 export class PropertyRenderListener extends AbstractListener {
@@ -18,6 +19,7 @@ export class PropertyRenderListener extends AbstractListener {
 
     if (!propertyToRender) return
 
+    PropertyInsightsRenderer.renderWithData(propertyToRender)
     await PropertyCardRenderer.renderWithData(propertyToRender)
   }
 }

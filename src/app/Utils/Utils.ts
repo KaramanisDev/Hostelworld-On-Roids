@@ -21,6 +21,23 @@ export function hash (input: string): string {
   return new Uint32Array([hash])[0].toString(36)
 }
 
+export async function waitFor<T> (
+  lookup: () => T | undefined,
+  maxTimeout: number,
+  timeoutMessage: string
+): Promise<T> {
+  const found: T | undefined = lookup()
+
+  if (found !== undefined) return found
+
+  if (maxTimeout <= 0) {
+    throw new Error(timeoutMessage)
+  }
+
+  await delay(100)
+  return waitFor(lookup, maxTimeout - 100, timeoutMessage)
+}
+
 export async function waitForProperty<T = unknown> (
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   root: any,
@@ -28,17 +45,13 @@ export async function waitForProperty<T = unknown> (
   maxTimeout: number = 5000
 ): Promise<T> {
   const path: string[] = pathToWait.split('.')
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const lookedUp: unknown = path.reduce((carry: any, property: string) => carry && carry[property], root)
 
-  if (lookedUp !== undefined) return lookedUp as T
-
-  if (maxTimeout <= 0) {
-    throw new Error(`Property path "${pathToWait}" is not available within the specified time.`)
-  }
-
-  await delay(100)
-  return waitForProperty<T>(root, pathToWait, maxTimeout - 100)
+  return waitFor<T>(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    () => path.reduce((carry: any, property: string) => carry && carry[property], root),
+    maxTimeout,
+    `Property path "${pathToWait}" is not available within the specified time.`
+  )
 }
 
 export async function waitForElement (
@@ -46,16 +59,11 @@ export async function waitForElement (
   maxTimeout: number = 30_000,
   onElement: Document | Element = document
 ): Promise<HTMLElement> {
-  const element: HTMLElement | null = onElement.querySelector(selector)
-
-  if (element) return element
-
-  if (maxTimeout <= 0) {
-    throw new Error(`Element that matches ${selector} was not found within the specified time.`)
-  }
-
-  await delay(100)
-  return waitForElement(selector, maxTimeout - 100, onElement)
+  return waitFor(
+    () => onElement.querySelector<HTMLElement>(selector) ?? undefined,
+    maxTimeout,
+    `Element that matches ${selector} was not found within the specified time.`
+  )
 }
 
 export function objectPick<T extends Record<string, unknown>, K extends keyof T> (object: T, keys: K[]): Pick<T, K> {

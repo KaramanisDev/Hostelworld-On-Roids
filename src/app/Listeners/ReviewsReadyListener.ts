@@ -1,6 +1,7 @@
 import { Subscribe } from 'Core/EventBus'
 import { AbstractListener } from './AbstractListener'
 import { PropertyCardRenderer } from 'UI/Renderers/PropertyCard'
+import { PropertyInsightsRenderer } from 'UI/Renderers/PropertyInsights'
 import { ReviewMetrics } from 'DTOs/ReviewMetrics'
 import type { PropertyReviews } from 'Services/Hostelworld/Api/ReviewsClient'
 
@@ -15,6 +16,7 @@ export class ReviewsReadyListener extends AbstractListener {
   public handle (payload: ReviewsPayload): void {
     const metrics: ReviewMetrics = new ReviewMetrics(payload.data)
     PropertyCardRenderer.updateReviewMetrics(payload.propertyId, metrics)
+    PropertyInsightsRenderer.updateReviewMetrics(payload.propertyId, metrics)
 
     this.emit('property:metric:collected', 'reviews', payload)
   }

@@ -1,4 +1,5 @@
 import { Search } from 'DTOs/Search'
+import type { PropertyPage } from 'DTOs/PropertyPage'
 import { Subscribe } from 'Core/EventBus'
 import { AbstractListener } from './AbstractListener'
 import { SearchDataAdapter } from 'Services/Hostelworld/SearchDataAdapter'
@@ -21,7 +22,8 @@ export class AppInitedListener extends AbstractListener {
       DevicePatcher.enforceMobile(),
       SearchPropertyListComponentPatcher.disableFeatured(),
       SearchPropertyListComponentPatcher.disableThirdPartyProperties(),
-      SearchPropertyListComponentPatcher.installPropertiesFilter()
+      SearchPropertyListComponentPatcher.installPropertiesFilter(),
+      VuexDataHook.onPropertyPageChanged(this.onPropertyPageChanged.bind(this))
     ])
 
     const renderProperties: (propertyIds: number[]) => void = (propertyIds: number[]) => {
@@ -74,5 +76,14 @@ export class AppInitedListener extends AbstractListener {
 
   private onUnavailableProperties (properties: Property[]): void {
     this.emit('hostelworld:search:intercepted', properties)
+  }
+
+  private onPropertyPageChanged (page: PropertyPage | null): void {
+    if (!page) {
+      this.emit('property:page:left')
+      return
+    }
+
+    this.emit('property:page:displayed', page)
   }
 }

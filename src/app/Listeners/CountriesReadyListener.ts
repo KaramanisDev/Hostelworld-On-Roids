@@ -1,6 +1,7 @@
 import { Subscribe } from 'Core/EventBus'
 import { AbstractListener } from './AbstractListener'
 import { PropertyCardRenderer } from 'UI/Renderers/PropertyCard'
+import { PropertyInsightsRenderer } from 'UI/Renderers/PropertyInsights'
 import type { PropertyGuestsCountries } from 'Services/Hostelworld/Api/VisitorsCountryClient'
 
 type CountriesPayload = {
@@ -15,6 +16,7 @@ export class CountriesReadyListener extends AbstractListener {
     void PropertyCardRenderer.updateCountries(
       payload.propertyId, payload.propertyName, payload.data
     )
+    PropertyInsightsRenderer.updateCountries(payload.propertyId, payload.data)
 
     this.emit('property:metric:collected', 'countries', payload)
   }
