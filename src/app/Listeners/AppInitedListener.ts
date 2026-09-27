@@ -53,6 +53,7 @@ export class AppInitedListener extends AbstractListener {
 
   private persistLatestSearch (url: URL): URL {
     this.loadAllController?.abort()
+    this.emit('worker:tasks:cancel')
 
     const search: Search = Search.createFromHostelworldSearchUrl(url)
     this.persistSearchInSession(search)
@@ -85,6 +86,8 @@ export class AppInitedListener extends AbstractListener {
   }
 
   private onPropertyPageChanged (page: PropertyPage | null): void {
+    this.emit('worker:tasks:cancel')
+
     if (!page) {
       this.emit('property:page:left')
       return

@@ -12,13 +12,13 @@ export class WorkerTaskDispatcher {
     this.tasks[taskName] = handler
   }
 
-  public static dispatch (taskName: TaskName, args: unknown[]): WorkerTaskResult {
+  public static dispatch (taskName: TaskName, args: unknown[], signal: AbortSignal): WorkerTaskResult {
     const handler: WorkerTask | undefined = this.tasks[taskName]
 
     if (!handler) {
       throw new Error(`No worker task handler registered for: ${taskName}`)
     }
 
-    return handler.handle(...args)
+    return handler.handle(args, signal)
   }
 }

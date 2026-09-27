@@ -9,8 +9,8 @@ export class WorkerInitializer {
   public static init (): void {
     this.registerTasks()
 
-    WorkerRPCEndpoint.onRequest<unknown[], WorkerTaskResult>((method: string, args: unknown[]) => {
-      return WorkerTaskDispatcher.dispatch(method, args)
+    WorkerRPCEndpoint.onRequest<unknown[], WorkerTaskResult>((method: string, args: unknown[], signal: AbortSignal) => {
+      return WorkerTaskDispatcher.dispatch(method, args, signal)
     })
   }
 

@@ -7,7 +7,7 @@ export type Message<TPayload = unknown> = {
 }
 
 type MessageSender = Runtime.MessageSender
-type OnMessageHandler<TPayload> = (event: string, payload: TPayload, tabId?: number) => void
+type OnMessageHandler<TPayload> = (event: string, payload: TPayload, tabId?: number, documentId?: string) => void
 
 export class ExtensionRuntime {
   public static assetUrl (filename: string): string {
@@ -42,12 +42,24 @@ export class ExtensionRuntime {
     void promiseFallback(Extension.tabs.sendMessage(tabId, { event, payload }))
   }
 
+  public static connect (name: string, onDisconnect: () => void): void {
+    Extension.runtime.connect({ name }).onDisconnect.addListener(onDisconnect)
+  }
+
   public static onMessage<TPayload = unknown> (callback: OnMessageHandler<TPayload>): void {
     Extension.runtime.onMessage.addListener(
       (request: unknown, sender: MessageSender): void => {
         const { event, payload } = request as Message<TPayload>
-        callback(event, payload, sender.tab?.id)
+        callback(event, payload, sender.tab?.id, sender.documentId)
       }
     )
+  }
+
+  public static onPortDisconnect (name: string, callback: (documentId?: string) => void): void {
+    Extension.runtime.onConnect.addListener((port: Runtime.Port): void => {
+      if (port.name !== name) return
+
+      port.onDisconnect.addListener(() => callback(port.sender?.documentId))
+    })
   }
 }

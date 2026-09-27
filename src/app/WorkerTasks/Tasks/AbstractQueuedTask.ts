@@ -10,6 +10,7 @@ type Job<TArgs, TResult> = {
   promise: Promise<TResult>
   resolve: (value: TResult) => void
   reject: (reason?: unknown) => void
+  requesters: number
 }
 
 export abstract class AbstractQueuedTask<TArgs, TResult> implements WorkerTask {
@@ -21,13 +22,18 @@ export abstract class AbstractQueuedTask<TArgs, TResult> implements WorkerTask {
   protected abstract jobId (args: TArgs): JobId
   protected abstract execute (args: TArgs): Promise<TResult>
 
-  public handle (...args: unknown[]): WorkerTaskResult<TResult> {
+  public handle (args: unknown[], signal: AbortSignal): WorkerTaskResult<TResult> {
     const typedArgs: TArgs = args as unknown as TArgs
     const id: JobId = this.jobId(typedArgs)
+    const job: Job<TArgs, TResult> = this.queue.get(id) ?? this.runningJobs.get(id) ?? this.enqueue(id, typedArgs)
 
-    const existing: Job<TArgs, TResult> | undefined = this.queue.get(id) ?? this.runningJobs.get(id)
-    if (existing) return existing.promise
+    job.requesters++
+    signal.addEventListener('abort', () => this.cancel(job), { once: true })
 
+    return job.promise
+  }
+
+  private enqueue (id: JobId, args: TArgs): Job<TArgs, TResult> {
     let resolvePromise!: (value: TResult) => void
     let rejectPromise!: (reason?: unknown) => void
     const promise: Promise<TResult> = new Promise<TResult>((resolve, reject) => {
@@ -35,11 +41,22 @@ export abstract class AbstractQueuedTask<TArgs, TResult> implements WorkerTask {
       rejectPromise = reject
     })
 
-    this.queue.set(id, { id, args: typedArgs, promise, resolve: resolvePromise, reject: rejectPromise })
+    const job: Job<TArgs, TResult> = {
+      id, args, promise, resolve: resolvePromise, reject: rejectPromise, requesters: 0
+    }
+    this.queue.set(id, job)
     WorkerKeepAlive.hold()
     this.startQueuedJobs()
 
-    return promise
+    return job
+  }
+
+  private cancel (job: Job<TArgs, TResult>): void {
+    job.requesters--
+    if (job.requesters > 0 || this.queue.get(job.id) !== job) return
+
+    this.queue.delete(job.id)
+    WorkerKeepAlive.release()
   }
 
   private startQueuedJobs (): void {

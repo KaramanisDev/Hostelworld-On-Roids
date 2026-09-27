@@ -9,3 +9,4 @@ export type RPCRequest<TArgs = unknown[]> = { id: string, task: string, args: TA
 export type RPCResult<TResult = unknown> = { id: string, task: string, result: TResult }
 export type RPCRequestPayload = { id: string, args: string }
 export type RPCResponsePayload = { id: string, result: string }
+export type RPCCancelPayload = { ids: string[] }

@@ -1,4 +1,4 @@
-import type { RPCRequest, RPCResult } from './RPCTypesContract'
+import type { RPCCancelPayload, RPCRequest, RPCResult } from './RPCTypesContract'
 import { deserialize, serialize } from 'Utils'
 
 type RPCResultHandler<T = unknown> = (event: string, response: T) => void
@@ -28,6 +28,17 @@ export class WorkerRPCProxy {
     this.watchForSilence()
   }
 
+  public static cancelPending (): void {
+    if (!this.pendingCalls.size) return
+
+    const payload: RPCCancelPayload = { ids: [...this.pendingCalls.keys()] }
+    this.pendingCalls.clear()
+
+    window.dispatchEvent(
+      new CustomEvent('rpc:cancel', { detail: payload })
+    )
+  }
+
   public static onResult<TResult = unknown> (callback: RPCResultHandler<TResult>): void {
     window.addEventListener('rpc:result', (eventInit: CustomEventInit<RPCResult<string>>): void => {
       if (!eventInit.detail) return
@@ -38,6 +49,17 @@ export class WorkerRPCProxy {
       this.pendingCalls.delete(id)
       this.lastActivityAt = Date.now()
       callback(task, deserialize<TResult>(result))
+    })
+  }
+
+  public static resendOnPageRestore (): void {
+    window.addEventListener('pageshow', (event: PageTransitionEvent): void => {
+      if (!event.persisted) return
+
+      this.lastActivityAt = Date.now()
+      for (const pendingCall of this.pendingCalls.values()) {
+        this.send(pendingCall.request)
+      }
     })
   }
 
