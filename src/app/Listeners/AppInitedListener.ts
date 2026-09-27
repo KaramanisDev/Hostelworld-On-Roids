@@ -14,6 +14,8 @@ import { pluck } from 'Utils'
 
 @Subscribe('app:inited')
 export class AppInitedListener extends AbstractListener {
+  private loadAllController: AbortController | null = null
+
   public async handle (): Promise<void> {
     this.applyRequestInterceptors()
 
@@ -50,6 +52,8 @@ export class AppInitedListener extends AbstractListener {
   }
 
   private persistLatestSearch (url: URL): URL {
+    this.loadAllController?.abort()
+
     const search: Search = Search.createFromHostelworldSearchUrl(url)
     this.persistSearchInSession(search)
 
@@ -65,10 +69,12 @@ export class AppInitedListener extends AbstractListener {
     const latestSearch: Search | undefined = this.latestSearchInSession()
     if (!latestSearch) return adapted
 
+    this.loadAllController = new AbortController()
     void SearchPropertyListComponentPatcher.loadAllForCity(
       latestSearch.getCityId(),
       pluck(adapted.properties, 'id'),
-      this.onUnavailableProperties.bind(this)
+      this.onUnavailableProperties.bind(this),
+      this.loadAllController.signal
     )
 
     return adapted

@@ -88,7 +88,8 @@ export class SearchPropertyListComponentPatcher {
   public static async loadAllForCity (
     cityId: string,
     availablePropertyIds: number[],
-    callback: (properties: Property[]) => void
+    callback: (properties: Property[]) => void,
+    signal: AbortSignal
   ): Promise<void> {
     const store: VuexStore | undefined = await promiseFallback(VueComponentAccessor.hostelworldStore())
     if (!store) return
@@ -98,6 +99,7 @@ export class SearchPropertyListComponentPatcher {
     const cityProperties: Property[] = [...properties]
 
     if (!await promiseFallback(waitForElement('.property-card .property-card-container'))) return
+    if (signal.aborted) return
 
     const loaded: Property[] = store.state.search.properties
     const loadedPropertyIds: number[] = pluck(loaded, 'id')
