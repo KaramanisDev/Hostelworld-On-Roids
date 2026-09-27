@@ -11,7 +11,7 @@
     "*.scss"
   ],
   "scripts": {
-    "watch": "yarn build:dev --watch --mode=development",
+    "watch": "yarn build:dev --watch",
     "build:prod": "webpack --config webpack.config.mjs --mode=production",
     "build:dev": "webpack --config webpack.config.mjs --mode=development",
     "lint": "yarn lint:tsc && yarn lint:eslint && yarn lint:scss && yarn lint:commit",
