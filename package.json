@@ -16,7 +16,7 @@
     "build:dev": "webpack --config webpack.config.mjs --mode=development",
     "lint": "yarn lint:tsc && yarn lint:eslint && yarn lint:scss && yarn lint:commit",
     "lint:tsc": "tsc --noEmit --incremental false",
-    "lint:eslint": "eslint \"{src,scripts}/**/*.{ts,tsx,js,mjs}\"",
+    "lint:eslint": "eslint \"{src,scripts}/**/*.{ts,tsx,js,mjs}\" \"*.{js,mjs}\"",
     "lint:scss": "stylelint \"src/**/*.scss\"",
     "lint:commit": "node scripts/commitlint.mjs",
     "crx:key": "node scripts/crx-key.mjs",

@@ -15,9 +15,6 @@ const compat = new FlatCompat({
 })
 
 export default [
-  {
-    ignores: ['**/*.config.js']
-  },
   js.configs.recommended,
   ...compat.extends(
     'standard',

@@ -31,7 +31,7 @@ export default {
       basePath('src/assets/styles/app.scss')
     ],
     worker: basePath('src/entries/worker.ts'),
-    content: basePath('src/entries/content.ts'),
+    content: basePath('src/entries/content.ts')
   },
   output: {
     filename: '[name].js',
