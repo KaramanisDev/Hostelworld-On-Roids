@@ -11,13 +11,15 @@ type CardEntry = {
 
 export class PropertyCardView implements ViewAdapterInterface<PropertyCardViewDTO> {
   private readonly entries: Map<number, CardEntry> = new Map()
+  private isDisconnected: boolean = false
 
   public mount (container: HTMLElement, viewDto: PropertyCardViewDTO): void {
     this.mountContainer(container, viewDto.propertyId, {
       reviews: viewDto.reviews,
       availability: viewDto.availability,
       ageGroups: viewDto.ageGroups,
-      recentRating: viewDto.recentRating
+      recentRating: viewDto.recentRating,
+      isDisconnected: this.isDisconnected
     })
   }
 
@@ -41,6 +43,14 @@ export class PropertyCardView implements ViewAdapterInterface<PropertyCardViewDT
 
     if ('recentRating' in viewDto) {
       entry.setters.setRecentRating(viewDto.recentRating)
+    }
+  }
+
+  public showDisconnected (): void {
+    this.isDisconnected = true
+
+    for (const entry of this.entries.values()) {
+      entry.setters?.setDisconnected(true)
     }
   }
 

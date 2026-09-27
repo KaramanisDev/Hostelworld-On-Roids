@@ -30,6 +30,10 @@ export class ExtensionRuntime {
     return Extension.runtime.getPlatformInfo()
   }
 
+  public static isConnected (): boolean {
+    return Boolean(Extension.runtime.id)
+  }
+
   public static sendMessage (event: string, payload: unknown): void {
     void promiseFallback(Extension.runtime.sendMessage({ event, payload }))
   }

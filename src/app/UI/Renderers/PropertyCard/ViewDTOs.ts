@@ -57,6 +57,7 @@ export class PropertyCardLabels {
 export class PropertyCardNotes {
   public static readonly loading: string = '🔄 Property data are being processed...'
   public static readonly finalized: string = 'ℹ️ Data displayed here can take up to an hour to be refreshed.'
+  public static readonly disconnected: string = '⚠️ H.O.R was updated. Reload the page to load the property data.'
 }
 
 export class PropertyCardViewDTOFactory {

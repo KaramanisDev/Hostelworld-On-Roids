@@ -1,7 +1,6 @@
 import type { Property } from 'DTOs/Property'
 import type { ReviewMetrics } from 'DTOs/ReviewMetrics'
 import type { AvailabilityMetrics } from 'DTOs/AvailabilityMetrics'
-import type { ViewAdapterInterface } from 'UI/ViewAdapterInterface'
 import { PropertyCardView } from 'UI/SolidJS/PropertyCard/PropertyCardView'
 import type { PropertyCardViewDTO } from './ViewDTOs'
 import { PropertyCardViewDTOFactory } from './ViewDTOs'
@@ -12,7 +11,7 @@ import { BookedCountry } from 'DTOs/BookedCountry'
 import type { PropertyGuestsCountries } from 'Services/Hostelworld/Api/VisitorsCountryClient'
 
 export class PropertyCardRenderer {
-  private static readonly view: ViewAdapterInterface<PropertyCardViewDTO> = new PropertyCardView()
+  private static readonly view: PropertyCardView = new PropertyCardView()
   private static readonly badgeTagsView: BadgeTagsView = new BadgeTagsView()
   private static readonly propertyLinkRegex: RegExp = /hosteldetails\.php\/[^/]+\/[^/]+\/(\d+)/
 
@@ -44,7 +43,7 @@ export class PropertyCardRenderer {
   }
 
   public static updateReviewMetrics (propertyId: number, metrics: ReviewMetrics): void {
-    this.view.update?.({
+    this.view.update({
       propertyId,
       reviews: PropertyCardViewDTOFactory.reviewsRow(metrics),
       ageGroups: PropertyCardViewDTOFactory.ageGroupsRow(metrics),
@@ -53,10 +52,14 @@ export class PropertyCardRenderer {
   }
 
   public static updateAvailabilityMetrics (propertyId: number, metrics: AvailabilityMetrics): void {
-    this.view.update?.({
+    this.view.update({
       propertyId,
       availability: PropertyCardViewDTOFactory.availabilityRow(metrics)
     })
+  }
+
+  public static showDisconnected (): void {
+    this.view.showDisconnected()
   }
 
   public static async updateCountries (propertyId: number, countries: PropertyGuestsCountries): Promise<void> {

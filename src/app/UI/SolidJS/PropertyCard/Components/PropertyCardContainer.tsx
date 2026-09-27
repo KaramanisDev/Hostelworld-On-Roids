@@ -10,6 +10,7 @@ export type CardState = {
   availability?: MetricRowViewDTO | null
   ageGroups?: MetricRowViewDTO | null
   recentRating?: RecentRatingViewDTO | null
+  isDisconnected?: boolean
 }
 
 export type CardStateSetters = {
@@ -17,6 +18,7 @@ export type CardStateSetters = {
   setAvailability: Setter<MetricRowViewDTO | null | undefined>
   setAgeGroups: Setter<MetricRowViewDTO | null | undefined>
   setRecentRating: Setter<RecentRatingViewDTO | null | undefined>
+  setDisconnected: Setter<boolean>
 }
 
 type Properties = {
@@ -39,15 +41,20 @@ export function PropertyCardContainer (properties: Properties): JSX.Element {
   const [recentRating, setRecentRating] = createSignal<RecentRatingViewDTO | null | undefined>(
     properties.initialState.recentRating
   )
+  const [isDisconnected, setDisconnected] = createSignal<boolean>(properties.initialState.isDisconnected ?? false)
 
-  properties.onStateReady({ setReviews, setAvailability, setAgeGroups, setRecentRating })
+  properties.onStateReady({ setReviews, setAvailability, setAgeGroups, setRecentRating, setDisconnected })
 
   const isFinalized = createMemo(() =>
     reviews() !== undefined && availability() !== undefined &&
     ageGroups() !== undefined && recentRating() !== undefined
   )
-  const isLoading = createMemo(() => !isFinalized())
-  const note = createMemo(() => isFinalized() ? PropertyCardNotes.finalized : PropertyCardNotes.loading)
+  const isLoading = createMemo(() => !isFinalized() && !isDisconnected())
+  const note = createMemo(() => {
+    if (isFinalized()) return PropertyCardNotes.finalized
+
+    return isDisconnected() ? PropertyCardNotes.disconnected : PropertyCardNotes.loading
+  })
 
   return (
     <>

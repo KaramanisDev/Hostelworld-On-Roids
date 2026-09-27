@@ -72,6 +72,10 @@ export class PropertyInsightsRenderer {
     })
   }
 
+  public static showDisconnected (): void {
+    this.view.showDisconnected()
+  }
+
   public static dispose (): void {
     this.observer?.disconnect()
     this.view.dispose()

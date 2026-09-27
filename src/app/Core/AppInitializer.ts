@@ -14,6 +14,10 @@ export class AppInitializer {
       EventBus.emit(`worker:result:${event}`, result)
     })
 
+    WorkerRPCProxy.onDisconnect((): void => {
+      EventBus.emit('worker:disconnected')
+    })
+
     return EventBus.emit('app:inited')
   }
 

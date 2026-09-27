@@ -15,8 +15,11 @@ export class WorkerRPCProxy {
   private static readonly pendingCalls: Map<string, PendingCall> = new Map()
   private static lastActivityAt: number = 0
   private static silenceCheck: ReturnType<typeof setInterval> | null = null
+  private static isDisconnected: boolean = false
 
   public static call (task: string, args: unknown[]): void {
+    if (this.isDisconnected) return
+
     const request: RPCRequest<string> = { id: crypto.randomUUID(), task, args: serialize(args) }
 
     this.pendingCalls.set(request.id, { request, attempts: 1 })
@@ -35,6 +38,16 @@ export class WorkerRPCProxy {
       this.pendingCalls.delete(id)
       this.lastActivityAt = Date.now()
       callback(task, deserialize<TResult>(result))
+    })
+  }
+
+  public static onDisconnect (callback: () => void): void {
+    window.addEventListener('rpc:disconnected', (): void => {
+      if (this.isDisconnected) return
+
+      this.isDisconnected = true
+      this.pendingCalls.clear()
+      callback()
     })
   }
 

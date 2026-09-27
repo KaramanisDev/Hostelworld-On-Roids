@@ -13,6 +13,7 @@ export type InsightsStateSetters = CardStateSetters & {
 
 type Properties = {
   viewDto: PropertyInsightsViewDTO
+  isDisconnected: boolean
   onStateReady: (setters: InsightsStateSetters) => void
 }
 
@@ -42,7 +43,8 @@ export function PropertyInsightsContainer (properties: Properties): JSX.Element 
             reviews: properties.viewDto.reviews,
             availability: properties.viewDto.availability,
             ageGroups: properties.viewDto.ageGroups,
-            recentRating: properties.viewDto.recentRating
+            recentRating: properties.viewDto.recentRating,
+            isDisconnected: properties.isDisconnected
           }}
           onStateReady={handleCardStateReady}
         >

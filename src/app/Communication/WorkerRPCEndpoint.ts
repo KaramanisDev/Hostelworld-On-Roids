@@ -16,8 +16,14 @@ export class WorkerRPCEndpoint {
       )
     })
 
-    window.addEventListener('rpc:call', async (eventInit: CustomEventInit<RPCRequest<string>>): Promise<void> => {
+    window.addEventListener('rpc:call', (eventInit: CustomEventInit<RPCRequest<string>>): void => {
       if (!eventInit.detail) return
+
+      if (!ExtensionRuntime.isConnected()) {
+        window.dispatchEvent(new CustomEvent('rpc:disconnected'))
+
+        return
+      }
 
       const { id, task, args } = eventInit.detail
       const dispatchEvent = `${task}:request`

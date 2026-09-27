@@ -10,6 +10,7 @@ type MountedComponent = {
 
 export class PropertyInsightsView implements ViewAdapterInterface<PropertyInsightsViewDTO> {
   private mounted: MountedComponent | null = null
+  private isDisconnected: boolean = false
 
   public mount (container: HTMLElement, viewDto: PropertyInsightsViewDTO): void {
     this.dispose()
@@ -19,6 +20,7 @@ export class PropertyInsightsView implements ViewAdapterInterface<PropertyInsigh
     const disposer: () => void = render(
       () => PropertyInsightsContainer({
         viewDto,
+        isDisconnected: this.isDisconnected,
         onStateReady: (setters: InsightsStateSetters) => {
           capturedSetters = setters
         }
@@ -56,6 +58,11 @@ export class PropertyInsightsView implements ViewAdapterInterface<PropertyInsigh
     if ('countries' in viewDto) {
       setters.setCountries(viewDto.countries)
     }
+  }
+
+  public showDisconnected (): void {
+    this.isDisconnected = true
+    this.mounted?.setters?.setDisconnected(true)
   }
 
   public dispose (): void {
