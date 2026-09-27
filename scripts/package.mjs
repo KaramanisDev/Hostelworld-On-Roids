@@ -91,7 +91,7 @@ async function createZipPackage () {
       return shouldExcludeFile(entry.name) ? false : entry
     })
 
-    archive.finalize()
+    archive.finalize().catch(reject)
   })
 }
 
