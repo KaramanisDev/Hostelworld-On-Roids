@@ -9,11 +9,16 @@ import { PropertyCardComponentPatcher } from 'Services/Hostelworld/Patchers/Prop
 import { BadgeTagsView } from 'UI/SolidJS/BadgeTags/BadgeTagsView'
 import { BookedCountry } from 'DTOs/BookedCountry'
 import type { PropertyGuestsCountries } from 'Services/Hostelworld/Api/VisitorsCountryClient'
+import { PropertyCardVisibilityTracker } from './PropertyCardVisibilityTracker'
+import { EventBus } from 'Core/EventBus'
 
 export class PropertyCardRenderer {
   private static readonly view: PropertyCardView = new PropertyCardView()
   private static readonly badgeTagsView: BadgeTagsView = new BadgeTagsView()
   private static readonly propertyLinkRegex: RegExp = /hosteldetails\.php\/[^/]+\/[^/]+\/(\d+)/
+  private static readonly visibilityTracker: PropertyCardVisibilityTracker = new PropertyCardVisibilityTracker(
+    (propertyIds: number[]): void => EventBus.emit('property:cards:visible', propertyIds)
+  )
 
   public static async render (propertyId: number): Promise<void> {
     if (!await this.hasPropertyCards()) return
@@ -23,6 +28,7 @@ export class PropertyCardRenderer {
 
     const viewDto: PropertyCardViewDTO = PropertyCardViewDTOFactory.loading(propertyId)
     this.view.mount(container, viewDto)
+    this.visibilityTracker.track(container, propertyId)
   }
 
   public static async renderWithData (property: Property): Promise<void> {
