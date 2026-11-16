@@ -11,6 +11,8 @@ export type HttpClientOptions = {
 
 export class HttpClient {
   private static readonly defaultCacheTimeInMinutes: number = 24 * 60
+  private static readonly requestTimeoutInMs: number = 15_000
+  private static readonly maxRetryAfterInMs: number = 10_000
   private static readonly storage: StorageInterface<string> = new CacheStorage('hor-http-client')
 
   public static async getJson<T = Record<string, unknown>> (url: string, options?: HttpClientOptions): Promise<T> {
@@ -25,7 +27,9 @@ export class HttpClient {
 
   private static options (options?: HttpClientOptions): Options {
     let kyOptions: Options = {
-      headers: options?.headers
+      headers: options?.headers,
+      timeout: this.requestTimeoutInMs,
+      retry: { maxRetryAfter: this.maxRetryAfterInMs }
     }
 
     if (options?.cacheInMinutes) {
