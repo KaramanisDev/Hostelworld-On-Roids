@@ -26,7 +26,7 @@ export class PropertyCardComponentPatcher {
 
     if (!component?.__vue__ || !countries.length) return
 
-    const avatars: Avatar[] = countries
+    const avatars: Avatar[] = [...countries]
       .sort((a: BookedCountry, b: BookedCountry) => b.getCount() - a.getCount())
       .reduce(
         (carry: Avatar[], country: BookedCountry) => {
