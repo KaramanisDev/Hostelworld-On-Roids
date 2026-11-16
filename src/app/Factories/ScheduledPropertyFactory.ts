@@ -12,8 +12,7 @@ export class ScheduledPropertyFactory {
       id: property.id,
       name: property.name,
       overallRating,
-      from: search.getFrom().toISOString(),
-      to: search.getTo().toISOString()
+      stay: search.getStay()
     }
   }
 }

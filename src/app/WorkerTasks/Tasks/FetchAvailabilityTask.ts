@@ -1,25 +1,22 @@
 import { AbstractQueuedTask } from './AbstractQueuedTask'
 import { AvailabilityClient, type PropertyAvailability } from 'Services/Hostelworld/Api/AvailabilityClient'
+import type { Stay } from 'DTOs/Stay'
 
-type Args = [propertyId: number, propertyName: string, from: string, to: string]
-type Result = { propertyId: number; propertyName: string; from: string; to: string; data: PropertyAvailability | null }
+type Args = [propertyId: number, propertyName: string, stay: Stay]
+type Result = { propertyId: number; propertyName: string; stay: Stay; data: PropertyAvailability | null }
 
 export class FetchAvailabilityTask extends AbstractQueuedTask<Args, Result> {
   protected jobId (args: Args): string {
-    const [propertyId, , from, to]: Args = args
+    const [propertyId, , stay]: Args = args
 
-    return `${propertyId}:${from}:${to}`
+    return `${propertyId}:${stay.getKey()}`
   }
 
   protected async execute (args: Args): Promise<Result> {
-    const [propertyId, propertyName, from, to]: Args = args
+    const [propertyId, propertyName, stay]: Args = args
 
-    const data: PropertyAvailability | null = await AvailabilityClient.fetch(
-      propertyId,
-      new Date(from),
-      new Date(to)
-    )
+    const data: PropertyAvailability | null = await AvailabilityClient.fetch(propertyId, stay)
 
-    return { propertyId, propertyName, from, to, data }
+    return { propertyId, propertyName, stay, data }
   }
 }

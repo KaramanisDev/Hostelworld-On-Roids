@@ -100,7 +100,7 @@ export class AppInitedListener extends AbstractListener {
 
   private onScheduledPropertyStart (property: ScheduledProperty): void {
     this.emit('worker:task:dispatch', 'fetch:reviews', property.id, property.name, property.overallRating)
-    this.emit('worker:task:dispatch', 'fetch:availability', property.id, property.name, property.from, property.to)
-    this.emit('worker:task:dispatch', 'fetch:countries', property.id, property.name, property.from, property.to)
+    this.emit('worker:task:dispatch', 'fetch:availability', property.id, property.name, property.stay)
+    this.emit('worker:task:dispatch', 'fetch:countries', property.id, property.name, property.stay)
   }
 }

@@ -18,8 +18,7 @@ export class PropertyFactory {
     return new Property({
       id: composition.id,
       name: composition.name,
-      from: composition.from,
-      to: composition.to,
+      stay: composition.stay,
       reviewMetrics,
       availabilityMetrics,
       bookedCountries,

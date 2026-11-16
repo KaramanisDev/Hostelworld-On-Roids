@@ -1,26 +1,21 @@
+import { Stay } from 'DTOs/Stay'
 import { dateAddDays } from 'Utils'
 
 type SearchAttributes = {
-  to: Date
-  from: Date
+  stay: Stay
   cityId: string
 }
 
 export class Search {
-  private to!: Date
-  private from!: Date
+  private stay!: Stay
   private cityId!: string
 
   constructor (attributes: SearchAttributes) {
     Object.assign(this, attributes)
   }
 
-  public getTo (): Date {
-    return this.to
-  }
-
-  public getFrom (): Date {
-    return this.from
+  public getStay (): Stay {
+    return this.stay
   }
 
   public getCityId (): string {
@@ -43,7 +38,7 @@ export class Search {
     const [, cityId]: [string, string] = match as [string, string]
 
     return new this({
-      cityId, from, to: dateAddDays(from, daysToAdd)
+      cityId, stay: new Stay({ from, to: dateAddDays(from, daysToAdd) })
     })
   }
 }

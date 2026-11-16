@@ -1,4 +1,5 @@
 import type { HostelworldPropertyAvailability } from 'Types/HostelworldPropertyAvailability'
+import { Stay } from 'DTOs/Stay'
 import { HttpClient, type HttpClientOptions } from 'Utils/HttpClient'
 import { dateAddDays, dateFormat, promiseFallback, randomNumber } from 'Utils'
 
@@ -20,14 +21,14 @@ export class AvailabilityClient {
 
   private static readonly networkJitterInMs: number = 300
 
-  public static async fetch (propertyId: number, from: Date, to: Date): Promise<PropertyAvailability | null> {
-    return await promiseFallback(this.availability(propertyId, from, to), null)
+  public static async fetch (propertyId: number, stay: Stay): Promise<PropertyAvailability | null> {
+    return await promiseFallback(this.availability(propertyId, stay), null)
   }
 
-  private static async availability (propertyId: number, from: Date, to: Date): Promise<PropertyAvailability> {
+  private static async availability (propertyId: number, stay: Stay): Promise<PropertyAvailability> {
     const [current, sampledMax]: [Metrics, Metrics] = await Promise.all([
-      this.currentCapacity(propertyId, from, to),
-      this.possibleMaxCapacity(propertyId, from)
+      this.currentCapacity(propertyId, stay),
+      this.possibleMaxCapacity(propertyId, stay.getFrom())
     ])
 
     const max: Metrics = this.highestMetrics(current, sampledMax)
@@ -39,9 +40,9 @@ export class AvailabilityClient {
     return { mixed: 0, female: 0, private: 0, total: 0 }
   }
 
-  private static async currentCapacity (propertyId: number, from: Date, to: Date): Promise<Metrics> {
+  private static async currentCapacity (propertyId: number, stay: Stay): Promise<Metrics> {
     const availability: HostelworldPropertyAvailability = await this.request(
-      propertyId, from, to, { cacheInMinutes: 30 }
+      propertyId, stay, { cacheInMinutes: 30 }
     )
 
     return this.toMetrics(availability)
@@ -54,11 +55,11 @@ export class AvailabilityClient {
 
     await Promise.all(daysAfterToCheck.map(async days => {
       const fromWithDaysAdded: Date = dateAddDays(from, days)
-      const toWithFromPlus3Days: Date = dateAddDays(fromWithDaysAdded, 3)
+      const sampledStay: Stay = new Stay({ from: fromWithDaysAdded, to: dateAddDays(fromWithDaysAdded, 3) })
 
       const availability: HostelworldPropertyAvailability = await promiseFallback(
         this.request(
-          propertyId, fromWithDaysAdded, toWithFromPlus3Days,
+          propertyId, sampledStay,
           { cacheInMinutes: 24 * 60, networkJitterInMs: this.networkJitterInMs }
         ),
         this.noRooms()
@@ -127,18 +128,12 @@ export class AvailabilityClient {
 
   private static async request (
     propertyId: number,
-    from: Date,
-    to: Date,
+    stay: Stay,
     options: HttpClientOptions
   ): Promise<HostelworldPropertyAvailability> {
-    const oneDayInMs: number = 24 * 60 * 60 * 1000
-    const nights: number = Math.round(
-      Math.abs(from.getTime() - to.getTime()) / oneDayInMs
-    )
-
     const endpoint: string = this.endpoint
-      .replaceAll('{from}', dateFormat(from))
-      .replaceAll('{nights}', String(nights))
+      .replaceAll('{from}', dateFormat(stay.getFrom()))
+      .replaceAll('{nights}', String(stay.getNights()))
       .replaceAll('{property}', String(propertyId))
 
     try {

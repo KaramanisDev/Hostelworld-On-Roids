@@ -2,6 +2,7 @@ import { HttpClient } from 'Utils/HttpClient'
 import type { HttpClientOptions } from 'Utils/HttpClient'
 import { dateFormat, promiseFallback } from 'Utils'
 import type { Data, HostelworldPropertyGuests } from 'Types/HostelworldPropertyGuests'
+import type { Stay } from 'DTOs/Stay'
 
 export type GuestCountry = {
   code: string
@@ -16,12 +17,12 @@ export class VisitorsCountryClient {
   private static readonly endpoint: string = 'https://prod.apigee.hostelworld.com/socialcues-service/api/v1/' +
     'properties/{property}/other-guests?from={from}&to={to}'
 
-  public static async fetch (propertyId: number, from: Date, to: Date): Promise<PropertyGuestsCountries> {
-    return await promiseFallback(this.countries(propertyId, from, to), [])
+  public static async fetch (propertyId: number, stay: Stay): Promise<PropertyGuestsCountries> {
+    return await promiseFallback(this.countries(propertyId, stay), [])
   }
 
-  private static async countries (propertyId: number, from: Date, to: Date): Promise<PropertyGuestsCountries> {
-    const guests: HostelworldPropertyGuests = await this.request(propertyId, from, to)
+  private static async countries (propertyId: number, stay: Stay): Promise<PropertyGuestsCountries> {
+    const guests: HostelworldPropertyGuests = await this.request(propertyId, stay)
 
     return guests.data
       .reduce(
@@ -41,11 +42,11 @@ export class VisitorsCountryClient {
       )
   }
 
-  private static async request (propertyId: number, from: Date, to: Date): Promise<HostelworldPropertyGuests> {
+  private static async request (propertyId: number, stay: Stay): Promise<HostelworldPropertyGuests> {
     const endpoint: string = this.endpoint
-      .replaceAll('{to}', dateFormat(to))
+      .replaceAll('{to}', dateFormat(stay.getTo()))
       .replaceAll('{property}', String(propertyId))
-      .replaceAll('{from}', dateFormat(from))
+      .replaceAll('{from}', dateFormat(stay.getFrom()))
 
     const options: HttpClientOptions = {
       cacheInMinutes: 30,

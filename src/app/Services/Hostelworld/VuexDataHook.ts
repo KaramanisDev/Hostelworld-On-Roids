@@ -1,6 +1,7 @@
 import { VueComponentAccessor } from 'Services/Hostelworld/VueComponentAccessor'
 import type { HostelworldPropertyDetails, VuePropertyListComponent } from 'Services/Hostelworld/VueComponentAccessor'
 import { PropertyPage } from 'DTOs/PropertyPage'
+import { Stay } from 'DTOs/Stay'
 import type { Property } from 'Types/HostelworldSearch'
 import { promiseFallback, waitForProperty } from 'Utils'
 
@@ -72,7 +73,8 @@ export class VuexDataHook {
         return
       }
 
-      const pageKey: string = `${propertyId}|${query.from}|${query.to}`
+      const stay: Stay = new Stay({ from: new Date(query.from), to: new Date(query.to) })
+      const pageKey: string = stay.getPropertyKey(propertyId)
       if (pageKey === this.displayedPropertyPageKey) return
       if (this.displayedPropertyPageKey) callback(null)
       this.displayedPropertyPageKey = pageKey
@@ -87,8 +89,7 @@ export class VuexDataHook {
         id: propertyId,
         name: details.name,
         overallRating: details.rating?.total || null,
-        from: new Date(query.from),
-        to: new Date(query.to)
+        stay
       }))
     }
 

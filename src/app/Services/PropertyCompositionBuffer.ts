@@ -1,13 +1,12 @@
+import type { Stay } from 'DTOs/Stay'
 import type { PropertyReviews } from 'Services/Hostelworld/Api/ReviewsClient'
 import type { PropertyAvailability } from 'Services/Hostelworld/Api/AvailabilityClient'
 import type { PropertyGuestsCountries } from 'Services/Hostelworld/Api/VisitorsCountryClient'
-import { stayKey } from 'Utils'
 
 export type StayEntry = {
   id: number
   name: string
-  from: Date
-  to: Date
+  stay: Stay
 }
 
 type PendingStay = StayEntry & {
@@ -18,8 +17,7 @@ type PendingStay = StayEntry & {
 export type CompletedProperty = {
   id: number
   name: string
-  from: Date
-  to: Date
+  stay: Stay
   reviews: PropertyReviews | null
   availability: PropertyAvailability | null
   countries: PropertyGuestsCountries
@@ -39,9 +37,9 @@ export class PropertyCompositionBuffer {
     this.reviews.set(id, reviews)
   }
 
-  public static collectStayMetric (stay: StayEntry, metric: StayMetric, data: MetricData): void {
-    const key: string = this.key(stay.id, stay.from, stay.to)
-    const pendingStay: PendingStay = this.stays.get(key) ?? { ...stay }
+  public static collectStayMetric (entry: StayEntry, metric: StayMetric, data: MetricData): void {
+    const key: string = this.key(entry.id, entry.stay)
+    const pendingStay: PendingStay = this.stays.get(key) ?? { ...entry }
 
     if (metric === 'availability') pendingStay.availability = data as PropertyAvailability | null
     if (metric === 'countries') pendingStay.countries = data as PropertyGuestsCountries
@@ -64,7 +62,7 @@ export class PropertyCompositionBuffer {
   }
 
   public static remove (entry: CompletedProperty): void {
-    this.stays.delete(this.key(entry.id, entry.from, entry.to))
+    this.stays.delete(this.key(entry.id, entry.stay))
   }
 
   public static clear (): void {
@@ -72,7 +70,7 @@ export class PropertyCompositionBuffer {
     this.stays.clear()
   }
 
-  private static key (id: number, from: Date, to: Date): string {
-    return `${id}|${stayKey(from, to)}`
+  private static key (id: number, stay: Stay): string {
+    return `${id}|${stay.getKey()}`
   }
 }

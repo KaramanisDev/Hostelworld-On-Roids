@@ -2,13 +2,8 @@ import type { ListenerInterface } from './ListenerInterface'
 import type { Search } from 'DTOs/Search'
 import type { Session } from 'DTOs/Session'
 import type { Property } from 'DTOs/Property'
+import type { Stay } from 'DTOs/Stay'
 import { EventBus } from 'Core/EventBus'
-import { stayKey } from 'Utils'
-
-type Stay = {
-  getFrom (): Date
-  getTo (): Date
-}
 
 export abstract class AbstractListener implements ListenerInterface {
   private session!: Session
@@ -37,17 +32,17 @@ export abstract class AbstractListener implements ListenerInterface {
 
   protected propertyInSession (
     propertyId: number,
-    stay: Stay | undefined = this.latestSearchInSession()
+    stay: Stay | undefined = this.latestSearchInSession()?.getStay()
   ): Property | undefined {
     if (!stay) return undefined
 
-    return this.session.pullProperty(propertyId, stay.getFrom(), stay.getTo())
+    return this.session.pullProperty(propertyId, stay)
   }
 
-  protected isLatestSearchStay (from: Date, to: Date): boolean {
+  protected isLatestSearchStay (stay: Stay): boolean {
     const search: Search | undefined = this.latestSearchInSession()
     if (!search) return false
 
-    return stayKey(search.getFrom(), search.getTo()) === stayKey(from, to)
+    return search.getStay().isSameAs(stay)
   }
 }

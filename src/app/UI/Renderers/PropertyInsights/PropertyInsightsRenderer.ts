@@ -1,5 +1,6 @@
 import type { Property } from 'DTOs/Property'
 import type { PropertyPage } from 'DTOs/PropertyPage'
+import type { Stay } from 'DTOs/Stay'
 import type { ReviewMetrics } from 'DTOs/ReviewMetrics'
 import type { AvailabilityMetrics } from 'DTOs/AvailabilityMetrics'
 import { BookedCountry } from 'DTOs/BookedCountry'
@@ -7,7 +8,6 @@ import type { PropertyGuestsCountries } from 'Services/Hostelworld/Api/VisitorsC
 import { PropertyCardViewDTOFactory } from 'UI/Renderers/PropertyCard/ViewDTOs'
 import { PropertyInsightsView } from 'UI/SolidJS/PropertyInsights/PropertyInsightsView'
 import { PropertyInsightsLabels, PropertyInsightsViewDTOFactory } from './ViewDTOs'
-import { stayKey } from 'Utils'
 
 export class PropertyInsightsRenderer {
   private static readonly sectionClassName: string = 'hor-property-insights'
@@ -17,7 +17,7 @@ export class PropertyInsightsRenderer {
   private static readonly previousTabIndex: number = 1
 
   private static propertyId: number | null = null
-  private static displayedStayKey: string | null = null
+  private static displayedStay: Stay | null = null
   private static section: HTMLElement | null = null
   private static tab: HTMLElement | null = null
   private static observer: MutationObserver | null = null
@@ -25,7 +25,7 @@ export class PropertyInsightsRenderer {
 
   public static render (page: PropertyPage): void {
     this.propertyId = page.getId()
-    this.displayedStayKey = stayKey(page.getFrom(), page.getTo())
+    this.displayedStay = page.getStay()
     this.section ??= this.createSection()
 
     this.view.mount(this.section, PropertyInsightsViewDTOFactory.loading(page.getId()))
@@ -35,7 +35,7 @@ export class PropertyInsightsRenderer {
   }
 
   public static renderWithData (property: Property): void {
-    if (!this.isDisplayedStay(property.getId(), property.getFrom(), property.getTo())) return
+    if (!this.isDisplayedStay(property.getId(), property.getStay())) return
 
     this.view.update(PropertyInsightsViewDTOFactory.loaded(property))
   }
@@ -50,21 +50,16 @@ export class PropertyInsightsRenderer {
     })
   }
 
-  public static updateAvailabilityMetrics (
-    propertyId: number,
-    from: Date,
-    to: Date,
-    metrics: AvailabilityMetrics | null
-  ): void {
-    if (!this.isDisplayedStay(propertyId, from, to)) return
+  public static updateAvailabilityMetrics (propertyId: number, stay: Stay, metrics: AvailabilityMetrics | null): void {
+    if (!this.isDisplayedStay(propertyId, stay)) return
 
     this.view.update({
       availability: PropertyCardViewDTOFactory.availabilityRow(metrics)
     })
   }
 
-  public static updateCountries (propertyId: number, from: Date, to: Date, countries: PropertyGuestsCountries): void {
-    if (!this.isDisplayedStay(propertyId, from, to)) return
+  public static updateCountries (propertyId: number, stay: Stay, countries: PropertyGuestsCountries): void {
+    if (!this.isDisplayedStay(propertyId, stay)) return
 
     const bookedCountries: BookedCountry[] = countries.map(country => new BookedCountry(country))
     this.view.update({
@@ -86,11 +81,11 @@ export class PropertyInsightsRenderer {
     this.section = null
     this.tab = null
     this.propertyId = null
-    this.displayedStayKey = null
+    this.displayedStay = null
   }
 
-  private static isDisplayedStay (propertyId: number, from: Date, to: Date): boolean {
-    return propertyId === this.propertyId && stayKey(from, to) === this.displayedStayKey
+  private static isDisplayedStay (propertyId: number, stay: Stay): boolean {
+    return propertyId === this.propertyId && Boolean(this.displayedStay?.isSameAs(stay))
   }
 
   private static createSection (): HTMLElement {

@@ -1,3 +1,4 @@
+import type { Stay } from 'DTOs/Stay'
 import type { Metric } from 'Services/PropertyCompositionBuffer'
 import { emptyFunction } from 'Utils'
 
@@ -5,8 +6,7 @@ export type ScheduledProperty = {
   id: number
   name: string
   overallRating: number | null
-  from: string
-  to: string
+  stay: Stay
 }
 
 type StartListener = (property: ScheduledProperty) => void

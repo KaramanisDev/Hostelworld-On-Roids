@@ -2,12 +2,12 @@ import type { AvailabilityMetrics } from 'DTOs/AvailabilityMetrics'
 import type { ReviewMetrics } from 'DTOs/ReviewMetrics'
 import type { BookedCountry } from 'DTOs/BookedCountry'
 import type { PropertyBadge } from 'Services/PropertyBadgeService'
+import type { Stay } from 'DTOs/Stay'
 
 type PropertyAttributes = {
   id: number
   name: string
-  from: Date
-  to: Date
+  stay: Stay
   reviewMetrics: ReviewMetrics | null
   availabilityMetrics: AvailabilityMetrics | null
   bookedCountries: BookedCountry[]
@@ -17,8 +17,7 @@ type PropertyAttributes = {
 export class Property {
   private id!: number
   private name!: string
-  private from!: Date
-  private to!: Date
+  private stay!: Stay
   private reviewMetrics!: ReviewMetrics | null
   private availabilityMetrics!: AvailabilityMetrics | null
   private bookedCountries!: BookedCountry[]
@@ -36,12 +35,8 @@ export class Property {
     return this.name
   }
 
-  public getFrom (): Date {
-    return this.from
-  }
-
-  public getTo (): Date {
-    return this.to
+  public getStay (): Stay {
+    return this.stay
   }
 
   public getReviewMetrics (): ReviewMetrics | null {

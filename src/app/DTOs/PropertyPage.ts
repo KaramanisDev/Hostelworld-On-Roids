@@ -1,17 +1,17 @@
+import type { Stay } from 'DTOs/Stay'
+
 type PropertyPageAttributes = {
   id: number
   name: string
   overallRating: number | null
-  from: Date
-  to: Date
+  stay: Stay
 }
 
 export class PropertyPage {
   private id!: number
   private name!: string
   private overallRating!: number | null
-  private from!: Date
-  private to!: Date
+  private stay!: Stay
 
   constructor (attributes: PropertyPageAttributes) {
     Object.assign(this, attributes)
@@ -29,11 +29,7 @@ export class PropertyPage {
     return this.overallRating
   }
 
-  public getFrom (): Date {
-    return this.from
-  }
-
-  public getTo (): Date {
-    return this.to
+  public getStay (): Stay {
+    return this.stay
   }
 }

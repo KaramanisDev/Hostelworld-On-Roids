@@ -117,10 +117,6 @@ export function dateAddDays (date: Date, days: number): Date {
   return newDate
 }
 
-export function stayKey (from: Date, to: Date): string {
-  return `${dateFormat(from)}|${dateFormat(to)}`
-}
-
 export async function promiseFallback<T> (promise: Promise<T>, fallback: T): Promise<T>
 export async function promiseFallback<T> (promise: Promise<T>): Promise<T | undefined>
 export async function promiseFallback<T> (promise: Promise<T>, fallback?: T): Promise<T | undefined> {
