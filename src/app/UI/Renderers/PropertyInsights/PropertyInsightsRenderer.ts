@@ -3,8 +3,8 @@ import type { PropertyPage } from 'DTOs/PropertyPage'
 import type { Stay } from 'DTOs/Stay'
 import type { ReviewMetrics } from 'DTOs/ReviewMetrics'
 import type { AvailabilityMetrics } from 'DTOs/AvailabilityMetrics'
-import { BookedCountry } from 'DTOs/BookedCountry'
-import type { PropertyGuestsCountries } from 'Services/Hostelworld/Api/VisitorsCountryClient'
+import type { BookedCountry } from 'DTOs/BookedCountry'
+import type { CollectedMetric } from 'Services/PropertyMetrics'
 import { PropertyCardViewDTOFactory } from 'UI/Renderers/PropertyCard/ViewDTOs'
 import { PropertyInsightsView } from 'UI/SolidJS/PropertyInsights/PropertyInsightsView'
 import { PropertyInsightsLabels, PropertyInsightsViewDTOFactory } from './ViewDTOs'
@@ -40,27 +40,15 @@ export class PropertyInsightsRenderer {
     this.view.update(PropertyInsightsViewDTOFactory.loaded(property))
   }
 
-  public static updateReviewMetrics (propertyId: number, metrics: ReviewMetrics | null): void {
-    if (propertyId !== this.propertyId) return
-
-    this.view.update(PropertyCardViewDTOFactory.reviewRows(metrics))
-  }
-
-  public static updateAvailabilityMetrics (propertyId: number, stay: Stay, metrics: AvailabilityMetrics | null): void {
-    if (!this.isDisplayedStay(propertyId, stay)) return
-
-    this.view.update({
-      availability: PropertyCardViewDTOFactory.availabilityRow(metrics)
-    })
-  }
-
-  public static updateCountries (propertyId: number, stay: Stay, countries: PropertyGuestsCountries): void {
-    if (!this.isDisplayedStay(propertyId, stay)) return
-
-    const bookedCountries: BookedCountry[] = countries.map(country => new BookedCountry(country))
-    this.view.update({
-      countries: PropertyInsightsViewDTOFactory.countries(bookedCountries)
-    })
+  public static updateMetric (collected: CollectedMetric): void {
+    switch (collected.metric) {
+      case 'reviews':
+        return this.updateReviewMetrics(collected.propertyId, collected.reviewMetrics)
+      case 'availability':
+        return this.updateAvailabilityMetrics(collected.propertyId, collected.stay, collected.availabilityMetrics)
+      case 'countries':
+        return this.updateCountries(collected.propertyId, collected.stay, collected.bookedCountries)
+    }
   }
 
   public static showDisconnected (): void {
@@ -78,6 +66,28 @@ export class PropertyInsightsRenderer {
     this.tab = null
     this.propertyId = null
     this.displayedStay = null
+  }
+
+  private static updateReviewMetrics (propertyId: number, metrics: ReviewMetrics | null): void {
+    if (propertyId !== this.propertyId) return
+
+    this.view.update(PropertyCardViewDTOFactory.reviewRows(metrics))
+  }
+
+  private static updateAvailabilityMetrics (propertyId: number, stay: Stay, metrics: AvailabilityMetrics | null): void {
+    if (!this.isDisplayedStay(propertyId, stay)) return
+
+    this.view.update({
+      availability: PropertyCardViewDTOFactory.availabilityRow(metrics)
+    })
+  }
+
+  private static updateCountries (propertyId: number, stay: Stay, bookedCountries: BookedCountry[]): void {
+    if (!this.isDisplayedStay(propertyId, stay)) return
+
+    this.view.update({
+      countries: PropertyInsightsViewDTOFactory.countries(bookedCountries)
+    })
   }
 
   private static isDisplayedStay (propertyId: number, stay: Stay): boolean {

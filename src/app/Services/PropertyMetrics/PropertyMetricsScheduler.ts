@@ -1,5 +1,5 @@
 import type { Stay } from 'DTOs/Stay'
-import type { Metric } from 'Services/PropertyCompositionBuffer'
+import type { Metric } from './PropertyCompositionBuffer'
 import { emptyFunction } from 'Utils'
 
 export type ScheduledProperty = {

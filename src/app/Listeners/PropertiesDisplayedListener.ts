@@ -3,12 +3,12 @@ import type { Search } from 'DTOs/Search'
 import { Subscribe } from 'Core/EventBus'
 import { AbstractListener } from './AbstractListener'
 import { ScheduledPropertyFactory } from 'Factories/ScheduledPropertyFactory'
-import { PropertyMetricsScheduler } from 'Services/PropertyMetricsScheduler'
+import { PropertyMetricsService } from 'Services/PropertyMetrics'
 
 @Subscribe('hostelworld:properties:displayed')
 export class PropertiesDisplayedListener extends AbstractListener {
   public handle (properties: DisplayedProperty[]): void {
-    PropertyMetricsScheduler.prioritizeDisplayed(properties.map(property => property.id))
+    PropertyMetricsService.prioritizeDisplayed(properties.map(property => property.id))
 
     for (const property of properties) {
       this.emit('property:render', property.id)
@@ -21,7 +21,7 @@ export class PropertiesDisplayedListener extends AbstractListener {
     const search: Search | undefined = this.latestSearchInSession()
     if (!search) return
 
-    PropertyMetricsScheduler.schedule(
+    PropertyMetricsService.schedule(
       properties
         .filter(property => !this.propertyInSession(property.id))
         .map(property => ScheduledPropertyFactory.create(property, search))

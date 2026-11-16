@@ -4,7 +4,7 @@ import { Subscribe } from 'Core/EventBus'
 import { AbstractListener } from './AbstractListener'
 import { PropertyCardRenderer } from 'UI/Renderers/PropertyCard/PropertyCardRenderer'
 import { ScheduledPropertyFactory } from 'Factories/ScheduledPropertyFactory'
-import { PropertyMetricsScheduler } from 'Services/PropertyMetricsScheduler'
+import { PropertyMetricsService } from 'Services/PropertyMetrics'
 
 @Subscribe('hostelworld:search:intercepted')
 export class PropertiesInterceptedListener extends AbstractListener {
@@ -16,7 +16,7 @@ export class PropertiesInterceptedListener extends AbstractListener {
       properties.map(property => PropertyCardRenderer.render(property.id))
     )
 
-    PropertyMetricsScheduler.schedule(
+    PropertyMetricsService.schedule(
       properties.map(property => ScheduledPropertyFactory.create(property, search))
     )
   }

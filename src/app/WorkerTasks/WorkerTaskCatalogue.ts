@@ -33,3 +33,10 @@ export type WorkerTaskName = keyof WorkerTaskCatalogue
 export type WorkerTaskArgs<TTask extends WorkerTaskName> = WorkerTaskCatalogue[TTask]['args']
 
 export type WorkerTaskPayload<TTask extends WorkerTaskName> = WorkerTaskCatalogue[TTask]['payload']
+
+export type WorkerResult = {
+  [TTask in WorkerTaskName]: {
+    task: TTask
+    payload: WorkerTaskPayload<TTask>
+  }
+}[WorkerTaskName]

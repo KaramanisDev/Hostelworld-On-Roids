@@ -11,8 +11,8 @@ export class AppInitializer {
 
     XHRRequestInterceptor.init()
 
-    WorkerRPCProxy.onResult((event: string, result: unknown): void => {
-      EventBus.emit(`worker:result:${event}`, result)
+    WorkerRPCProxy.onResult((task: string, payload: unknown): void => {
+      EventBus.emit('worker:result', { task, payload })
     })
 
     WorkerRPCProxy.resendOnPageRestore()

@@ -7,8 +7,8 @@ import { PropertyCardViewDTOFactory } from './ViewDTOs'
 import { promiseFallback, waitForElement } from 'Utils'
 import { PropertyCardComponentPatcher } from 'Services/Hostelworld/Patchers/PropertyCardComponentPatcher'
 import { BadgeTagsView } from 'UI/SolidJS/BadgeTags/BadgeTagsView'
-import { BookedCountry } from 'DTOs/BookedCountry'
-import type { PropertyGuestsCountries } from 'Services/Hostelworld/Api/VisitorsCountryClient'
+import type { BookedCountry } from 'DTOs/BookedCountry'
+import type { CollectedMetric } from 'Services/PropertyMetrics'
 import { PropertyCardVisibilityTracker } from './PropertyCardVisibilityTracker'
 import { EventBus } from 'Core/EventBus'
 
@@ -47,26 +47,36 @@ export class PropertyCardRenderer {
     )
   }
 
-  public static updateReviewMetrics (propertyId: number, metrics: ReviewMetrics | null): void {
-    this.view.update({ propertyId, ...PropertyCardViewDTOFactory.reviewRows(metrics) })
-  }
-
-  public static updateAvailabilityMetrics (propertyId: number, metrics: AvailabilityMetrics | null): void {
-    this.view.update({
-      propertyId,
-      availability: PropertyCardViewDTOFactory.availabilityRow(metrics)
-    })
+  public static async updateMetric (collected: CollectedMetric): Promise<void> {
+    switch (collected.metric) {
+      case 'reviews':
+        return this.updateReviewMetrics(collected.propertyId, collected.reviewMetrics)
+      case 'availability':
+        return this.updateAvailabilityMetrics(collected.propertyId, collected.availabilityMetrics)
+      case 'countries':
+        return this.updateCountries(collected.propertyId, collected.bookedCountries)
+    }
   }
 
   public static showDisconnected (): void {
     this.view.showDisconnected()
   }
 
-  public static async updateCountries (propertyId: number, countries: PropertyGuestsCountries): Promise<void> {
+  private static updateReviewMetrics (propertyId: number, metrics: ReviewMetrics | null): void {
+    this.view.update({ propertyId, ...PropertyCardViewDTOFactory.reviewRows(metrics) })
+  }
+
+  private static updateAvailabilityMetrics (propertyId: number, metrics: AvailabilityMetrics | null): void {
+    this.view.update({
+      propertyId,
+      availability: PropertyCardViewDTOFactory.availabilityRow(metrics)
+    })
+  }
+
+  private static async updateCountries (propertyId: number, bookedCountries: BookedCountry[]): Promise<void> {
     const container: HTMLElement | null = this.findContainer(propertyId)
     if (!container) return
 
-    const bookedCountries: BookedCountry[] = countries.map(country => new BookedCountry(country))
     await PropertyCardComponentPatcher.injectBookedCountries(container, bookedCountries)
   }
 

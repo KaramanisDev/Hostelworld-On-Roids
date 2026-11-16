@@ -3,7 +3,7 @@ import type { PropertyPage } from 'DTOs/PropertyPage'
 import { Subscribe } from 'Core/EventBus'
 import { AbstractListener } from './AbstractListener'
 import { PropertyInsightsRenderer } from 'UI/Renderers/PropertyInsights'
-import { WorkerRPCProxy } from 'Communication/WorkerRPCProxy'
+import { ScheduledPropertyFactory } from 'Factories/ScheduledPropertyFactory'
 
 @Subscribe('property:page:displayed')
 export class PropertyPageDisplayedListener extends AbstractListener {
@@ -16,8 +16,6 @@ export class PropertyPageDisplayedListener extends AbstractListener {
       return
     }
 
-    WorkerRPCProxy.call('fetch:reviews', page.getId(), page.getName(), page.getOverallRating())
-    WorkerRPCProxy.call('fetch:availability', page.getId(), page.getName(), page.getStay())
-    WorkerRPCProxy.call('fetch:countries', page.getId(), page.getName(), page.getStay())
+    this.emit('property:metrics:requested', ScheduledPropertyFactory.createFromPage(page))
   }
 }

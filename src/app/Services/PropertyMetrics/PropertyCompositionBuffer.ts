@@ -1,0 +1,116 @@
+import type { Property } from 'DTOs/Property'
+import type { Stay } from 'DTOs/Stay'
+import type { ReviewMetrics } from 'DTOs/ReviewMetrics'
+import type { AvailabilityMetrics } from 'DTOs/AvailabilityMetrics'
+import type { BookedCountry } from 'DTOs/BookedCountry'
+import { PropertyFactory } from 'Factories/PropertyFactory'
+
+type CollectedReviews = {
+  metric: 'reviews'
+  propertyId: number
+  reviewMetrics: ReviewMetrics | null
+}
+
+type CollectedAvailability = {
+  metric: 'availability'
+  propertyId: number
+  stay: Stay
+  availabilityMetrics: AvailabilityMetrics | null
+}
+
+type CollectedCountries = {
+  metric: 'countries'
+  propertyId: number
+  stay: Stay
+  bookedCountries: BookedCountry[]
+}
+
+type CollectedStayMetric = CollectedAvailability | CollectedCountries
+
+type StayMetrics = {
+  availabilityMetrics?: AvailabilityMetrics | null
+  bookedCountries?: BookedCountry[]
+}
+
+type PendingStay = StayMetrics & {
+  id: number
+  name: string
+  stay: Stay
+}
+
+export type CollectedMetric = CollectedReviews | CollectedStayMetric
+
+export type Metric = CollectedMetric['metric']
+
+export type CompletedProperty = {
+  id: number
+  name: string
+  stay: Stay
+  reviewMetrics: ReviewMetrics | null
+  availabilityMetrics: AvailabilityMetrics | null
+  bookedCountries: BookedCountry[]
+}
+
+export class PropertyCompositionBuffer {
+  private static reviews: Map<number, ReviewMetrics | null> = new Map()
+  private static stays: Map<string, PendingStay> = new Map()
+
+  public static collect (collected: CollectedMetric, propertyName: string): Property[] {
+    this.store(collected, propertyName)
+
+    const completed: CompletedProperty[] = this.completedEntries(collected.propertyId)
+    for (const entry of completed) {
+      this.stays.delete(entry.stay.getPropertyKey(entry.id))
+    }
+
+    return completed.map(entry => PropertyFactory.create(entry))
+  }
+
+  public static clear (): void {
+    this.reviews.clear()
+    this.stays.clear()
+  }
+
+  private static store (collected: CollectedMetric, propertyName: string): void {
+    switch (collected.metric) {
+      case 'reviews':
+        this.reviews.set(collected.propertyId, collected.reviewMetrics)
+        return
+      case 'availability':
+        this.updateStay(collected, propertyName, { availabilityMetrics: collected.availabilityMetrics })
+        return
+      case 'countries':
+        this.updateStay(collected, propertyName, { bookedCountries: collected.bookedCountries })
+    }
+  }
+
+  private static updateStay (collected: CollectedStayMetric, propertyName: string, metrics: StayMetrics): void {
+    const key: string = collected.stay.getPropertyKey(collected.propertyId)
+    const pendingStay: PendingStay = this.stays.get(key) ?? {
+      id: collected.propertyId,
+      name: propertyName,
+      stay: collected.stay
+    }
+
+    this.stays.set(key, { ...pendingStay, ...metrics })
+  }
+
+  private static completedEntries (id: number): CompletedProperty[] {
+    const reviewMetrics: ReviewMetrics | null | undefined = this.reviews.get(id)
+    if (reviewMetrics === undefined) return []
+
+    const completed: CompletedProperty[] = []
+    for (const stay of this.stays.values()) {
+      if (stay.id !== id || stay.availabilityMetrics === undefined || stay.bookedCountries === undefined) continue
+
+      completed.push({
+        ...stay,
+        reviewMetrics,
+        availabilityMetrics: stay.availabilityMetrics,
+        bookedCountries: stay.bookedCountries
+      })
+    }
+
+    return completed
+  }
+}

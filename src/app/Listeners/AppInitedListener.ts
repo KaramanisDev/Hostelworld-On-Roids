@@ -9,12 +9,9 @@ import { SearchPageHook } from 'Services/Hostelworld/SearchPageHook'
 import { AppDiscountInterceptor } from 'Services/Hostelworld/AppDiscountInterceptor'
 import { TrackerInterceptor } from 'Services/Hostelworld/TrackerInterceptor'
 import { VuexDataHook } from 'Services/Hostelworld/VuexDataHook'
-import { PropertyMetricsScheduler } from 'Services/PropertyMetricsScheduler'
-import { PropertyCompositionBuffer } from 'Services/PropertyCompositionBuffer'
-import type { ScheduledProperty } from 'Services/PropertyMetricsScheduler'
+import { PropertyMetricsService, type ScheduledProperty } from 'Services/PropertyMetrics'
 import type { DisplayedProperty, Property } from 'Types/HostelworldSearch'
 import { FilterModalRenderer } from 'UI/Renderers/FilterModal'
-import { WorkerRPCProxy } from 'Communication/WorkerRPCProxy'
 
 @Subscribe('app:inited')
 export class AppInitedListener extends AbstractListener {
@@ -22,7 +19,7 @@ export class AppInitedListener extends AbstractListener {
     TrackerInterceptor.blockTrackers()
     ResizeObserverComponentPatcher.useNativeObserver()
     this.applyRequestInterceptors()
-    PropertyMetricsScheduler.onStart(this.onScheduledPropertyStart.bind(this))
+    PropertyMetricsService.onStart(this.onScheduledPropertyStart.bind(this))
 
     await Promise.allSettled([
       FilterModalRenderer.render(),
@@ -60,7 +57,7 @@ export class AppInitedListener extends AbstractListener {
   }
 
   private onSearchResults (properties: Property[]): void {
-    PropertyCompositionBuffer.clear()
+    PropertyMetricsService.discardCollected()
     this.emit('hostelworld:search:intercepted', properties)
   }
 
@@ -84,8 +81,6 @@ export class AppInitedListener extends AbstractListener {
   }
 
   private onScheduledPropertyStart (property: ScheduledProperty): void {
-    WorkerRPCProxy.call('fetch:reviews', property.id, property.name, property.overallRating)
-    WorkerRPCProxy.call('fetch:availability', property.id, property.name, property.stay)
-    WorkerRPCProxy.call('fetch:countries', property.id, property.name, property.stay)
+    this.emit('property:metrics:requested', property)
   }
 }

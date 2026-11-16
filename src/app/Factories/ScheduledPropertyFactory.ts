@@ -1,6 +1,7 @@
 import type { DisplayedProperty, Property } from 'Types/HostelworldSearch'
 import type { Search } from 'DTOs/Search'
-import type { ScheduledProperty } from 'Services/PropertyMetricsScheduler'
+import type { PropertyPage } from 'DTOs/PropertyPage'
+import type { ScheduledProperty } from 'Services/PropertyMetrics'
 
 export class ScheduledPropertyFactory {
   public static create (property: Property | DisplayedProperty, search: Search): ScheduledProperty {
@@ -9,6 +10,15 @@ export class ScheduledPropertyFactory {
       name: property.name,
       overallRating: this.overallRating(property),
       stay: search.getStay()
+    }
+  }
+
+  public static createFromPage (page: PropertyPage): ScheduledProperty {
+    return {
+      id: page.getId(),
+      name: page.getName(),
+      overallRating: page.getOverallRating(),
+      stay: page.getStay()
     }
   }
 
