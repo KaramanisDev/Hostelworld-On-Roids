@@ -31,13 +31,8 @@ export class AppInitedListener extends AbstractListener {
       VuexDataHook.onPropertyPageChanged(this.onPropertyPageChanged.bind(this))
     ])
 
-    const renderProperties: (propertyIds: number[]) => void = (propertyIds: number[]) => {
-      for (const propertyId of propertyIds) {
-        this.emit('property:render', propertyId)
-      }
-    }
     await VuexDataHook.onPropertiesDisplayed(
-      renderProperties.bind(this)
+      this.onPropertiesDisplayed.bind(this)
     )
   }
 
@@ -86,6 +81,10 @@ export class AppInitedListener extends AbstractListener {
 
   private onUnavailableProperties (properties: Property[]): void {
     this.emit('hostelworld:search:intercepted', properties)
+  }
+
+  private onPropertiesDisplayed (properties: Property[]): void {
+    this.emit('hostelworld:properties:displayed', properties)
   }
 
   private onPropertyPageChanged (page: PropertyPage | null): void {

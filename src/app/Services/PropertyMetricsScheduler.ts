@@ -17,6 +17,7 @@ export class PropertyMetricsScheduler {
   private static readonly stalledAfterInMs: number = 2 * 60 * 1000
   private static readonly queued: Map<number, ScheduledProperty> = new Map()
   private static readonly running: Map<number, Set<Metric>> = new Map()
+  private static displayedIds: number[] = []
   private static startListener: StartListener = emptyFunction
 
   public static onStart (listener: StartListener): void {
@@ -41,6 +42,10 @@ export class PropertyMetricsScheduler {
     if (collectedMetrics.size < this.metricsPerProperty) return
 
     this.release(propertyId, collectedMetrics)
+  }
+
+  public static prioritizeDisplayed (propertyIds: number[]): void {
+    this.displayedIds = propertyIds
   }
 
   public static clear (): void {
@@ -75,6 +80,9 @@ export class PropertyMetricsScheduler {
   }
 
   private static nextQueued (): ScheduledProperty | undefined {
-    return this.queued.values().next().value
+    const displayedId: number | undefined = this.displayedIds.find(propertyId => this.queued.has(propertyId))
+    if (displayedId === undefined) return this.queued.values().next().value
+
+    return this.queued.get(displayedId)
   }
 }

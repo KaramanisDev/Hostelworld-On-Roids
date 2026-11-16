@@ -27,7 +27,7 @@ export class VuexDataHook {
   private static readonly propertyRouteName: string = 'hosteldetails.php-name-city-id'
   private static displayedPropertyPageKey: string | null = null
 
-  public static async onPropertiesDisplayed (callback: (propertyIds: number[]) => void): Promise<void> {
+  public static async onPropertiesDisplayed (callback: (properties: Property[]) => void): Promise<void> {
     const onDisplayedPropertiesUpdate: () => Promise<void> = async (): Promise<void> => {
       const component: VuePropertyListComponent | undefined = await promiseFallback(
         VueComponentAccessor.propertyListComponent()
@@ -41,9 +41,7 @@ export class VuexDataHook {
         if (!properties[0]) return
 
         callback(
-          properties
-            .filter(property => !property.is3PIProperty)
-            .map(property => property.id)
+          properties.filter(property => !property.is3PIProperty)
         )
       }
 
