@@ -2,7 +2,7 @@ import { VueComponentAccessor } from 'Services/Hostelworld/VueComponentAccessor'
 import type { HostelworldPropertyDetails, VuePropertyListComponent } from 'Services/Hostelworld/VueComponentAccessor'
 import { PropertyPage } from 'DTOs/PropertyPage'
 import { Stay } from 'DTOs/Stay'
-import type { Property } from 'Types/HostelworldSearch'
+import type { DisplayedProperty } from 'Types/HostelworldSearch'
 import { promiseFallback, waitForProperty } from 'Utils'
 
 type VuexRoute = {
@@ -28,7 +28,7 @@ export class VuexDataHook {
   private static readonly propertyRouteName: string = 'hosteldetails.php-name-city-id'
   private static displayedPropertyPageKey: string | null = null
 
-  public static async onPropertiesDisplayed (callback: (properties: Property[]) => void): Promise<void> {
+  public static async onPropertiesDisplayed (callback: (properties: DisplayedProperty[]) => void): Promise<void> {
     const onDisplayedPropertiesUpdate: () => Promise<void> = async (): Promise<void> => {
       const component: VuePropertyListComponent | undefined = await promiseFallback(
         VueComponentAccessor.propertyListComponent()
@@ -38,7 +38,9 @@ export class VuexDataHook {
       if (component.isDisplayedPropertiesWatched) return
       component.isDisplayedPropertiesWatched = true
 
-      const onDisplayedProperties: (properties: Property[]) => void = (properties: Property[]): void => {
+      const onDisplayedProperties: (properties: DisplayedProperty[]) => void = (
+        properties: DisplayedProperty[]
+      ): void => {
         if (!properties[0]) return
 
         callback(
@@ -46,7 +48,7 @@ export class VuexDataHook {
         )
       }
 
-      component.$watch<Property[]>('displayedProperties', onDisplayedProperties)
+      component.$watch<DisplayedProperty[]>('displayedProperties', onDisplayedProperties)
       component.$watch('cardComponent', () => {
         component.$nextTick(() => onDisplayedProperties(component.displayedProperties))
       })

@@ -1,4 +1,4 @@
-import type { Property } from 'Types/HostelworldSearch'
+import type { DisplayedProperty, DisplayedRating, Property } from 'Types/HostelworldSearch'
 import { waitFor, waitForElement, waitForProperty } from 'Utils'
 
 type VueConstructor = {
@@ -34,9 +34,7 @@ interface HostelworldSearchService {
 export type HostelworldPropertyDetails = {
   id: string
   name: string
-  rating: {
-    total: number
-  } | null
+  rating: DisplayedRating | null
 }
 
 type HostelworldState = {
@@ -59,7 +57,7 @@ export type VuePropertyListComponent = {
   filteredProperties: Property[]
   filteredHWProperties: Property[]
   displayFeaturedProperties: boolean
-  displayedProperties: Property[]
+  displayedProperties: DisplayedProperty[]
   _computedWatchers?: Record<string, VueComputedWatcher>
   isDisplayedPropertiesWatched?: boolean
   $watch: <T>(property: string, callback: (value: T) => void) => void

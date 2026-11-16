@@ -10,7 +10,7 @@ import { VuexDataHook } from 'Services/Hostelworld/VuexDataHook'
 import { PropertyMetricsScheduler } from 'Services/PropertyMetricsScheduler'
 import { PropertyCompositionBuffer } from 'Services/PropertyCompositionBuffer'
 import type { ScheduledProperty } from 'Services/PropertyMetricsScheduler'
-import type { Property } from 'Types/HostelworldSearch'
+import type { DisplayedProperty, Property } from 'Types/HostelworldSearch'
 import { FilterModalRenderer } from 'UI/Renderers/FilterModal'
 import { WorkerRPCProxy } from 'Communication/WorkerRPCProxy'
 
@@ -58,7 +58,7 @@ export class AppInitedListener extends AbstractListener {
     this.emit('hostelworld:search:intercepted', properties)
   }
 
-  private onPropertiesDisplayed (properties: Property[]): void {
+  private onPropertiesDisplayed (properties: DisplayedProperty[]): void {
     this.emit('hostelworld:properties:displayed', properties)
   }
 

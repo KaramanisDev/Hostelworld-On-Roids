@@ -1,4 +1,4 @@
-import type { Property } from 'Types/HostelworldSearch'
+import type { DisplayedProperty } from 'Types/HostelworldSearch'
 import type { Search } from 'DTOs/Search'
 import { Subscribe } from 'Core/EventBus'
 import { AbstractListener } from './AbstractListener'
@@ -7,7 +7,7 @@ import { PropertyMetricsScheduler } from 'Services/PropertyMetricsScheduler'
 
 @Subscribe('hostelworld:properties:displayed')
 export class PropertiesDisplayedListener extends AbstractListener {
-  public handle (properties: Property[]): void {
+  public handle (properties: DisplayedProperty[]): void {
     PropertyMetricsScheduler.prioritizeDisplayed(properties.map(property => property.id))
 
     for (const property of properties) {
@@ -17,7 +17,7 @@ export class PropertiesDisplayedListener extends AbstractListener {
     this.scheduleMissingMetrics(properties)
   }
 
-  private scheduleMissingMetrics (properties: Property[]): void {
+  private scheduleMissingMetrics (properties: DisplayedProperty[]): void {
     const search: Search | undefined = this.latestSearchInSession()
     if (!search) return
 
