@@ -1,5 +1,6 @@
 import { createSignal, Show, type JSX, type Setter } from 'solid-js'
-import type { FilterModalViewDTO, FilterCriteria } from 'UI/Renderers/FilterModal/ViewDTOs'
+import type { FilterModalViewDTO } from 'UI/Renderers/FilterModal/ViewDTOs'
+import type { FilterCriteria } from 'Services/PropertyFilterService'
 import { FilterModalViewDTOFactory } from 'UI/Renderers/FilterModal/ViewDTOs'
 import { FilterButton } from './FilterButton'
 import { FilterModal } from './FilterModal'
@@ -47,45 +48,6 @@ export function FilterModalApp (properties: Properties): JSX.Element {
     restoreStateBeforeOpen()
   }
 
-  function enabledBadges (sections: FilterModalViewDTO['sections']): FilterCriteria['badges'] {
-    const badges: FilterCriteria['badges'] = {}
-
-    for (const section of sections) {
-      if (!section.badgeFilters) continue
-
-      for (const filter of section.badgeFilters) {
-        if (!filter.enabled) continue
-        badges[filter.key] = true
-      }
-    }
-
-    return badges
-  }
-
-  function modifiedRanges (sections: FilterModalViewDTO['sections']): FilterCriteria['ranges'] {
-    const ranges: FilterCriteria['ranges'] = {}
-
-    for (const section of sections) {
-      if (!section.rangeFilters) continue
-
-      for (const filter of section.rangeFilters) {
-        if (filter.rangeMin === filter.min && filter.rangeMax === filter.max) continue
-        ranges[filter.key] = { min: filter.rangeMin, max: filter.rangeMax }
-      }
-    }
-
-    return ranges
-  }
-
-  function filterCriteria (): FilterCriteria {
-    const sections: FilterModalViewDTO['sections'] = viewDto().sections
-
-    return {
-      badges: enabledBadges(sections),
-      ranges: modifiedRanges(sections)
-    }
-  }
-
   function handleReset (): void {
     commitChanges()
     setViewDto(() => {
@@ -99,7 +61,7 @@ export function FilterModalApp (properties: Properties): JSX.Element {
     commitChanges()
     setViewDto(previous => ({ ...previous, isOpen: false }))
 
-    const criteria: FilterCriteria = filterCriteria()
+    const criteria: FilterCriteria = FilterModalViewDTOFactory.criteria(viewDto().sections)
     properties.onFilterApplied(criteria)
   }
 

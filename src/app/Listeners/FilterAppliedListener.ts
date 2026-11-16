@@ -1,5 +1,5 @@
 import type { Property } from 'DTOs/Property'
-import type { FilterCriteria } from 'UI/Renderers/FilterModal/ViewDTOs'
+import type { FilterCriteria } from 'Services/PropertyFilterService'
 import { Subscribe } from 'Core/EventBus'
 import { AbstractListener } from './AbstractListener'
 import { SearchPropertyListComponentPatcher } from 'Services/Hostelworld/Patchers/SearchPropertyListComponentPatcher'

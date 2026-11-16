@@ -1,5 +1,6 @@
-import type { BadgeColor, BadgeId, BadgeMetadata } from 'Services/PropertyBadgeService'
-import { PropertyBadgeService } from 'Services/PropertyBadgeService'
+import type { BadgeColor, BadgeId } from 'Services/PropertyBadgeService'
+import { PropertyFilterService } from 'Services/PropertyFilterService'
+import type { FilterCriteria, RangeDimension, RangeKey, RangeSection } from 'Services/PropertyFilterService'
 import { ExtensionConfig } from 'Utils/ExtensionConfig'
 
 export type BadgeFilterViewDTO = {
@@ -36,34 +37,29 @@ export type FilterModalViewDTO = {
   sections: FilterSectionViewDTO[]
 }
 
-export type FilterCriteria = {
-  badges: Partial<Record<BadgeId, boolean>>
-  ranges: Record<string, { min: number; max: number }>
-}
-
-type RangeDefinition = {
-  key: string
+type RangeLabel = {
   label: string
   description: string
 }
 
+export class FilterModalLabels {
+  public static readonly sections: Record<RangeSection, string> = {
+    demographics: 'Demographics',
+    ageGroups: 'Age Groups'
+  }
+
+  public static readonly ranges: Record<RangeKey, RangeLabel> = {
+    male: { label: 'Male %', description: 'Filter by percentage of male reviewers' },
+    female: { label: 'Female %', description: 'Filter by percentage of female reviewers' },
+    solo: { label: 'Solo %', description: 'Filter by percentage of solo travelers' },
+    age18to24: { label: '18-24 %', description: 'Filter by percentage of 18-24 year olds' },
+    age25to30: { label: '25-30 %', description: 'Filter by percentage of 25-30 year olds' },
+    age31to40: { label: '31-40 %', description: 'Filter by percentage of 31-40 year olds' },
+    age41plus: { label: '41+ %', description: 'Filter by percentage of 41+ year olds' }
+  }
+}
+
 export class FilterModalViewDTOFactory {
-  private static readonly badgeDefinitions: BadgeMetadata[] =
-    PropertyBadgeService.badgeMetadata().filter(badge => badge.id !== 'closedDown')
-
-  private static readonly demographicDefinitions: RangeDefinition[] = [
-    { key: 'male', label: 'Male %', description: 'Filter by percentage of male reviewers' },
-    { key: 'female', label: 'Female %', description: 'Filter by percentage of female reviewers' },
-    { key: 'solo', label: 'Solo %', description: 'Filter by percentage of solo travelers' }
-  ]
-
-  private static readonly ageGroupDefinitions: RangeDefinition[] = [
-    { key: 'age18to24', label: '18-24 %', description: 'Filter by percentage of 18-24 year olds' },
-    { key: 'age25to30', label: '25-30 %', description: 'Filter by percentage of 25-30 year olds' },
-    { key: 'age31to40', label: '31-40 %', description: 'Filter by percentage of 31-40 year olds' },
-    { key: 'age41plus', label: '41+ %', description: 'Filter by percentage of 41+ year olds' }
-  ]
-
   public static create (criteria: FilterCriteria = { badges: {}, ranges: {} }): FilterModalViewDTO {
     return {
       isOpen: false,
@@ -75,47 +71,79 @@ export class FilterModalViewDTOFactory {
       extensionName: ExtensionConfig.extensionName(),
       sections: [
         this.badgesSection(criteria),
-        this.demographicsSection(criteria),
-        this.ageGroupsSection(criteria)
+        this.rangesSection('demographics', criteria),
+        this.rangesSection('ageGroups', criteria)
       ]
+    }
+  }
+
+  public static criteria (sections: FilterSectionViewDTO[]): FilterCriteria {
+    return {
+      badges: this.enabledBadges(sections),
+      ranges: this.modifiedRanges(sections)
     }
   }
 
   private static badgesSection (criteria: FilterCriteria): FilterSectionViewDTO {
     return {
       title: 'Badges',
-      badgeFilters: this.badgeDefinitions.map(definition => ({
-        key: definition.id,
-        label: definition.label,
-        color: definition.color,
-        enabled: criteria.badges[definition.id] ?? false
+      badgeFilters: PropertyFilterService.filterableBadges().map(badge => ({
+        key: badge.id,
+        label: badge.label,
+        color: badge.color,
+        enabled: criteria.badges[badge.id] ?? false
       }))
     }
   }
 
-  private static demographicsSection (criteria: FilterCriteria): FilterSectionViewDTO {
+  private static rangesSection (section: RangeSection, criteria: FilterCriteria): FilterSectionViewDTO {
     return {
-      title: 'Demographics',
-      rangeFilters: this.demographicDefinitions.map(definition => this.rangeFilter(definition, criteria))
+      title: FilterModalLabels.sections[section],
+      rangeFilters: PropertyFilterService.rangeDimensionsIn(section).map(
+        dimension => this.rangeFilter(dimension, criteria)
+      )
     }
   }
 
-  private static ageGroupsSection (criteria: FilterCriteria): FilterSectionViewDTO {
+  private static rangeFilter (dimension: RangeDimension, criteria: FilterCriteria): RangeFilterViewDTO {
     return {
-      title: 'Age Groups',
-      rangeFilters: this.ageGroupDefinitions.map(definition => this.rangeFilter(definition, criteria))
-    }
-  }
-
-  private static rangeFilter (definition: RangeDefinition, criteria: FilterCriteria): RangeFilterViewDTO {
-    return {
-      key: definition.key,
-      label: definition.label,
-      description: definition.description,
+      key: dimension.key,
+      label: FilterModalLabels.ranges[dimension.key].label,
+      description: FilterModalLabels.ranges[dimension.key].description,
       min: 0,
       max: 100,
-      rangeMin: criteria.ranges[definition.key]?.min ?? 0,
-      rangeMax: criteria.ranges[definition.key]?.max ?? 100
+      rangeMin: criteria.ranges[dimension.key]?.min ?? 0,
+      rangeMax: criteria.ranges[dimension.key]?.max ?? 100
     }
+  }
+
+  private static enabledBadges (sections: FilterSectionViewDTO[]): FilterCriteria['badges'] {
+    const badges: FilterCriteria['badges'] = {}
+
+    for (const section of sections) {
+      if (!section.badgeFilters) continue
+
+      for (const filter of section.badgeFilters) {
+        if (!filter.enabled) continue
+        badges[filter.key] = true
+      }
+    }
+
+    return badges
+  }
+
+  private static modifiedRanges (sections: FilterSectionViewDTO[]): FilterCriteria['ranges'] {
+    const ranges: FilterCriteria['ranges'] = {}
+
+    for (const section of sections) {
+      if (!section.rangeFilters) continue
+
+      for (const filter of section.rangeFilters) {
+        if (filter.rangeMin === filter.min && filter.rangeMax === filter.max) continue
+        ranges[filter.key] = { min: filter.rangeMin, max: filter.rangeMax }
+      }
+    }
+
+    return ranges
   }
 }

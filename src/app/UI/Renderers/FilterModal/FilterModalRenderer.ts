@@ -1,5 +1,6 @@
 import { FilterModalView } from 'UI/SolidJS/FilterModal/FilterModalView'
-import type { FilterCriteria, FilterModalViewDTO } from './ViewDTOs'
+import type { FilterModalViewDTO } from './ViewDTOs'
+import type { FilterCriteria } from 'Services/PropertyFilterService'
 import { FilterModalViewDTOFactory } from './ViewDTOs'
 import { waitForElement } from 'Utils'
 import { EventBus } from 'Core/EventBus'

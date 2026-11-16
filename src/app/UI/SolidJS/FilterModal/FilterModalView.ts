@@ -1,6 +1,7 @@
 import { render } from 'solid-js/web'
 import type { ViewAdapterInterface } from 'UI/ViewAdapterInterface'
-import type { FilterModalViewDTO, FilterCriteria } from 'UI/Renderers/FilterModal/ViewDTOs'
+import type { FilterModalViewDTO } from 'UI/Renderers/FilterModal/ViewDTOs'
+import type { FilterCriteria } from 'Services/PropertyFilterService'
 import { FilterModalApp, type FilterModalStateSetters } from './Components/FilterModalApp'
 
 type MountedComponent = {
