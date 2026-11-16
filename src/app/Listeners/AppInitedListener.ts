@@ -6,6 +6,7 @@ import { SearchPropertyListComponentPatcher } from 'Services/Hostelworld/Patcher
 import { DevicePatcher } from 'Services/Hostelworld/Patchers/DevicePatcher'
 import { SearchPageHook } from 'Services/Hostelworld/SearchPageHook'
 import { AppDiscountInterceptor } from 'Services/Hostelworld/AppDiscountInterceptor'
+import { TrackerInterceptor } from 'Services/Hostelworld/TrackerInterceptor'
 import { VuexDataHook } from 'Services/Hostelworld/VuexDataHook'
 import { PropertyMetricsScheduler } from 'Services/PropertyMetricsScheduler'
 import { PropertyCompositionBuffer } from 'Services/PropertyCompositionBuffer'
@@ -17,6 +18,7 @@ import { WorkerRPCProxy } from 'Communication/WorkerRPCProxy'
 @Subscribe('app:inited')
 export class AppInitedListener extends AbstractListener {
   public async handle (): Promise<void> {
+    TrackerInterceptor.blockTrackers()
     this.applyRequestInterceptors()
     PropertyMetricsScheduler.onStart(this.onScheduledPropertyStart.bind(this))
 
