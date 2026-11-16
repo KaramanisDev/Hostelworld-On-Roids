@@ -1,7 +1,7 @@
 import type { AfterResponseState, BeforeRequestState, KyResponse, Options } from 'ky'
 import { default as KyClient, isHTTPError } from 'ky'
 import { CacheStorage } from 'Utils/Storage/CacheStorage'
-import { delay, hash, promiseFallback, randomNumber } from 'Utils/index'
+import { delay, promiseFallback, randomNumber } from 'Utils/index'
 import type { StorageInterface } from 'Utils/Storage/StorageInterface'
 
 export type HttpClientOptions = {
@@ -83,6 +83,6 @@ export class HttpClient {
   }
 
   private static cacheKey (request: Request): string {
-    return hash(`${request.url}_${request.method}`)
+    return `${request.method} ${request.url}`
   }
 }

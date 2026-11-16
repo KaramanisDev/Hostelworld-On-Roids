@@ -31,7 +31,7 @@ export class CacheApiAdapter implements StorageAdapterInterface {
     const cache: Cache = await this.getCache()
     const requests: readonly Request[] = await cache.keys()
 
-    return requests.map((request: Request): string => request.url.slice(this.keyPrefix.length))
+    return requests.map((request: Request): string => decodeURIComponent(request.url.slice(this.keyPrefix.length)))
   }
 
   private getCache (): Promise<Cache> {
@@ -39,6 +39,6 @@ export class CacheApiAdapter implements StorageAdapterInterface {
   }
 
   private key (key: string): string {
-    return `${this.keyPrefix}${key}`
+    return `${this.keyPrefix}${encodeURIComponent(key)}`
   }
 }

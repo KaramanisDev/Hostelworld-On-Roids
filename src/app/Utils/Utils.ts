@@ -10,18 +10,6 @@ export function delay (timeoutInMs: number): Promise<void> {
   return new Promise(resolve => setTimeout(resolve, timeoutInMs))
 }
 
-export function hash (input: string): string {
-  let hash: number = 0
-
-  for (let index = 0; index < input.length; index++) {
-    const char: number = <number>input.codePointAt(index)
-    hash = (hash << 5) - hash + char
-    hash &= hash
-  }
-
-  return new Uint32Array([hash])[0].toString(36)
-}
-
 export async function waitFor<T> (
   lookup: () => T | undefined,
   maxTimeout: number,
