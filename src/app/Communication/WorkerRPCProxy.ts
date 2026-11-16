@@ -56,11 +56,12 @@ export class WorkerRPCProxy {
     window.addEventListener('pageshow', (event: PageTransitionEvent): void => {
       if (!event.persisted) return
 
-      this.lastActivityAt = Date.now()
-      for (const pendingCall of this.pendingCalls.values()) {
-        this.send(pendingCall.request)
-      }
+      this.resendPending()
     })
+  }
+
+  public static resendOnInterruption (): void {
+    window.addEventListener('rpc:interrupted', (): void => this.resendPending())
   }
 
   public static onDisconnect (callback: () => void): void {
@@ -77,6 +78,14 @@ export class WorkerRPCProxy {
     window.dispatchEvent(
       new CustomEvent('rpc:call', { detail: request })
     )
+  }
+
+  private static resendPending (): void {
+    this.lastActivityAt = Date.now()
+
+    for (const pendingCall of this.pendingCalls.values()) {
+      this.send(pendingCall.request)
+    }
   }
 
   private static watchForSilence (): void {

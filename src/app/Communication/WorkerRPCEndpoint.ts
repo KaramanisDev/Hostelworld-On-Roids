@@ -119,6 +119,8 @@ export class WorkerRPCEndpoint {
     this.isDocumentPortOpen = true
     ExtensionRuntime.connect(this.documentPortName, (): void => {
       this.isDocumentPortOpen = false
+
+      window.dispatchEvent(new CustomEvent('rpc:interrupted'))
     })
   }
 
