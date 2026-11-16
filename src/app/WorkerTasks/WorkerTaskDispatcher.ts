@@ -1,19 +1,19 @@
 import type { WorkerTask, WorkerTaskResult } from './Tasks/WorkerTask'
+import type { WorkerTaskName } from './WorkerTaskCatalogue'
 
 export type { WorkerTaskResult }
 
-type TaskName = string
-type WorkerTaskRegistry = Record<TaskName, WorkerTask>
+type WorkerTaskRegistry = Partial<Record<WorkerTaskName, WorkerTask>>
 
 export class WorkerTaskDispatcher {
   private static tasks: WorkerTaskRegistry = {}
 
-  public static register (taskName: TaskName, handler: WorkerTask): void {
+  public static register (taskName: WorkerTaskName, handler: WorkerTask): void {
     this.tasks[taskName] = handler
   }
 
-  public static dispatch (taskName: TaskName, args: unknown[], signal: AbortSignal): WorkerTaskResult {
-    const handler: WorkerTask | undefined = this.tasks[taskName]
+  public static dispatch (taskName: string, args: unknown[], signal: AbortSignal): WorkerTaskResult {
+    const handler: WorkerTask | undefined = this.tasks[taskName as WorkerTaskName]
 
     if (!handler) {
       throw new Error(`No worker task handler registered for: ${taskName}`)

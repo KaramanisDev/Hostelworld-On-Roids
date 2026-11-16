@@ -12,6 +12,7 @@ import { PropertyMetricsScheduler } from 'Services/PropertyMetricsScheduler'
 import type { ScheduledProperty } from 'Services/PropertyMetricsScheduler'
 import type { HostelworldSearch, Property } from 'Types/HostelworldSearch'
 import { FilterModalRenderer } from 'UI/Renderers/FilterModal'
+import { WorkerRPCProxy } from 'Communication/WorkerRPCProxy'
 import { pluck } from 'Utils'
 
 @Subscribe('app:inited')
@@ -99,8 +100,8 @@ export class AppInitedListener extends AbstractListener {
   }
 
   private onScheduledPropertyStart (property: ScheduledProperty): void {
-    this.emit('worker:task:dispatch', 'fetch:reviews', property.id, property.name, property.overallRating)
-    this.emit('worker:task:dispatch', 'fetch:availability', property.id, property.name, property.stay)
-    this.emit('worker:task:dispatch', 'fetch:countries', property.id, property.name, property.stay)
+    WorkerRPCProxy.call('fetch:reviews', property.id, property.name, property.overallRating)
+    WorkerRPCProxy.call('fetch:availability', property.id, property.name, property.stay)
+    WorkerRPCProxy.call('fetch:countries', property.id, property.name, property.stay)
   }
 }

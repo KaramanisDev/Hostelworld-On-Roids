@@ -3,13 +3,9 @@ import { AbstractListener } from './AbstractListener'
 import { PropertyCardRenderer } from 'UI/Renderers/PropertyCard'
 import { PropertyInsightsRenderer } from 'UI/Renderers/PropertyInsights'
 import { ReviewMetrics } from 'DTOs/ReviewMetrics'
-import type { PropertyReviews } from 'Services/Hostelworld/Api/ReviewsClient'
+import type { WorkerTaskPayload } from 'WorkerTasks/WorkerTaskCatalogue'
 
-type ReviewsPayload = {
-  propertyId: number
-  propertyName: string
-  data: PropertyReviews | null
-}
+type ReviewsPayload = WorkerTaskPayload<'fetch:reviews'>
 
 @Subscribe('worker:result:fetch:reviews')
 export class ReviewsReadyListener extends AbstractListener {

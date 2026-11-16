@@ -3,15 +3,9 @@ import { AbstractListener } from './AbstractListener'
 import { PropertyCardRenderer } from 'UI/Renderers/PropertyCard'
 import { PropertyInsightsRenderer } from 'UI/Renderers/PropertyInsights'
 import { AvailabilityMetrics } from 'DTOs/AvailabilityMetrics'
-import type { Stay } from 'DTOs/Stay'
-import type { PropertyAvailability } from 'Services/Hostelworld/Api/AvailabilityClient'
+import type { WorkerTaskPayload } from 'WorkerTasks/WorkerTaskCatalogue'
 
-type AvailabilityPayload = {
-  propertyId: number
-  propertyName: string
-  stay: Stay
-  data: PropertyAvailability | null
-}
+type AvailabilityPayload = WorkerTaskPayload<'fetch:availability'>
 
 @Subscribe('worker:result:fetch:availability')
 export class AvailabilityReadyListener extends AbstractListener {

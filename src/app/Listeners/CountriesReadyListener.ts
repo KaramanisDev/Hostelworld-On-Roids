@@ -2,15 +2,9 @@ import { Subscribe } from 'Core/EventBus'
 import { AbstractListener } from './AbstractListener'
 import { PropertyCardRenderer } from 'UI/Renderers/PropertyCard'
 import { PropertyInsightsRenderer } from 'UI/Renderers/PropertyInsights'
-import type { Stay } from 'DTOs/Stay'
-import type { PropertyGuestsCountries } from 'Services/Hostelworld/Api/VisitorsCountryClient'
+import type { WorkerTaskPayload } from 'WorkerTasks/WorkerTaskCatalogue'
 
-type CountriesPayload = {
-  propertyId: number
-  propertyName: string
-  stay: Stay
-  data: PropertyGuestsCountries
-}
+type CountriesPayload = WorkerTaskPayload<'fetch:countries'>
 
 @Subscribe('worker:result:fetch:countries')
 export class CountriesReadyListener extends AbstractListener {

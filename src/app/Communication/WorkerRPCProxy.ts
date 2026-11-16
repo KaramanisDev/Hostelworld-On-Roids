@@ -1,5 +1,6 @@
 import type { RPCCancelPayload, RPCRequest, RPCResult } from './RPCTypesContract'
 import { RPCSerializer } from './RPCSerializer'
+import type { WorkerTaskArgs, WorkerTaskName } from 'WorkerTasks/WorkerTaskCatalogue'
 
 type RPCResultHandler<T = unknown> = (event: string, response: T) => void
 
@@ -17,7 +18,7 @@ export class WorkerRPCProxy {
   private static silenceCheck: ReturnType<typeof setInterval> | null = null
   private static isDisconnected: boolean = false
 
-  public static call (task: string, args: unknown[]): void {
+  public static call<TTask extends WorkerTaskName> (task: TTask, ...args: WorkerTaskArgs<TTask>): void {
     if (this.isDisconnected) return
 
     const request: RPCRequest<string> = { id: crypto.randomUUID(), task, args: RPCSerializer.serialize(args) }

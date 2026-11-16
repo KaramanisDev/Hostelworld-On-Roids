@@ -1,9 +1,9 @@
 import { AbstractQueuedTask } from './AbstractQueuedTask'
 import { AvailabilityClient, type PropertyAvailability } from 'Services/Hostelworld/Api/AvailabilityClient'
-import type { Stay } from 'DTOs/Stay'
+import type { WorkerTaskArgs, WorkerTaskPayload } from 'WorkerTasks/WorkerTaskCatalogue'
 
-type Args = [propertyId: number, propertyName: string, stay: Stay]
-type Result = { propertyId: number; propertyName: string; stay: Stay; data: PropertyAvailability | null }
+type Args = WorkerTaskArgs<'fetch:availability'>
+type Result = WorkerTaskPayload<'fetch:availability'>
 
 export class FetchAvailabilityTask extends AbstractQueuedTask<Args, Result> {
   protected jobId (args: Args): string {

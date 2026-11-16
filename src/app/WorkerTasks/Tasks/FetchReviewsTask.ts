@@ -1,8 +1,9 @@
 import { AbstractQueuedTask } from './AbstractQueuedTask'
 import { ReviewsClient, type PropertyReviews } from 'Services/Hostelworld/Api/ReviewsClient'
+import type { WorkerTaskArgs, WorkerTaskPayload } from 'WorkerTasks/WorkerTaskCatalogue'
 
-type Args = [propertyId: number, propertyName: string, overallRating: number | null]
-type Result = { propertyId: number; propertyName: string; data: PropertyReviews | null }
+type Args = WorkerTaskArgs<'fetch:reviews'>
+type Result = WorkerTaskPayload<'fetch:reviews'>
 
 export class FetchReviewsTask extends AbstractQueuedTask<Args, Result> {
   protected jobId (args: Args): number {
