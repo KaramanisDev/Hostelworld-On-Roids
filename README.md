@@ -29,6 +29,7 @@ Here's what it does:
 * Offers a custom filter system to narrow down properties by badge, demographics, and age groups.
 * Shows the same insights on each property's own page.
 * Blocks all trackers on Hostelworld, including the cookie consent banner.
+* Speeds up Hostelworld's page loads.
 
 H.O.R was developed as a personal side project to simplify the process of selecting the "best" hostel from an extensive
 range of good ones. It proved & continues to prove useful during my travels, assisting me in finding the most suitable

@@ -4,6 +4,7 @@ import { Subscribe } from 'Core/EventBus'
 import { AbstractListener } from './AbstractListener'
 import { SearchPropertyListComponentPatcher } from 'Services/Hostelworld/Patchers/SearchPropertyListComponentPatcher'
 import { DevicePatcher } from 'Services/Hostelworld/Patchers/DevicePatcher'
+import { ResizeObserverComponentPatcher } from 'Services/Hostelworld/Patchers/ResizeObserverComponentPatcher'
 import { SearchPageHook } from 'Services/Hostelworld/SearchPageHook'
 import { AppDiscountInterceptor } from 'Services/Hostelworld/AppDiscountInterceptor'
 import { TrackerInterceptor } from 'Services/Hostelworld/TrackerInterceptor'
@@ -19,6 +20,7 @@ import { WorkerRPCProxy } from 'Communication/WorkerRPCProxy'
 export class AppInitedListener extends AbstractListener {
   public async handle (): Promise<void> {
     TrackerInterceptor.blockTrackers()
+    ResizeObserverComponentPatcher.useNativeObserver()
     this.applyRequestInterceptors()
     PropertyMetricsScheduler.onStart(this.onScheduledPropertyStart.bind(this))
 
