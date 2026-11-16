@@ -18,6 +18,8 @@ type FilterState = {
 export class SearchPropertyListComponentPatcher {
   private static filterPredicate: PropertyFilterPredicate | null = null
   private static filterState: FilterState | null = null
+  private static scheduledRefresh: ReturnType<typeof setTimeout> | null = null
+  private static readonly refreshDelayInMs: number = 250
   private static readonly filteredPropertiesGetters: string[] = [
     'search/filteredProperties',
     'search/filteredHWProperties'
@@ -128,7 +130,16 @@ export class SearchPropertyListComponentPatcher {
     void this.triggerFilterChange()
   }
 
-  public static async refreshProperties (): Promise<void> {
+  public static scheduleRefresh (): void {
+    if (this.scheduledRefresh) return
+
+    this.scheduledRefresh = setTimeout(() => {
+      this.scheduledRefresh = null
+      void this.refreshProperties()
+    }, this.refreshDelayInMs)
+  }
+
+  private static async refreshProperties (): Promise<void> {
     if (this.filterPredicate && this.filterState) {
       this.filterState.version++
 

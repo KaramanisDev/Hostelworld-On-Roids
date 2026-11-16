@@ -11,7 +11,7 @@ export class FilterAppliedListener extends AbstractListener {
     const criteria: FilterCriteria | undefined = this.parsedFilterCriteria(args)
 
     if (!criteria) {
-      void SearchPropertyListComponentPatcher.refreshProperties()
+      SearchPropertyListComponentPatcher.scheduleRefresh()
       return
     }
 
