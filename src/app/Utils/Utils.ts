@@ -143,6 +143,28 @@ export async function promiseFallback<T> (promise: Promise<T>, fallback?: T): Pr
   }
 }
 
+export async function mapWithConcurrency<T, R> (
+  items: T[],
+  concurrency: number,
+  mapper: (item: T) => Promise<R>
+): Promise<R[]> {
+  const results: R[] = []
+  let nextIndex: number = 0
+
+  const runNext: () => Promise<void> = async (): Promise<void> => {
+    while (nextIndex < items.length) {
+      const index: number = nextIndex++
+      results[index] = await mapper(items[index])
+    }
+  }
+
+  await Promise.all(
+    Array.from({ length: Math.min(concurrency, items.length) }, runNext)
+  )
+
+  return results
+}
+
 export function pluck<T extends object, K extends keyof T> (arrayOfObjects: T[], property: K): T[K][] {
   return arrayOfObjects.map(
     item => item[property]
