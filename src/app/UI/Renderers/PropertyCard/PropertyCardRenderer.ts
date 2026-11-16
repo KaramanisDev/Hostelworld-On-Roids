@@ -39,13 +39,12 @@ export class PropertyCardRenderer {
 
     const viewDto: PropertyCardViewDTO = PropertyCardViewDTOFactory.loaded(property)
     this.view.mount(container, viewDto)
+    this.badgeTagsView.mount(container, { propertyId: property.getId(), badges: property.getBadges() })
 
     await PropertyCardComponentPatcher.injectBookedCountries(
       container,
       property.getBookedCountries()
     )
-
-    this.badgeTagsView.mount(container, { propertyId: property.getId(), badges: property.getBadges() })
   }
 
   public static updateReviewMetrics (propertyId: number, metrics: ReviewMetrics | null): void {
