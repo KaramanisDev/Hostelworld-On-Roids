@@ -8,6 +8,8 @@ import { DevicePatcher } from 'Services/Hostelworld/Patchers/DevicePatcher'
 import { SearchApiRequestsInterceptor } from 'Services/Hostelworld/SearchApiRequestsInterceptor'
 import { AppDiscountInterceptor } from 'Services/Hostelworld/AppDiscountInterceptor'
 import { VuexDataHook } from 'Services/Hostelworld/VuexDataHook'
+import { PropertyMetricsScheduler } from 'Services/PropertyMetricsScheduler'
+import type { ScheduledProperty } from 'Services/PropertyMetricsScheduler'
 import type { HostelworldSearch, Property } from 'Types/HostelworldSearch'
 import { FilterModalRenderer } from 'UI/Renderers/FilterModal'
 import { pluck } from 'Utils'
@@ -18,6 +20,7 @@ export class AppInitedListener extends AbstractListener {
 
   public async handle (): Promise<void> {
     this.applyRequestInterceptors()
+    PropertyMetricsScheduler.onStart(this.onScheduledPropertyStart.bind(this))
 
     await Promise.allSettled([
       FilterModalRenderer.render(),
@@ -94,5 +97,11 @@ export class AppInitedListener extends AbstractListener {
     }
 
     this.emit('property:page:displayed', page)
+  }
+
+  private onScheduledPropertyStart (property: ScheduledProperty): void {
+    this.emit('worker:task:dispatch', 'fetch:reviews', property.id, property.name, property.overallRating)
+    this.emit('worker:task:dispatch', 'fetch:availability', property.id, property.name, property.from, property.to)
+    this.emit('worker:task:dispatch', 'fetch:countries', property.id, property.name, property.from, property.to)
   }
 }

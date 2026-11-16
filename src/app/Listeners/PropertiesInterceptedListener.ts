@@ -3,6 +3,8 @@ import type { Search } from 'DTOs/Search'
 import { Subscribe } from 'Core/EventBus'
 import { AbstractListener } from './AbstractListener'
 import { PropertyCardRenderer } from 'UI/Renderers/PropertyCard/PropertyCardRenderer'
+import { ScheduledPropertyFactory } from 'Factories/ScheduledPropertyFactory'
+import { PropertyMetricsScheduler } from 'Services/PropertyMetricsScheduler'
 
 @Subscribe('hostelworld:search:intercepted')
 export class PropertiesInterceptedListener extends AbstractListener {
@@ -10,21 +12,12 @@ export class PropertiesInterceptedListener extends AbstractListener {
     const search: Search | undefined = this.latestSearchInSession()
     if (!search) throw new Error('There is no search in session to properly compose the properties.')
 
-    const from: string = search.getFrom().toISOString()
-    const to: string = search.getTo().toISOString()
-
     await Promise.allSettled(
       properties.map(property => PropertyCardRenderer.render(property.id))
     )
 
-    for (const property of properties) {
-      const overallRating: number | null = property.overallRating
-        ? Number((property.overallRating.overall / 10).toFixed(1))
-        : null
-
-      this.emit('worker:task:dispatch', 'fetch:reviews', property.id, property.name, overallRating)
-      this.emit('worker:task:dispatch', 'fetch:availability', property.id, property.name, from, to)
-      this.emit('worker:task:dispatch', 'fetch:countries', property.id, property.name, from, to)
-    }
+    PropertyMetricsScheduler.schedule(
+      properties.map(property => ScheduledPropertyFactory.create(property, search))
+    )
   }
 }
