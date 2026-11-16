@@ -49,18 +49,7 @@ export default {
       {
         test: /\.tsx?$/,
         exclude: /node_modules/,
-        use: [
-          {
-            loader: 'babel-loader'
-          },
-          {
-            loader: 'ts-loader',
-            options: {
-              transpileOnly: false,
-              happyPackMode: false
-            }
-          }
-        ]
+        loader: 'babel-loader'
       },
       {
         test: /\.scss$/,

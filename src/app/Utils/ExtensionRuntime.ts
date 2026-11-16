@@ -1,4 +1,4 @@
-import { default as Extension, Runtime } from 'webextension-polyfill'
+import { default as Extension, type Runtime } from 'webextension-polyfill'
 import { promiseFallback } from 'Utils/Utils'
 
 export type Message<TPayload = unknown> = {

@@ -24,6 +24,8 @@
     "resolveJsonModule": true,
     "moduleResolution": "bundler",
     "experimentalDecorators": true,
+    "useDefineForClassFields": true,
+    "verbatimModuleSyntax": true,
     "forceConsistentCasingInFileNames": true
   },
   "include": ["src"],

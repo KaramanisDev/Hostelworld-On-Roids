@@ -1,5 +1,6 @@
 import { deserialize as deserializeAnything, serialize as serializeAnything } from 'serialize-anything'
-import RequireContext = __WebpackModuleApi.RequireContext
+
+type RequireContext = __WebpackModuleApi.RequireContext
 
 export function emptyFunction (): void {
 // method intentionally left blank

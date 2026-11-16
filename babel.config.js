@@ -5,8 +5,9 @@ module.exports = (api) => {
 
   return {
     targets: 'chrome >= 111',
-    presets: ['@babel/preset-env'],
+    presets: ['@babel/preset-env', '@babel/preset-typescript'],
     plugins: [
+      ['@babel/plugin-proposal-decorators', { version: 'legacy' }],
       ['babel-plugin-polyfill-corejs3', { method: 'usage-global' }]
     ],
     overrides: [
