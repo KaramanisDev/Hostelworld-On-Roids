@@ -1,5 +1,6 @@
 import type { HostelworldPropertyAvailability } from 'Types/HostelworldPropertyAvailability'
 import { Stay } from 'DTOs/Stay'
+import { PropertyAvailabilityFactory } from 'Factories/PropertyAvailabilityFactory'
 import { HttpClient, type HttpClientOptions } from 'Utils/HttpClient'
 import { dateAddDays, dateFormat, promiseFallback, randomNumber } from 'Utils'
 
@@ -26,104 +27,30 @@ export class AvailabilityClient {
   }
 
   private static async availability (propertyId: number, stay: Stay): Promise<PropertyAvailability> {
-    const [current, sampledMax]: [Metrics, Metrics] = await Promise.all([
-      this.currentCapacity(propertyId, stay),
-      this.possibleMaxCapacity(propertyId, stay.getFrom())
-    ])
+    const [current, capacitySamples]: [HostelworldPropertyAvailability, HostelworldPropertyAvailability[]] =
+      await Promise.all([
+        this.request(propertyId, stay, { cacheInMinutes: 30 }),
+        this.capacitySamples(propertyId, stay.getFrom())
+      ])
 
-    const max: Metrics = this.highestMetrics(current, sampledMax)
-
-    return { current, max }
+    return PropertyAvailabilityFactory.create(current, capacitySamples)
   }
 
-  private static emptyMetrics (): Metrics {
-    return { mixed: 0, female: 0, private: 0, total: 0 }
-  }
-
-  private static async currentCapacity (propertyId: number, stay: Stay): Promise<Metrics> {
-    const availability: HostelworldPropertyAvailability = await this.request(
-      propertyId, stay, { cacheInMinutes: 30 }
-    )
-
-    return this.toMetrics(availability)
-  }
-
-  private static async possibleMaxCapacity (propertyId: number, from: Date): Promise<Metrics> {
-    const maxMetrics: Metrics = this.emptyMetrics()
-
+  private static async capacitySamples (propertyId: number, from: Date): Promise<HostelworldPropertyAvailability[]> {
     const daysAfterToCheck: number[] = [10, 20, 30, 45, 60, 70, randomNumber(80, 90)]
 
-    await Promise.all(daysAfterToCheck.map(async days => {
+    return await Promise.all(daysAfterToCheck.map(async days => {
       const fromWithDaysAdded: Date = dateAddDays(from, days)
       const sampledStay: Stay = new Stay({ from: fromWithDaysAdded, to: dateAddDays(fromWithDaysAdded, 3) })
 
-      const availability: HostelworldPropertyAvailability = await promiseFallback(
+      return await promiseFallback(
         this.request(
           propertyId, sampledStay,
           { cacheInMinutes: 24 * 60, networkJitterInMs: this.networkJitterInMs }
         ),
         this.noRooms()
       )
-      this.adaptDormBedToMaxCapacity(availability)
-      const metrics: Metrics = this.toMetrics(availability)
-
-      for (const key in metrics) {
-        const metricsKey: keyof Metrics = key as keyof Metrics
-
-        if (maxMetrics[metricsKey] > metrics[metricsKey]) continue
-        maxMetrics[metricsKey] = metrics[metricsKey]
-      }
     }))
-
-    return maxMetrics
-  }
-
-  private static toMetrics (availability: HostelworldPropertyAvailability): Metrics {
-    const metrics: Metrics = this.emptyMetrics()
-
-    const { dorms, privates } = availability.rooms
-
-    for (const dorm of dorms) {
-      if (!dorm.basicType.toLowerCase().includes('female')) metrics.mixed += dorm.totalBedsAvailable
-      if (dorm.basicType.toLowerCase().includes('female')) metrics.female += dorm.totalBedsAvailable
-
-      metrics.total += dorm.totalBedsAvailable
-    }
-
-    for (const room of privates) {
-      metrics.private += room.totalRoomsAvailable || 1
-      metrics.total += room.totalBedsAvailable || 1
-    }
-
-    return metrics
-  }
-
-  private static highestMetrics (...sources: Metrics[]): Metrics {
-    const result: Metrics = this.emptyMetrics()
-
-    for (const source of sources) {
-      for (const key in result) {
-        const metricsKey: keyof Metrics = key as keyof Metrics
-
-        if (source[metricsKey] <= result[metricsKey]) continue
-        result[metricsKey] = source[metricsKey]
-      }
-    }
-
-    return result
-  }
-
-  private static adaptDormBedToMaxCapacity (
-    availability: HostelworldPropertyAvailability
-  ): void {
-    for (const dorm of availability.rooms.dorms) {
-      const capacity: number = Number(dorm.capacity)
-      if (!capacity) continue
-
-      dorm.totalBedsAvailable = Math.ceil(
-        dorm.totalBedsAvailable / capacity
-      ) * capacity
-    }
   }
 
   private static async request (

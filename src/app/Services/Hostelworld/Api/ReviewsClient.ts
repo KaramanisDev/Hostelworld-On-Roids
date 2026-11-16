@@ -1,6 +1,7 @@
 import type { HostelworldPropertyReviews, Review } from 'Types/HostelworldPropertyReviews'
 import { mapWithConcurrency, promiseFallback } from 'Utils'
 import { HttpClient } from 'Utils/HttpClient'
+import { PropertyReviewsFactory } from 'Factories/PropertyReviewsFactory'
 
 export type PropertyReviews = {
   male: number
@@ -18,9 +19,6 @@ export class ReviewsClient {
   private static readonly endpoint: string = 'https://prod.apigee.hostelworld.com/legacy-hwapi-service/2.2/' +
     'properties/{property}/reviews/?page={page}&sort=newest&allLanguages=true&monthCount=72&per-page=50'
 
-  private static readonly ageBrackets: string[] = ['18-24', '25-30', '31-40', '41+']
-  private static readonly recentMonthsWindow: number = 12
-  private static readonly recentReviewsLimit: number = 25
   private static readonly concurrentPageRequests: number = 6
   private static readonly networkJitterInMs: number = 500
 
@@ -30,20 +28,17 @@ export class ReviewsClient {
 
   private static async reviewMetrics (propertyId: number, overallRating: number | null): Promise<PropertyReviews> {
     const firstPage: HostelworldPropertyReviews | null = await this.firstPage(propertyId)
-    if (!firstPage) return this.emptyMetrics(overallRating)
+    if (!firstPage) return PropertyReviewsFactory.empty(overallRating)
 
     const { reviews, reviewStatistics, pagination } = firstPage
     const remainingReviews: Review[] = await this.fetchRemainingPages(propertyId, pagination.numberOfPages)
-    const allReviews: Review[] = [...reviews, ...remainingReviews]
 
-    const metrics: PropertyReviews = this.emptyMetrics(overallRating)
-    metrics.total = pagination.totalNumberOfItems
-    metrics.solo = Math.round(metrics.total * ((reviewStatistics?.soloPercentage ?? 0) / 100))
-
-    this.collectDemographics(allReviews, metrics)
-    this.collectRecentRating(allReviews, metrics)
-
-    return metrics
+    return PropertyReviewsFactory.create({
+      reviews: [...reviews, ...remainingReviews],
+      total: pagination.totalNumberOfItems,
+      soloPercentage: reviewStatistics?.soloPercentage ?? 0,
+      overallRating
+    })
   }
 
   private static async firstPage (propertyId: number): Promise<HostelworldPropertyReviews | null> {
@@ -53,20 +48,6 @@ export class ReviewsClient {
       if (!HttpClient.isNotFound(error)) throw error
 
       return null
-    }
-  }
-
-  private static emptyMetrics (overallRating: number | null): PropertyReviews {
-    return {
-      male: 0,
-      female: 0,
-      other: 0,
-      solo: 0,
-      total: 0,
-      ages: Object.fromEntries(this.ageBrackets.map(bracket => [bracket, 0])),
-      recentOverallRating: null,
-      recentReviewCount: 0,
-      overallRating
     }
   }
 
@@ -84,38 +65,6 @@ export class ReviewsClient {
     )
 
     return pages.flat()
-  }
-
-  private static collectDemographics (reviews: Review[], metrics: PropertyReviews): void {
-    for (const review of reviews) {
-      metrics.male += Number(['MALE', 'ALLMALEGROUP'].includes(review.groupInformation.groupTypeCode))
-      metrics.female += Number(['FEMALE', 'ALLFEMALEGROUP'].includes(review.groupInformation.groupTypeCode))
-      metrics.other += Number(['COUPLE', 'MIXEDGROUP'].includes(review.groupInformation.groupTypeCode))
-
-      const age: string = review.groupInformation.age
-      metrics.ages[age] = (metrics.ages[age] ?? 0) + 1
-    }
-  }
-
-  private static collectRecentRating (reviews: Review[], metrics: PropertyReviews): void {
-    const cutoffDate: Date = new Date()
-    cutoffDate.setMonth(cutoffDate.getMonth() - this.recentMonthsWindow)
-    const cutoffTimestamp: number = cutoffDate.getTime()
-    let ratingSum: number = 0
-
-    for (const review of reviews) {
-      if (metrics.recentReviewCount >= this.recentReviewsLimit) break
-
-      const reviewTimestamp: number = new Date(review.date).getTime()
-      if (reviewTimestamp < cutoffTimestamp) break
-
-      ratingSum += review.rating.overall
-      metrics.recentReviewCount++
-    }
-
-    if (metrics.recentReviewCount > 0) {
-      metrics.recentOverallRating = Number((ratingSum / metrics.recentReviewCount / 10).toFixed(1))
-    }
   }
 
   private static async request (propertyId: number, page: number): Promise<HostelworldPropertyReviews> {

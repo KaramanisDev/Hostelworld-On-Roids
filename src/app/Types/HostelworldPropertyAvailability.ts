@@ -50,7 +50,7 @@ type RatePlan = {
   promotions?: Promotions
 }
 
-type Dorm = {
+export type Dorm = {
   id: number
   token: string
   name: string
