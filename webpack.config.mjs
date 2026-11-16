@@ -5,7 +5,7 @@ import CopyPlugin from 'copy-webpack-plugin'
 import TerserPlugin from 'terser-webpack-plugin'
 import { CleanWebpackPlugin } from 'clean-webpack-plugin'
 import MiniCssExtractPlugin from 'mini-css-extract-plugin'
-import ExtensionReloader from 'webpack-ext-reloader'
+import { ExtensionReloadPlugin } from './scripts/extension-reload/plugin.mjs'
 import { basePath, latestGitTag } from './scripts/utils.mjs'
 
 function aliases () {
@@ -102,8 +102,6 @@ export default {
     new MiniCssExtractPlugin({
       filename: '[name].css'
     }),
-    new ExtensionReloader({
-      manifest: basePath('src/assets/static/manifest.json')
-    })
+    new ExtensionReloadPlugin()
   ]
 }
