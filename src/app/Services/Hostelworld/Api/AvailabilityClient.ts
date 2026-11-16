@@ -1,6 +1,6 @@
 import type { HostelworldPropertyAvailability } from 'Types/HostelworldPropertyAvailability'
-import { HttpClient } from 'Utils/HttpClient'
-import { dateAddDays, dateFormat, delay, promiseFallback, randomNumber } from 'Utils'
+import { HttpClient, type HttpClientOptions } from 'Utils/HttpClient'
+import { dateAddDays, dateFormat, promiseFallback, randomNumber } from 'Utils'
 
 export type Metrics = {
   mixed: number
@@ -17,6 +17,8 @@ export type PropertyAvailability = {
 export class AvailabilityClient {
   private static readonly endpoint: string = 'https://prod.apigee.hostelworld.com/legacy-hwapi-service/2.2/' +
     'properties/{property}/availability/?date-start={from}&num-nights={nights}'
+
+  private static readonly networkJitterInMs: number = 300
 
   public static async fetch (propertyId: number, from: Date, to: Date): Promise<PropertyAvailability | null> {
     return await promiseFallback(this.availability(propertyId, from, to), null)
@@ -38,7 +40,9 @@ export class AvailabilityClient {
   }
 
   private static async currentCapacity (propertyId: number, from: Date, to: Date): Promise<Metrics> {
-    const availability: HostelworldPropertyAvailability = await this.request(propertyId, from, to, 30)
+    const availability: HostelworldPropertyAvailability = await this.request(
+      propertyId, from, to, { cacheInMinutes: 30 }
+    )
 
     return this.toMetrics(availability)
   }
@@ -52,10 +56,11 @@ export class AvailabilityClient {
       const fromWithDaysAdded: Date = dateAddDays(from, days)
       const toWithFromPlus3Days: Date = dateAddDays(fromWithDaysAdded, 3)
 
-      await delay(randomNumber(0, 3) * 100)
-
       const availability: HostelworldPropertyAvailability = await promiseFallback(
-        this.request(propertyId, fromWithDaysAdded, toWithFromPlus3Days, 24 * 60),
+        this.request(
+          propertyId, fromWithDaysAdded, toWithFromPlus3Days,
+          { cacheInMinutes: 24 * 60, networkJitterInMs: this.networkJitterInMs }
+        ),
         this.noRooms()
       )
       this.adaptDormBedToMaxCapacity(availability)
@@ -124,7 +129,7 @@ export class AvailabilityClient {
     propertyId: number,
     from: Date,
     to: Date,
-    cacheInMinutes?: number
+    options: HttpClientOptions
   ): Promise<HostelworldPropertyAvailability> {
     const oneDayInMs: number = 24 * 60 * 60 * 1000
     const nights: number = Math.round(
@@ -137,7 +142,7 @@ export class AvailabilityClient {
       .replaceAll('{property}', String(propertyId))
 
     try {
-      return await HttpClient.getJson(endpoint, { cacheInMinutes })
+      return await HttpClient.getJson(endpoint, options)
     } catch (error) {
       if (!HttpClient.isNotFound(error)) throw error
 

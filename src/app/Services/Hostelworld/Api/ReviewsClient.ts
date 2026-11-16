@@ -1,5 +1,5 @@
 import type { HostelworldPropertyReviews, Review } from 'Types/HostelworldPropertyReviews'
-import { delay, mapWithConcurrency, promiseFallback, randomNumber } from 'Utils'
+import { mapWithConcurrency, promiseFallback } from 'Utils'
 import { HttpClient } from 'Utils/HttpClient'
 
 export type PropertyReviews = {
@@ -22,6 +22,7 @@ export class ReviewsClient {
   private static readonly recentMonthsWindow: number = 12
   private static readonly recentReviewsLimit: number = 25
   private static readonly concurrentPageRequests: number = 6
+  private static readonly networkJitterInMs: number = 500
 
   public static async fetch (propertyId: number, overallRating: number | null): Promise<PropertyReviews | null> {
     return await promiseFallback(this.reviewMetrics(propertyId, overallRating), null)
@@ -76,7 +77,6 @@ export class ReviewsClient {
       Array.from({ length: remainingPages }, (_, index) => index + 2),
       this.concurrentPageRequests,
       async (page: number): Promise<Review[]> => {
-        await delay(randomNumber(1, 5) * 100)
         const { reviews } = await this.request(propertyId, page)
 
         return reviews
@@ -125,6 +125,9 @@ export class ReviewsClient {
 
     const cacheTimeInDays: number = [1, 2].includes(page) ? 1 : 3
 
-    return await HttpClient.getJson(endpoint, { cacheInMinutes: cacheTimeInDays * 24 * 60 })
+    return await HttpClient.getJson(endpoint, {
+      cacheInMinutes: cacheTimeInDays * 24 * 60,
+      networkJitterInMs: this.networkJitterInMs
+    })
   }
 }

@@ -1,5 +1,4 @@
 import type { WorkerTask, WorkerTaskResult } from './WorkerTask'
-import { delay } from 'Utils'
 import { WorkerKeepAlive } from 'WorkerTasks/WorkerKeepAlive'
 
 type JobId = string | number
@@ -16,7 +15,6 @@ type Job<TArgs, TResult> = {
 export abstract class AbstractQueuedTask<TArgs, TResult> implements WorkerTask {
   private readonly runningJobs: Map<JobId, Job<TArgs, TResult>> = new Map()
   private readonly maxConcurrency: number = 4
-  private readonly pauseAfterJobInMs: number = 200
   private readonly queue: Map<JobId, Job<TArgs, TResult>> = new Map()
 
   protected abstract jobId (args: TArgs): JobId
@@ -76,7 +74,6 @@ export abstract class AbstractQueuedTask<TArgs, TResult> implements WorkerTask {
     } catch (error) {
       job.reject(error)
     } finally {
-      await delay(this.pauseAfterJobInMs)
       this.runningJobs.delete(job.id)
       WorkerKeepAlive.release()
       this.startQueuedJobs()

@@ -1,11 +1,12 @@
 import type { AfterResponseState, BeforeRequestState, KyResponse, Options } from 'ky'
 import { default as KyClient, isHTTPError } from 'ky'
 import { CacheStorage } from 'Utils/Storage/CacheStorage'
-import { hash, promiseFallback } from 'Utils/index'
+import { delay, hash, promiseFallback, randomNumber } from 'Utils/index'
 import type { StorageInterface } from 'Utils/Storage/StorageInterface'
 
 export type HttpClientOptions = {
   cacheInMinutes?: number
+  networkJitterInMs?: number
   headers?: Record<string, string | undefined>,
 }
 
@@ -37,7 +38,8 @@ export class HttpClient {
         ...kyOptions,
         hooks: {
           beforeRequest: [
-            async ({ request }: BeforeRequestState): Promise<Request | Response> => this.beforeRequestHook(request)
+            async ({ request }: BeforeRequestState): Promise<Request | Response> =>
+              this.beforeRequestHook(request, options?.networkJitterInMs)
           ],
           afterResponse: [
             ({ request, response }: AfterResponseState): Promise<void> =>
@@ -50,13 +52,15 @@ export class HttpClient {
     return kyOptions
   }
 
-  private static async beforeRequestHook (request: Request): Promise<Request | Response> {
+  private static async beforeRequestHook (request: Request, networkJitterInMs?: number): Promise<Request | Response> {
     const cachedContent: string | undefined = await promiseFallback(
       this.storage.get(this.cacheKey(request))
     )
-    if (!cachedContent) return request
+    if (cachedContent) return new Response(cachedContent)
 
-    return new Response(cachedContent)
+    if (networkJitterInMs) await delay(randomNumber(0, networkJitterInMs))
+
+    return request
   }
 
   private static async afterResponseHook (
