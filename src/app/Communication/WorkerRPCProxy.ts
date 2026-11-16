@@ -1,5 +1,5 @@
 import type { RPCCancelPayload, RPCRequest, RPCResult } from './RPCTypesContract'
-import { deserialize, serialize } from 'Utils'
+import { RPCSerializer } from './RPCSerializer'
 
 type RPCResultHandler<T = unknown> = (event: string, response: T) => void
 
@@ -20,7 +20,7 @@ export class WorkerRPCProxy {
   public static call (task: string, args: unknown[]): void {
     if (this.isDisconnected) return
 
-    const request: RPCRequest<string> = { id: crypto.randomUUID(), task, args: serialize(args) }
+    const request: RPCRequest<string> = { id: crypto.randomUUID(), task, args: RPCSerializer.serialize(args) }
 
     this.pendingCalls.set(request.id, { request, attempts: 1 })
     this.lastActivityAt = Date.now()
@@ -48,7 +48,7 @@ export class WorkerRPCProxy {
 
       this.pendingCalls.delete(id)
       this.lastActivityAt = Date.now()
-      callback(task, deserialize<TResult>(result))
+      callback(task, RPCSerializer.deserialize<TResult>(result))
     })
   }
 

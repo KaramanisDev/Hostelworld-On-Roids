@@ -6,7 +6,7 @@ import type {
   RPCResponsePayload,
   RPCResult
 } from './RPCTypesContract'
-import { deserialize, serialize } from 'Utils'
+import { RPCSerializer } from './RPCSerializer'
 
 type OnRequestHandler<TPayload = unknown, TResponse = unknown> = (
   event: string,
@@ -93,12 +93,12 @@ export class WorkerRPCEndpoint {
 
       const response: TResponse = callback(
         originalEvent,
-        deserialize<TPayload>(payload.args),
+        RPCSerializer.deserialize<TPayload>(payload.args),
         request.controller.signal
       )
       const respond: (result: TResponse) => void = (result: TResponse): void => {
         this.pendingRequests.delete(payload.id)
-        const responsePayload: RPCResponsePayload = { id: payload.id, result: serialize(result) }
+        const responsePayload: RPCResponsePayload = { id: payload.id, result: RPCSerializer.serialize(result) }
 
         ExtensionRuntime.sendMessageToTab(tabId, `${originalEvent}:response`, responsePayload)
       }
