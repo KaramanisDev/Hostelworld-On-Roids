@@ -1,5 +1,5 @@
 import { FilterModalView } from 'UI/SolidJS/FilterModal/FilterModalView'
-import type { FilterModalViewDTO } from './ViewDTOs'
+import type { FilterCriteria, FilterModalViewDTO } from './ViewDTOs'
 import { FilterModalViewDTOFactory } from './ViewDTOs'
 import { waitForElement } from 'Utils'
 import { EventBus } from 'Core/EventBus'
@@ -10,17 +10,24 @@ export class FilterModalRenderer {
 
   private static wrapper: HTMLDivElement | null = null
   private static observer: MutationObserver | null = null
+  private static appliedCriteria: FilterCriteria = { badges: {}, ranges: {} }
   private static readonly view: FilterModalView = new FilterModalView()
 
   public static async render (): Promise<void> {
     if (this.observer) return
 
-    this.view.onFilter(criteria => EventBus.emit('filter:applied', criteria))
+    this.view.onFilter(this.applyFilter.bind(this))
 
     await waitForElement(this.shareButtonSelector)
 
     this.injectWrapper()
     this.watchForRemoval()
+  }
+
+  private static applyFilter (criteria: FilterCriteria): void {
+    this.appliedCriteria = criteria
+
+    EventBus.emit('filter:applied', criteria)
   }
 
   private static injectWrapper (): void {
@@ -37,7 +44,7 @@ export class FilterModalRenderer {
     this.wrapper.className = this.wrapperClassName
     parent.insertBefore(this.wrapper, shareButton)
 
-    const viewDto: FilterModalViewDTO = FilterModalViewDTOFactory.create()
+    const viewDto: FilterModalViewDTO = FilterModalViewDTOFactory.create(this.appliedCriteria)
     this.view.mount(this.wrapper, viewDto)
   }
 

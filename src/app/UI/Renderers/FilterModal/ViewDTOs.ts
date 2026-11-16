@@ -64,7 +64,7 @@ export class FilterModalViewDTOFactory {
     { key: 'age41plus', label: '41+ %', description: 'Filter by percentage of 41+ year olds' }
   ]
 
-  public static create (): FilterModalViewDTO {
+  public static create (criteria: FilterCriteria = { badges: {}, ranges: {} }): FilterModalViewDTO {
     return {
       isOpen: false,
       title: 'Filter Properties',
@@ -74,52 +74,48 @@ export class FilterModalViewDTOFactory {
       logo: ExtensionConfig.asset('icon'),
       extensionName: ExtensionConfig.extensionName(),
       sections: [
-        this.badgesSection(),
-        this.demographicsSection(),
-        this.ageGroupsSection()
+        this.badgesSection(criteria),
+        this.demographicsSection(criteria),
+        this.ageGroupsSection(criteria)
       ]
     }
   }
 
-  private static badgesSection (): FilterSectionViewDTO {
+  private static badgesSection (criteria: FilterCriteria): FilterSectionViewDTO {
     return {
       title: 'Badges',
       badgeFilters: this.badgeDefinitions.map(definition => ({
         key: definition.id,
         label: definition.label,
         color: definition.color,
-        enabled: false
+        enabled: criteria.badges[definition.id] ?? false
       }))
     }
   }
 
-  private static demographicsSection (): FilterSectionViewDTO {
+  private static demographicsSection (criteria: FilterCriteria): FilterSectionViewDTO {
     return {
       title: 'Demographics',
-      rangeFilters: this.demographicDefinitions.map(definition => ({
-        key: definition.key,
-        label: definition.label,
-        description: definition.description,
-        min: 0,
-        max: 100,
-        rangeMin: 0,
-        rangeMax: 100
-      }))
+      rangeFilters: this.demographicDefinitions.map(definition => this.rangeFilter(definition, criteria))
     }
   }
 
-  private static ageGroupsSection (): FilterSectionViewDTO {
+  private static ageGroupsSection (criteria: FilterCriteria): FilterSectionViewDTO {
     return {
       title: 'Age Groups',
-      rangeFilters: this.ageGroupDefinitions.map(definition => ({
-        key: definition.key,
-        label: definition.label,
-        description: definition.description,
-        min: 0,
-        max: 100,
-        rangeMin: 0,
-        rangeMax: 100
-      }))
+      rangeFilters: this.ageGroupDefinitions.map(definition => this.rangeFilter(definition, criteria))
+    }
+  }
+
+  private static rangeFilter (definition: RangeDefinition, criteria: FilterCriteria): RangeFilterViewDTO {
+    return {
+      key: definition.key,
+      label: definition.label,
+      description: definition.description,
+      min: 0,
+      max: 100,
+      rangeMin: criteria.ranges[definition.key]?.min ?? 0,
+      rangeMax: criteria.ranges[definition.key]?.max ?? 100
     }
   }
 }
