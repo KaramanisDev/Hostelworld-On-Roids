@@ -14,6 +14,7 @@ export class HttpClient {
   private static readonly defaultCacheTimeInMinutes: number = 24 * 60
   private static readonly requestTimeoutInMs: number = 15_000
   private static readonly maxRetryAfterInMs: number = 10_000
+  private static readonly cacheHitHeader: string = 'x-hor-cache'
   private static readonly storage: StorageInterface<string> = new CacheStorage('hor-http-client')
 
   public static async getJson<T = Record<string, unknown>> (url: string, options?: HttpClientOptions): Promise<T> {
@@ -56,7 +57,7 @@ export class HttpClient {
     const cachedContent: string | undefined = await promiseFallback(
       this.storage.get(this.cacheKey(request))
     )
-    if (cachedContent) return new Response(cachedContent)
+    if (cachedContent) return new Response(cachedContent, { headers: { [this.cacheHitHeader]: 'hit' } })
 
     if (networkJitterInMs) await delay(randomNumber(0, networkJitterInMs))
 
@@ -68,17 +69,13 @@ export class HttpClient {
     response: Response,
     cacheInMinutes?: number
   ): Promise<void> {
-    if (!response.ok) return
-
-    const cacheKey: string = this.cacheKey(request)
-
-    const hasNotExpired: boolean = await promiseFallback(this.storage.hasNotExpired(cacheKey), false)
-    if (hasNotExpired) return
+    const isCacheable: boolean = response.ok && !response.headers.has(this.cacheHitHeader)
+    if (!isCacheable) return
 
     const content: string = await response.clone().text()
     const cacheTimeInMs: number = (cacheInMinutes ?? this.defaultCacheTimeInMinutes) * 60 * 1000
 
-    return promiseFallback(this.storage.put(cacheKey, content, cacheTimeInMs))
+    return promiseFallback(this.storage.put(this.cacheKey(request), content, cacheTimeInMs))
   }
 
   private static cacheKey (request: Request): string {

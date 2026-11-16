@@ -26,23 +26,14 @@ export abstract class AbstractStorage<T> implements StorageInterface<T> {
 
   public async get (key: string): Promise<T | undefined> {
     const item = await this.store.get(key) as Item<T> | undefined
-
     if (!item) return
 
-    const { payload } = item
-
-    const hasNotExpired: boolean = await this.hasNotExpired(key)
-    if (hasNotExpired) return payload
+    if (!this.isExpired(item)) return item.payload
 
     await this.store.remove(key)
   }
 
-  public async hasNotExpired (key: string): Promise<boolean> {
-    const item = await this.store.get(key) as Item<T> | undefined
-
-    if (!item) return false
-
-    const { expiresAt } = item
-    return Date.now() < expiresAt
+  private isExpired (item: Item<T>): boolean {
+    return Date.now() >= item.expiresAt
   }
 }
