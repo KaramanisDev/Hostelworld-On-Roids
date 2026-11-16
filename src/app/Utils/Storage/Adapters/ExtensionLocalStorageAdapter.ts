@@ -23,6 +23,15 @@ export class ExtensionLocalStorageAdapter implements StorageAdapterInterface {
     await Extension.storage.local.remove(this.namespaced(key))
   }
 
+  public async keys (): Promise<string[]> {
+    const prefix: string = this.namespaced('')
+    const stored: Record<string, unknown> = await Extension.storage.local.get(null)
+
+    return Object.keys(stored)
+      .filter((key: string): boolean => key.startsWith(prefix))
+      .map((key: string): string => key.slice(prefix.length))
+  }
+
   private namespaced (key: string): string {
     return `${this.namespace}:${key}`
   }

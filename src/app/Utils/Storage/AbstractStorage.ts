@@ -10,6 +10,8 @@ export abstract class AbstractStorage<T> implements StorageInterface<T> {
   private readonly name: string
   protected readonly abstract store: StorageAdapterInterface
   private readonly defaultExpiresAfterInMs: number = 15 * 60 * 1000 // 15 min
+  private readonly nextPurgeAtKey: string = 'storage:next-purge-at'
+  private readonly purgeIntervalInMs: number = 24 * 60 * 60 * 1000
 
   constructor (name: string) {
     this.name = name
@@ -31,6 +33,22 @@ export abstract class AbstractStorage<T> implements StorageInterface<T> {
     if (!this.isExpired(item)) return item.payload
 
     await this.store.remove(key)
+  }
+
+  public async purgeExpired (): Promise<void> {
+    const nextPurgeAt = await this.store.get(this.nextPurgeAtKey) as number | undefined
+    if (nextPurgeAt && Date.now() < nextPurgeAt) return
+
+    for (const key of await this.store.keys()) {
+      if (key === this.nextPurgeAtKey) continue
+
+      const item = await this.store.get(key) as Item<T> | undefined
+      if (item && !this.isExpired(item)) continue
+
+      await this.store.remove(key)
+    }
+
+    await this.store.set(this.nextPurgeAtKey, Date.now() + this.purgeIntervalInMs)
   }
 
   private isExpired (item: Item<T>): boolean {

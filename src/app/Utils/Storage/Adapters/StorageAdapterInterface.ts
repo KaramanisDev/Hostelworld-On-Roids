@@ -4,4 +4,6 @@ export interface StorageAdapterInterface {
   get(key: string): Promise<unknown>
 
   remove(key: string): Promise<void>
+
+  keys(): Promise<string[]>
 }

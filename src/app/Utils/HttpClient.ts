@@ -23,6 +23,10 @@ export class HttpClient {
     return response.json()
   }
 
+  public static async purgeExpiredCache (): Promise<void> {
+    await promiseFallback(this.storage.purgeExpired())
+  }
+
   public static isNotFound (error: unknown): boolean {
     return isHTTPError(error) && error.response.status === 404
   }

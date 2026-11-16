@@ -1,6 +1,7 @@
 import type { StorageAdapterInterface } from './StorageAdapterInterface'
 
 export class CacheApiAdapter implements StorageAdapterInterface {
+  private readonly keyPrefix: string = 'https://hor.local/'
   private readonly cacheName: string
 
   constructor (cacheName: string) {
@@ -26,11 +27,18 @@ export class CacheApiAdapter implements StorageAdapterInterface {
     await cache.delete(this.key(key))
   }
 
+  public async keys (): Promise<string[]> {
+    const cache: Cache = await this.getCache()
+    const requests: readonly Request[] = await cache.keys()
+
+    return requests.map((request: Request): string => request.url.slice(this.keyPrefix.length))
+  }
+
   private getCache (): Promise<Cache> {
     return caches.open(this.cacheName)
   }
 
   private key (key: string): string {
-    return `https://hor.local/${key}`
+    return `${this.keyPrefix}${key}`
   }
 }

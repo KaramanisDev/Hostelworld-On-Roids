@@ -4,6 +4,7 @@ import type { WorkerTaskResult } from 'WorkerTasks/WorkerTaskDispatcher'
 import { FetchReviewsTask } from 'WorkerTasks/Tasks/FetchReviewsTask'
 import { FetchAvailabilityTask } from 'WorkerTasks/Tasks/FetchAvailabilityTask'
 import { FetchCountriesTask } from 'WorkerTasks/Tasks/FetchCountriesTask'
+import { HttpClient } from 'Utils/HttpClient'
 
 export class WorkerInitializer {
   public static init (): void {
@@ -12,6 +13,8 @@ export class WorkerInitializer {
     WorkerRPCEndpoint.onRequest<unknown[], WorkerTaskResult>((method: string, args: unknown[], signal: AbortSignal) => {
       return WorkerTaskDispatcher.dispatch(method, args, signal)
     })
+
+    void HttpClient.purgeExpiredCache()
   }
 
   private static registerTasks (): void {
