@@ -9,6 +9,7 @@ import { SearchApiRequestsInterceptor } from 'Services/Hostelworld/SearchApiRequ
 import { AppDiscountInterceptor } from 'Services/Hostelworld/AppDiscountInterceptor'
 import { VuexDataHook } from 'Services/Hostelworld/VuexDataHook'
 import { PropertyMetricsScheduler } from 'Services/PropertyMetricsScheduler'
+import { PropertyCompositionBuffer } from 'Services/PropertyCompositionBuffer'
 import type { ScheduledProperty } from 'Services/PropertyMetricsScheduler'
 import type { HostelworldSearch, Property } from 'Types/HostelworldSearch'
 import { FilterModalRenderer } from 'UI/Renderers/FilterModal'
@@ -63,7 +64,7 @@ export class AppInitedListener extends AbstractListener {
   private onSearchProperties (search: HostelworldSearch): HostelworldSearch {
     const adapted: HostelworldSearch = SearchDataAdapter.withoutPromotions(search)
 
-    this.emit('property:composition:reset')
+    PropertyCompositionBuffer.clear()
     this.emit('hostelworld:search:intercepted', adapted.properties)
 
     const latestSearch: Search | undefined = this.latestSearchInSession()

@@ -1,17 +1,22 @@
+import type { Property } from 'DTOs/Property'
 import type { Stay } from 'DTOs/Stay'
+import { PropertyFactory } from 'Factories/PropertyFactory'
 import type { PropertyReviews } from 'Services/Hostelworld/Api/ReviewsClient'
 import type { PropertyAvailability } from 'Services/Hostelworld/Api/AvailabilityClient'
 import type { PropertyGuestsCountries } from 'Services/Hostelworld/Api/VisitorsCountryClient'
+import type { WorkerTaskPayload } from 'WorkerTasks/WorkerTaskCatalogue'
 
-export type StayEntry = {
+type StayPayload = WorkerTaskPayload<'fetch:availability' | 'fetch:countries'>
+
+type StayMetrics = {
+  availability?: PropertyAvailability | null
+  countries?: PropertyGuestsCountries
+}
+
+type PendingStay = StayMetrics & {
   id: number
   name: string
   stay: Stay
-}
-
-type PendingStay = StayEntry & {
-  availability?: PropertyAvailability | null
-  countries?: PropertyGuestsCountries
 }
 
 export type CompletedProperty = {
@@ -23,31 +28,55 @@ export type CompletedProperty = {
   countries: PropertyGuestsCountries
 }
 
-export type MetricData = PropertyReviews | PropertyAvailability | PropertyGuestsCountries | null
+export type Metric = 'reviews' | 'availability' | 'countries'
 
-export type StayMetric = 'availability' | 'countries'
-
-export type Metric = 'reviews' | StayMetric
+export type MetricPayload = WorkerTaskPayload<'fetch:reviews'> | StayPayload
 
 export class PropertyCompositionBuffer {
   private static reviews: Map<number, PropertyReviews | null> = new Map()
   private static stays: Map<string, PendingStay> = new Map()
 
-  public static collectReviews (id: number, reviews: PropertyReviews | null): void {
-    this.reviews.set(id, reviews)
+  public static collect (metric: Metric, payload: MetricPayload): Property[] {
+    this.store(metric, payload)
+
+    const completed: CompletedProperty[] = this.completedEntries(payload.propertyId)
+    for (const entry of completed) {
+      this.stays.delete(entry.stay.getPropertyKey(entry.id))
+    }
+
+    return completed.map(entry => PropertyFactory.create(entry))
   }
 
-  public static collectStayMetric (entry: StayEntry, metric: StayMetric, data: MetricData): void {
-    const key: string = this.key(entry.id, entry.stay)
-    const pendingStay: PendingStay = this.stays.get(key) ?? { ...entry }
-
-    if (metric === 'availability') pendingStay.availability = data as PropertyAvailability | null
-    if (metric === 'countries') pendingStay.countries = data as PropertyGuestsCountries
-
-    this.stays.set(key, pendingStay)
+  public static clear (): void {
+    this.reviews.clear()
+    this.stays.clear()
   }
 
-  public static completedEntries (id: number): CompletedProperty[] {
+  private static store (metric: Metric, payload: MetricPayload): void {
+    switch (metric) {
+      case 'reviews':
+        this.reviews.set(payload.propertyId, payload.data as PropertyReviews | null)
+        return
+      case 'availability':
+        this.updateStay(payload as StayPayload, { availability: payload.data as PropertyAvailability | null })
+        return
+      case 'countries':
+        this.updateStay(payload as StayPayload, { countries: payload.data as PropertyGuestsCountries })
+    }
+  }
+
+  private static updateStay (payload: StayPayload, metrics: StayMetrics): void {
+    const key: string = payload.stay.getPropertyKey(payload.propertyId)
+    const pendingStay: PendingStay = this.stays.get(key) ?? {
+      id: payload.propertyId,
+      name: payload.propertyName,
+      stay: payload.stay
+    }
+
+    this.stays.set(key, { ...pendingStay, ...metrics })
+  }
+
+  private static completedEntries (id: number): CompletedProperty[] {
     const reviews: PropertyReviews | null | undefined = this.reviews.get(id)
     if (reviews === undefined) return []
 
@@ -59,18 +88,5 @@ export class PropertyCompositionBuffer {
     }
 
     return completed
-  }
-
-  public static remove (entry: CompletedProperty): void {
-    this.stays.delete(this.key(entry.id, entry.stay))
-  }
-
-  public static clear (): void {
-    this.reviews.clear()
-    this.stays.clear()
-  }
-
-  private static key (id: number, stay: Stay): string {
-    return `${id}|${stay.getKey()}`
   }
 }

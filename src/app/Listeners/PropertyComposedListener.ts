@@ -1,12 +1,10 @@
-import type { Property } from 'DTOs/Property'
-import { AbstractListener } from './AbstractListener'
 import { Subscribe } from 'Core/EventBus'
+import { AbstractListener } from './AbstractListener'
+import { SearchPropertyListComponentPatcher } from 'Services/Hostelworld/Patchers/SearchPropertyListComponentPatcher'
 
 @Subscribe('property:composed')
 export class PropertyComposedListener extends AbstractListener {
-  public async handle (property: Property): Promise<void> {
-    this.persistPropertyInSession(property)
-
-    this.emit('property:render', property)
+  public handle (): void {
+    SearchPropertyListComponentPatcher.scheduleRefresh()
   }
 }

@@ -1,35 +1,20 @@
+import type { Property } from 'DTOs/Property'
 import { Subscribe } from 'Core/EventBus'
 import { AbstractListener } from './AbstractListener'
-import type { Stay } from 'DTOs/Stay'
-import { PropertyFactory } from 'Factories/PropertyFactory'
-import { PropertyCompositionBuffer } from 'Services/PropertyCompositionBuffer'
-import type { CompletedProperty, Metric, MetricData } from 'Services/PropertyCompositionBuffer'
-import type { PropertyReviews } from 'Services/Hostelworld/Api/ReviewsClient'
-
-type MetricPayload = {
-  propertyId: number
-  propertyName: string
-  stay?: Stay
-  data: MetricData
-}
+import { PropertyCompositionBuffer, type Metric, type MetricPayload } from 'Services/PropertyCompositionBuffer'
+import { PropertyMetricsScheduler } from 'Services/PropertyMetricsScheduler'
 
 @Subscribe('property:metric:collected')
 export class PropertyComposerListener extends AbstractListener {
   public handle (metric: Metric, payload: MetricPayload): void {
-    if (metric === 'reviews') {
-      PropertyCompositionBuffer.collectReviews(payload.propertyId, payload.data as PropertyReviews | null)
-    } else if (payload.stay) {
-      PropertyCompositionBuffer.collectStayMetric(
-        { id: payload.propertyId, name: payload.propertyName, stay: payload.stay },
-        metric,
-        payload.data
-      )
+    const composedProperties: Property[] = PropertyCompositionBuffer.collect(metric, payload)
+
+    for (const property of composedProperties) {
+      this.persistPropertyInSession(property)
+      this.emit('property:composed', property)
+      this.emit('property:render', property)
     }
 
-    const entries: CompletedProperty[] = PropertyCompositionBuffer.completedEntries(payload.propertyId)
-    for (const entry of entries) {
-      PropertyCompositionBuffer.remove(entry)
-      this.emit('property:composed', PropertyFactory.create(entry))
-    }
+    PropertyMetricsScheduler.complete(payload.propertyId, metric)
   }
 }
