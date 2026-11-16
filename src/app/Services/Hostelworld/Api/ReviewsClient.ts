@@ -22,12 +22,15 @@ export class ReviewsClient {
   private static readonly recentMonthsWindow: number = 12
   private static readonly recentReviewsLimit: number = 25
 
-  public static async fetch (propertyId: number, overallRating: number | null): Promise<PropertyReviews> {
-    return await promiseFallback(this.reviewMetrics(propertyId, overallRating), this.emptyMetrics(overallRating))
+  public static async fetch (propertyId: number, overallRating: number | null): Promise<PropertyReviews | null> {
+    return await promiseFallback(this.reviewMetrics(propertyId, overallRating), null)
   }
 
   private static async reviewMetrics (propertyId: number, overallRating: number | null): Promise<PropertyReviews> {
-    const { reviews, reviewStatistics, pagination } = await this.request(propertyId, 1)
+    const firstPage: HostelworldPropertyReviews | null = await this.firstPage(propertyId)
+    if (!firstPage) return this.emptyMetrics(overallRating)
+
+    const { reviews, reviewStatistics, pagination } = firstPage
     const remainingReviews: Review[] = await this.fetchRemainingPages(propertyId, pagination.numberOfPages)
     const allReviews: Review[] = [...reviews, ...remainingReviews]
 
@@ -39,6 +42,16 @@ export class ReviewsClient {
     this.collectRecentRating(allReviews, metrics)
 
     return metrics
+  }
+
+  private static async firstPage (propertyId: number): Promise<HostelworldPropertyReviews | null> {
+    try {
+      return await this.request(propertyId, 1)
+    } catch (error) {
+      if (!HttpClient.isNotFound(error)) throw error
+
+      return null
+    }
   }
 
   private static emptyMetrics (overallRating: number | null): PropertyReviews {

@@ -17,7 +17,7 @@ type MetricPayload = {
 export class PropertyComposerListener extends AbstractListener {
   public handle (metric: Metric, payload: MetricPayload): void {
     if (metric === 'reviews') {
-      PropertyCompositionBuffer.collectReviews(payload.propertyId, payload.data as PropertyReviews)
+      PropertyCompositionBuffer.collectReviews(payload.propertyId, payload.data as PropertyReviews | null)
     } else if (payload.from && payload.to) {
       PropertyCompositionBuffer.collectStayMetric(
         { id: payload.propertyId, name: payload.propertyName, from: new Date(payload.from), to: new Date(payload.to) },

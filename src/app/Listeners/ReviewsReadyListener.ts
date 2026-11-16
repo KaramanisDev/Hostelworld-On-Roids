@@ -8,13 +8,13 @@ import type { PropertyReviews } from 'Services/Hostelworld/Api/ReviewsClient'
 type ReviewsPayload = {
   propertyId: number
   propertyName: string
-  data: PropertyReviews
+  data: PropertyReviews | null
 }
 
 @Subscribe('worker:result:fetch:reviews')
 export class ReviewsReadyListener extends AbstractListener {
   public handle (payload: ReviewsPayload): void {
-    const metrics: ReviewMetrics = new ReviewMetrics(payload.data)
+    const metrics: ReviewMetrics | null = payload.data ? new ReviewMetrics(payload.data) : null
     PropertyCardRenderer.updateReviewMetrics(payload.propertyId, metrics)
     PropertyInsightsRenderer.updateReviewMetrics(payload.propertyId, metrics)
 

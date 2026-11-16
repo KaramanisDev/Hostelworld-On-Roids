@@ -48,7 +48,7 @@ export class PropertyCardRenderer {
     this.badgeTagsView.mount(container, { propertyId: property.getId(), badges: property.getBadges() })
   }
 
-  public static updateReviewMetrics (propertyId: number, metrics: ReviewMetrics): void {
+  public static updateReviewMetrics (propertyId: number, metrics: ReviewMetrics | null): void {
     this.view.update({
       propertyId,
       reviews: PropertyCardViewDTOFactory.reviewsRow(metrics),
@@ -57,7 +57,7 @@ export class PropertyCardRenderer {
     })
   }
 
-  public static updateAvailabilityMetrics (propertyId: number, metrics: AvailabilityMetrics): void {
+  public static updateAvailabilityMetrics (propertyId: number, metrics: AvailabilityMetrics | null): void {
     this.view.update({
       propertyId,
       availability: PropertyCardViewDTOFactory.availabilityRow(metrics)

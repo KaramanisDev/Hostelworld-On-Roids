@@ -10,13 +10,13 @@ type AvailabilityPayload = {
   propertyName: string
   from: string
   to: string
-  data: PropertyAvailability
+  data: PropertyAvailability | null
 }
 
 @Subscribe('worker:result:fetch:availability')
 export class AvailabilityReadyListener extends AbstractListener {
   public handle (payload: AvailabilityPayload): void {
-    const metrics: AvailabilityMetrics = new AvailabilityMetrics(payload.data)
+    const metrics: AvailabilityMetrics | null = payload.data ? new AvailabilityMetrics(payload.data) : null
     const from: Date = new Date(payload.from)
     const to: Date = new Date(payload.to)
 

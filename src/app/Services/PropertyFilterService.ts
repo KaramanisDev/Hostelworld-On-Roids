@@ -38,7 +38,8 @@ export class PropertyFilterService {
   }
 
   private static percentageForKey (property: Property, key: string): number | undefined {
-    const reviews: ReviewMetrics = property.getReviewMetrics()
+    const reviews: ReviewMetrics | null = property.getReviewMetrics()
+    if (!reviews) return undefined
 
     const percentageMap: Record<string, () => number> = {
       male: () => reviews.getMalePercentage(),

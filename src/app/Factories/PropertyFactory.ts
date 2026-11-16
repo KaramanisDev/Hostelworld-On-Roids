@@ -7,8 +7,10 @@ import { PropertyBadgeService, type PropertyBadge, type PropertyMetrics } from '
 
 export class PropertyFactory {
   public static create (composition: CompletedProperty): Property {
-    const reviewMetrics: ReviewMetrics = new ReviewMetrics(composition.reviews)
-    const availabilityMetrics: AvailabilityMetrics = new AvailabilityMetrics(composition.availability)
+    const reviewMetrics: ReviewMetrics | null = composition.reviews ? new ReviewMetrics(composition.reviews) : null
+    const availabilityMetrics: AvailabilityMetrics | null = composition.availability
+      ? new AvailabilityMetrics(composition.availability)
+      : null
     const bookedCountries: BookedCountry[] = composition.countries.map(country => new BookedCountry(country))
     const metrics: PropertyMetrics = { reviews: reviewMetrics, availability: availabilityMetrics }
     const badges: PropertyBadge[] = PropertyBadgeService.badgesFor(metrics)

@@ -40,7 +40,7 @@ export class PropertyInsightsRenderer {
     this.view.update(PropertyInsightsViewDTOFactory.loaded(property))
   }
 
-  public static updateReviewMetrics (propertyId: number, metrics: ReviewMetrics): void {
+  public static updateReviewMetrics (propertyId: number, metrics: ReviewMetrics | null): void {
     if (propertyId !== this.propertyId) return
 
     this.view.update({
@@ -54,7 +54,7 @@ export class PropertyInsightsRenderer {
     propertyId: number,
     from: Date,
     to: Date,
-    metrics: AvailabilityMetrics
+    metrics: AvailabilityMetrics | null
   ): void {
     if (!this.isDisplayedStay(propertyId, from, to)) return
 

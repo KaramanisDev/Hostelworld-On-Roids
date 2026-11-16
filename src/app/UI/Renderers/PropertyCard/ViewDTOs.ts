@@ -34,6 +34,7 @@ export class PropertyCardLabels {
   public static readonly availability: ReadonlyArray<string> = ['Mixed', 'Female', 'Private', 'Guests']
   public static readonly ageGroups: ReadonlyArray<string> = ['18-24', '25-30', '31-40', '41+']
   public static readonly recentRating: ReadonlyArray<string> = ['Score', 'Trend', 'Reviews', 'Period']
+  public static readonly unavailable: string = 'Unavailable'
 
   public static forType (metricType: MetricType): ReadonlyArray<string> {
     switch (metricType) {
@@ -81,7 +82,9 @@ export class PropertyCardViewDTOFactory {
     }
   }
 
-  public static reviewsRow (metrics: ReviewMetrics): MetricRowViewDTO {
+  public static reviewsRow (metrics: ReviewMetrics | null): MetricRowViewDTO {
+    if (!metrics) return this.unavailableRow('reviews')
+
     return {
       title: 'Reviews',
       items: [
@@ -93,7 +96,9 @@ export class PropertyCardViewDTOFactory {
     }
   }
 
-  public static availabilityRow (metrics: AvailabilityMetrics): MetricRowViewDTO {
+  public static availabilityRow (metrics: AvailabilityMetrics | null): MetricRowViewDTO {
+    if (!metrics) return this.unavailableRow('availability')
+
     return {
       title: 'Availability',
       items: [
@@ -118,7 +123,9 @@ export class PropertyCardViewDTOFactory {
     }
   }
 
-  public static ageGroupsRow (metrics: ReviewMetrics): MetricRowViewDTO {
+  public static ageGroupsRow (metrics: ReviewMetrics | null): MetricRowViewDTO {
+    if (!metrics) return this.unavailableRow('ageGroups')
+
     const ages: Record<string, number> = metrics.getAges()
     const total: number = metrics.getTotal()
 
@@ -131,7 +138,9 @@ export class PropertyCardViewDTOFactory {
     }
   }
 
-  public static recentRatingRow (metrics: ReviewMetrics): RecentRatingViewDTO {
+  public static recentRatingRow (metrics: ReviewMetrics | null): RecentRatingViewDTO {
+    if (!metrics) return { items: this.unavailableItems('recentRating'), trendDirection: null }
+
     const recent: number | null = metrics.getRecentOverallRating()
     const hasRating: boolean = recent !== null
 
@@ -144,6 +153,17 @@ export class PropertyCardViewDTOFactory {
       ],
       trendDirection: this.trendDirection(recent, metrics.getOverallRating())
     }
+  }
+
+  private static unavailableRow (metricType: MetricType): MetricRowViewDTO {
+    return {
+      title: PropertyCardLabels.titleForType(metricType),
+      items: this.unavailableItems(metricType)
+    }
+  }
+
+  private static unavailableItems (metricType: MetricType): MetricValueViewDTO[] {
+    return PropertyCardLabels.forType(metricType).map(label => ({ label, value: PropertyCardLabels.unavailable }))
   }
 
   private static trendLabel (recent: number | null, allTime: number | null): string {

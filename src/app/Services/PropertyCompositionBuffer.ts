@@ -11,7 +11,7 @@ export type StayEntry = {
 }
 
 type PendingStay = StayEntry & {
-  availability?: PropertyAvailability
+  availability?: PropertyAvailability | null
   countries?: PropertyGuestsCountries
 }
 
@@ -20,22 +20,22 @@ export type CompletedProperty = {
   name: string
   from: Date
   to: Date
-  reviews: PropertyReviews
-  availability: PropertyAvailability
+  reviews: PropertyReviews | null
+  availability: PropertyAvailability | null
   countries: PropertyGuestsCountries
 }
 
-export type MetricData = PropertyReviews | PropertyAvailability | PropertyGuestsCountries
+export type MetricData = PropertyReviews | PropertyAvailability | PropertyGuestsCountries | null
 
 export type StayMetric = 'availability' | 'countries'
 
 export type Metric = 'reviews' | StayMetric
 
 export class PropertyCompositionBuffer {
-  private static reviews: Map<number, PropertyReviews> = new Map()
+  private static reviews: Map<number, PropertyReviews | null> = new Map()
   private static stays: Map<string, PendingStay> = new Map()
 
-  public static collectReviews (id: number, reviews: PropertyReviews): void {
+  public static collectReviews (id: number, reviews: PropertyReviews | null): void {
     this.reviews.set(id, reviews)
   }
 
@@ -43,19 +43,19 @@ export class PropertyCompositionBuffer {
     const key: string = this.key(stay.id, stay.from, stay.to)
     const pendingStay: PendingStay = this.stays.get(key) ?? { ...stay }
 
-    if (metric === 'availability') pendingStay.availability = data as PropertyAvailability
+    if (metric === 'availability') pendingStay.availability = data as PropertyAvailability | null
     if (metric === 'countries') pendingStay.countries = data as PropertyGuestsCountries
 
     this.stays.set(key, pendingStay)
   }
 
   public static completedEntries (id: number): CompletedProperty[] {
-    const reviews: PropertyReviews | undefined = this.reviews.get(id)
-    if (!reviews) return []
+    const reviews: PropertyReviews | null | undefined = this.reviews.get(id)
+    if (reviews === undefined) return []
 
     const completed: CompletedProperty[] = []
     for (const stay of this.stays.values()) {
-      if (stay.id !== id || !stay.availability || !stay.countries) continue
+      if (stay.id !== id || stay.availability === undefined || stay.countries === undefined) continue
 
       completed.push({ ...stay, reviews, availability: stay.availability, countries: stay.countries })
     }

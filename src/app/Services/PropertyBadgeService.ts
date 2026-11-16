@@ -12,8 +12,8 @@ export type PropertyBadge = {
 }
 
 export type PropertyMetrics = {
-  reviews: ReviewMetrics
-  availability: AvailabilityMetrics
+  reviews: ReviewMetrics | null
+  availability: AvailabilityMetrics | null
 }
 
 export type BadgeMetadata = {
@@ -22,9 +22,22 @@ export type BadgeMetadata = {
   color: BadgeColor
 }
 
-export type BadgeDefinition = BadgeMetadata & {
-  condition: (metrics: PropertyMetrics) => boolean
+type ReviewsBadgeDefinition = BadgeMetadata & {
+  basis: 'reviews'
+  condition: (reviews: ReviewMetrics) => boolean
 }
+
+type AvailabilityBadgeDefinition = BadgeMetadata & {
+  basis: 'availability'
+  condition: (availability: AvailabilityMetrics) => boolean
+}
+
+type CombinedBadgeDefinition = BadgeMetadata & {
+  basis: 'combined'
+  condition: (reviews: ReviewMetrics, availability: AvailabilityMetrics) => boolean
+}
+
+export type BadgeDefinition = ReviewsBadgeDefinition | AvailabilityBadgeDefinition | CombinedBadgeDefinition
 
 export class PropertyBadgeService {
   private static readonly badges: BadgeDefinition[] = [
@@ -32,15 +45,17 @@ export class PropertyBadgeService {
       id: 'greatForSolo',
       label: 'Great for Solo',
       color: 'purple',
-      condition: (metrics: PropertyMetrics): boolean => metrics.reviews.getSoloPercentage() > 90
+      basis: 'reviews',
+      condition: (reviews: ReviewMetrics): boolean => reviews.getSoloPercentage() > 90
     },
     {
       id: 'femaleFriendly',
       label: 'Female Friendly',
       color: 'pink',
-      condition: (metrics: PropertyMetrics): boolean => {
-        const hasFemaleReviews: boolean = metrics.reviews.getFemalePercentage() > 60
-        const hasFemaleBeds: boolean = metrics.availability.getMaxFemaleBeds() > 0
+      basis: 'combined',
+      condition: (reviews: ReviewMetrics, availability: AvailabilityMetrics): boolean => {
+        const hasFemaleReviews: boolean = reviews.getFemalePercentage() > 60
+        const hasFemaleBeds: boolean = availability.getMaxFemaleBeds() > 0
 
         return hasFemaleReviews && hasFemaleBeds
       }
@@ -49,20 +64,23 @@ export class PropertyBadgeService {
       id: 'youngCrowd',
       label: 'Young Crowd',
       color: 'orange',
-      condition: (metrics: PropertyMetrics): boolean => metrics.reviews.getAgePercentage('18-24') > 40
+      basis: 'reviews',
+      condition: (reviews: ReviewMetrics): boolean => reviews.getAgePercentage('18-24') > 40
     },
     {
       id: 'midAgeCrowd',
       label: 'Mid-Age Crowd',
       color: 'teal',
-      condition: (metrics: PropertyMetrics): boolean => metrics.reviews.getAgePercentage('18-24') < 30
+      basis: 'reviews',
+      condition: (reviews: ReviewMetrics): boolean => reviews.getAgePercentage('18-24') < 30
     },
     {
       id: 'matureCrowd',
       label: 'Mature Crowd',
       color: 'blue',
-      condition: (metrics: PropertyMetrics): boolean => {
-        const percentage: number = metrics.reviews.getAgePercentage('31-40') + metrics.reviews.getAgePercentage('41+')
+      basis: 'reviews',
+      condition: (reviews: ReviewMetrics): boolean => {
+        const percentage: number = reviews.getAgePercentage('31-40') + reviews.getAgePercentage('41+')
 
         return percentage > 40
       }
@@ -71,7 +89,8 @@ export class PropertyBadgeService {
       id: 'closedDown',
       label: 'Closed Down',
       color: 'red',
-      condition: (metrics: PropertyMetrics): boolean => !metrics.availability.getMaxGuests()
+      basis: 'availability',
+      condition: (availability: AvailabilityMetrics): boolean => !availability.getMaxGuests()
     }
   ]
 
@@ -87,11 +106,21 @@ export class PropertyBadgeService {
     const result: PropertyBadge[] = []
 
     for (const badge of this.badges) {
-      if (!badge.condition(metrics)) continue
+      if (!this.isEarned(badge, metrics)) continue
 
       result.push({ id: badge.id, label: badge.label, color: badge.color })
     }
 
     return result
+  }
+
+  private static isEarned (badge: BadgeDefinition, metrics: PropertyMetrics): boolean {
+    const { reviews, availability }: PropertyMetrics = metrics
+
+    switch (badge.basis) {
+      case 'reviews': return reviews !== null && badge.condition(reviews)
+      case 'availability': return availability !== null && badge.condition(availability)
+      case 'combined': return reviews !== null && availability !== null && badge.condition(reviews, availability)
+    }
   }
 }

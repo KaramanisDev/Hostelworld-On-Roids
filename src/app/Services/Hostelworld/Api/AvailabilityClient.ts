@@ -18,11 +18,8 @@ export class AvailabilityClient {
   private static readonly endpoint: string = 'https://prod.apigee.hostelworld.com/legacy-hwapi-service/2.2/' +
     'properties/{property}/availability/?date-start={from}&num-nights={nights}'
 
-  public static async fetch (propertyId: number, from: Date, to: Date): Promise<PropertyAvailability> {
-    return await promiseFallback(
-      this.availability(propertyId, from, to),
-      { current: this.emptyMetrics(), max: this.emptyMetrics() }
-    )
+  public static async fetch (propertyId: number, from: Date, to: Date): Promise<PropertyAvailability | null> {
+    return await promiseFallback(this.availability(propertyId, from, to), null)
   }
 
   private static async availability (propertyId: number, from: Date, to: Date): Promise<PropertyAvailability> {
@@ -57,8 +54,9 @@ export class AvailabilityClient {
 
       await delay(randomNumber(0, 3) * 100)
 
-      const availability: HostelworldPropertyAvailability = await this.request(
-        propertyId, fromWithDaysAdded, toWithFromPlus3Days, 24 * 60
+      const availability: HostelworldPropertyAvailability = await promiseFallback(
+        this.request(propertyId, fromWithDaysAdded, toWithFromPlus3Days, 24 * 60),
+        this.noRooms()
       )
       this.adaptDormBedToMaxCapacity(availability)
       const metrics: Metrics = this.toMetrics(availability)
@@ -138,9 +136,16 @@ export class AvailabilityClient {
       .replaceAll('{nights}', String(nights))
       .replaceAll('{property}', String(propertyId))
 
-    return await promiseFallback(
-      HttpClient.getJson(endpoint, { cacheInMinutes }),
-      { rooms: { dorms: [], privates: [] } } as unknown as HostelworldPropertyAvailability
-    )
+    try {
+      return await HttpClient.getJson(endpoint, { cacheInMinutes })
+    } catch (error) {
+      if (!HttpClient.isNotFound(error)) throw error
+
+      return this.noRooms()
+    }
+  }
+
+  private static noRooms (): HostelworldPropertyAvailability {
+    return { rooms: { dorms: [], privates: [] } } as unknown as HostelworldPropertyAvailability
   }
 }

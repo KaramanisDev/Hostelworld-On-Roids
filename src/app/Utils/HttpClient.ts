@@ -1,5 +1,5 @@
 import type { AfterResponseState, BeforeRequestState, KyResponse, Options } from 'ky'
-import { default as KyClient } from 'ky'
+import { default as KyClient, isHTTPError } from 'ky'
 import { CacheStorage } from 'Utils/Storage/CacheStorage'
 import { hash, promiseFallback } from 'Utils/index'
 import type { StorageInterface } from 'Utils/Storage/StorageInterface'
@@ -17,6 +17,10 @@ export class HttpClient {
     const response: KyResponse = await KyClient.get(url, this.options(options))
 
     return response.json()
+  }
+
+  public static isNotFound (error: unknown): boolean {
+    return isHTTPError(error) && error.response.status === 404
   }
 
   private static options (options?: HttpClientOptions): Options {

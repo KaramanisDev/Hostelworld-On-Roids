@@ -8,8 +8,8 @@ type PropertyAttributes = {
   name: string
   from: Date
   to: Date
-  reviewMetrics: ReviewMetrics
-  availabilityMetrics: AvailabilityMetrics
+  reviewMetrics: ReviewMetrics | null
+  availabilityMetrics: AvailabilityMetrics | null
   bookedCountries: BookedCountry[]
   badges: PropertyBadge[]
 }
@@ -19,8 +19,8 @@ export class Property {
   private name!: string
   private from!: Date
   private to!: Date
-  private reviewMetrics!: ReviewMetrics
-  private availabilityMetrics!: AvailabilityMetrics
+  private reviewMetrics!: ReviewMetrics | null
+  private availabilityMetrics!: AvailabilityMetrics | null
   private bookedCountries!: BookedCountry[]
   private badges!: PropertyBadge[]
 
@@ -44,11 +44,11 @@ export class Property {
     return this.to
   }
 
-  public getReviewMetrics (): ReviewMetrics {
+  public getReviewMetrics (): ReviewMetrics | null {
     return this.reviewMetrics
   }
 
-  public getAvailabilityMetrics (): AvailabilityMetrics {
+  public getAvailabilityMetrics (): AvailabilityMetrics | null {
     return this.availabilityMetrics
   }
 
