@@ -7,8 +7,13 @@ type VueConstructor = {
   }
 }
 
+export type VueDependency = {
+  notify: () => void
+}
+
 type VueComputedWatcher = {
   dirty: boolean
+  deps: VueDependency[]
 }
 
 type HostelworldSearchServiceResult = {
@@ -65,6 +70,7 @@ export type VuePropertyListComponent = {
 
 export type VuexStoreViewModel = {
   isPropertiesFilterInstalled?: boolean
+  _computedWatchers?: Record<string, VueComputedWatcher>
   $options: {
     _base: VueConstructor
   }

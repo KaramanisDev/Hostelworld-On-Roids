@@ -2,6 +2,7 @@ import type { Property } from 'Types/HostelworldSearch'
 import { VuexDataHook } from 'Services/Hostelworld/VuexDataHook'
 import { VueComponentAccessor } from 'Services/Hostelworld/VueComponentAccessor'
 import type {
+  VueDependency,
   VuePropertyListComponent,
   VueSearchPageComponent,
   VuexStore,
@@ -17,6 +18,7 @@ type FilterState = {
 
 export class SearchPropertyListComponentPatcher {
   private static filterPredicate: PropertyFilterPredicate | null = null
+  private static storeViewModel: VuexStoreViewModel | null = null
   private static filterState: FilterState | null = null
   private static scheduledRefresh: ReturnType<typeof setTimeout> | null = null
   private static readonly refreshDelayInMs: number = 250
@@ -75,6 +77,7 @@ export class SearchPropertyListComponentPatcher {
       if (!viewModel || viewModel.isPropertiesFilterInstalled) return
       viewModel.isPropertiesFilterInstalled = true
 
+      this.storeViewModel = viewModel
       this.filterState ??= this.reactiveFilterState(viewModel)
 
       for (const getterName of this.filteredPropertiesGetters) {
@@ -161,6 +164,10 @@ export class SearchPropertyListComponentPatcher {
     component.$forceUpdate()
   }
 
+  private static isFiltering (): boolean {
+    return Boolean(this.filterState?.version) && this.filterPredicate !== null
+  }
+
   private static reactiveFilterState (viewModel: VuexStoreViewModel): FilterState {
     const state: FilterState = { version: 1 }
     viewModel.$options._base.util.defineReactive(state, 'version', 1)
@@ -176,10 +183,9 @@ export class SearchPropertyListComponentPatcher {
       configurable: true,
       enumerable: true,
       get: (): Property[] => {
-        void this.filterState?.version
         const original: Property[] = descriptor.get!.call(viewModel) ?? []
 
-        if (!this.filterPredicate) return original
+        if (!this.isFiltering()) return original
 
         return original.filter(
           (entry: Property) => this.filterPredicate!(entry.id)
@@ -192,13 +198,23 @@ export class SearchPropertyListComponentPatcher {
   }
 
   private static async triggerFilterChange (): Promise<void> {
-    if (!this.filterState) return
+    if (!this.storeViewModel) return
 
     const store: VuexStore | undefined = await promiseFallback(VueComponentAccessor.hostelworldStore())
     if (store) {
       void store.commit('search/setPage', 1)
     }
 
-    this.filterState.version++
+    this.invalidateFilteredProperties(this.storeViewModel)
+  }
+
+  private static invalidateFilteredProperties (viewModel: VuexStoreViewModel): void {
+    for (const getterName of this.filteredPropertiesGetters) {
+      const dependencies: VueDependency[] = viewModel._computedWatchers?.[getterName]?.deps ?? []
+
+      for (const dependency of [...dependencies]) {
+        dependency.notify()
+      }
+    }
   }
 }
