@@ -16,6 +16,9 @@ export class PropertiesInterceptedListener extends AbstractListener {
       properties.map(property => PropertyCardRenderer.render(property.id))
     )
 
+    const isSearchReplaced: boolean = this.latestSearchInSession() !== search
+    if (isSearchReplaced) return
+
     PropertyMetricsService.schedule(
       properties.map(property => ScheduledPropertyFactory.create(property, search))
     )
