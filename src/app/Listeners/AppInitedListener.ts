@@ -39,6 +39,7 @@ export class AppInitedListener extends AbstractListener {
 
     SearchPageHook.onSearch({
       onSearchStarted: this.onSearchStarted.bind(this),
+      onSearchUnrecognized: this.onSearchUnrecognized.bind(this),
       onSearchResults: this.onSearchResults.bind(this),
       onUnavailableProperties: this.onUnavailableProperties.bind(this)
     })
@@ -47,6 +48,11 @@ export class AppInitedListener extends AbstractListener {
   private onSearchStarted (search: Search): void {
     this.emit('worker:tasks:cancel')
     this.persistSearchInSession(search)
+  }
+
+  private onSearchUnrecognized (): void {
+    this.emit('worker:tasks:cancel')
+    this.forgetSearchInSession()
   }
 
   private onSearchResults (properties: Property[]): void {

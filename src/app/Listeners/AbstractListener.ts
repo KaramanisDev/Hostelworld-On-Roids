@@ -26,6 +26,10 @@ export abstract class AbstractListener implements ListenerInterface {
     return this.session.updateLatestSearch(search)
   }
 
+  protected forgetSearchInSession (): void {
+    return this.session.forgetLatestSearch()
+  }
+
   protected persistPropertyInSession (property: Property): void {
     return this.session.persistProperty(property)
   }

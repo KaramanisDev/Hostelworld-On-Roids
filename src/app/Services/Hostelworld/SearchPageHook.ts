@@ -7,6 +7,7 @@ import { pluck } from 'Utils'
 
 export type SearchPageCallbacks = {
   onSearchStarted: (search: Search) => void
+  onSearchUnrecognized: () => void
   onSearchResults: (properties: Property[]) => void
   onUnavailableProperties: (properties: Property[]) => void
 }
@@ -29,8 +30,14 @@ export class SearchPageHook {
   private static startSearch (url: URL, callbacks: SearchPageCallbacks): URL {
     this.loadAllController?.abort()
 
-    const search: Search = Search.createFromHostelworldSearchUrl(url)
-    this.latestCityId = search.getCityId()
+    const search: Search | null = Search.createFromHostelworldSearchUrl(url)
+    this.latestCityId = search?.getCityId() ?? null
+
+    if (!search) {
+      callbacks.onSearchUnrecognized()
+      return url
+    }
+
     callbacks.onSearchStarted(search)
 
     return url
@@ -38,9 +45,9 @@ export class SearchPageHook {
 
   private static receiveResults (search: HostelworldSearch, callbacks: SearchPageCallbacks): HostelworldSearch {
     const adapted: HostelworldSearch = SearchDataAdapter.withoutPromotions(search)
+    if (!this.latestCityId) return adapted
 
     callbacks.onSearchResults(adapted.properties)
-    if (!this.latestCityId) return adapted
 
     this.loadAllController = new AbortController()
     void SearchPropertyListComponentPatcher.loadAllForCity(

@@ -22,19 +22,16 @@ export class Search {
     return this.cityId
   }
 
-  public static createFromHostelworldSearchUrl (url: URL): Search {
+  public static createFromHostelworldSearchUrl (url: URL): Search | null {
     const parameters: URLSearchParams = url.searchParams
-    if (!parameters.has('date-start') || !parameters.has('num-nights')) {
-      throw new Error('Not a hostelworld search url.')
-    }
+    if (!parameters.has('date-start') || !parameters.has('num-nights')) return null
 
     const from: Date = new Date(<string>parameters.get('date-start'))
     const daysToAdd: number = Number(parameters.get('num-nights'))
 
     const match: RegExpMatchArray | null = url.toString().match(/cities\/(\d+)\/properties\//)
-    if (!match) {
-      throw new Error('Not a hostelworld search url.')
-    }
+    if (!match) return null
+
     const [, cityId]: [string, string] = match as [string, string]
 
     return new this({

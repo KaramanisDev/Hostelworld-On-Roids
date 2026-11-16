@@ -16,6 +16,10 @@ export class Session {
     this.latestSearch = search
   }
 
+  public forgetLatestSearch (): void {
+    this.latestSearch = undefined
+  }
+
   public pullProperty (propertyId: number, stay: Stay): Property | undefined {
     return this.properties[stay.getPropertyKey(propertyId)]
   }
