@@ -33,7 +33,7 @@ export function RecentRating (properties: Properties): JSX.Element {
               <div class="hor-label">{label}</div>
               <div class={valueClass(index())}>
                 <Show when={isLoaded()} fallback={<div class="hor-skeleton-pulse" />}>
-                  {properties.data?.items[index()]?.value ?? ''}
+                  {properties.data?.values[index()] ?? ''}
                 </Show>
               </div>
             </div>

@@ -43,11 +43,7 @@ export class PropertyInsightsRenderer {
   public static updateReviewMetrics (propertyId: number, metrics: ReviewMetrics | null): void {
     if (propertyId !== this.propertyId) return
 
-    this.view.update({
-      reviews: PropertyCardViewDTOFactory.reviewsRow(metrics),
-      ageGroups: PropertyCardViewDTOFactory.ageGroupsRow(metrics),
-      recentRating: PropertyCardViewDTOFactory.recentRatingRow(metrics)
-    })
+    this.view.update(PropertyCardViewDTOFactory.reviewRows(metrics))
   }
 
   public static updateAvailabilityMetrics (propertyId: number, stay: Stay, metrics: AvailabilityMetrics | null): void {

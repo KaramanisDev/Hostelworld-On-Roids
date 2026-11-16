@@ -25,7 +25,7 @@ export function MetricsRow (properties: Properties): JSX.Element {
               <div class="hor-label">{label}</div>
               <div class="hor-value">
                 <Show when={isLoaded()} fallback={<div class="hor-skeleton-pulse" />}>
-                  {properties.data?.items[index()]?.value ?? ''}
+                  {properties.data?.values[index()] ?? ''}
                 </Show>
               </div>
             </div>

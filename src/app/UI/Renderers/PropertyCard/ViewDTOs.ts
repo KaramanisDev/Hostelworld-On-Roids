@@ -6,19 +6,13 @@ export type MetricType = 'reviews' | 'availability' | 'ageGroups' | 'recentRatin
 
 export type TrendDirection = 'up' | 'down' | 'flat'
 
-export type MetricValueViewDTO = {
-  label: string
-  value: string
-}
-
 export type RecentRatingViewDTO = {
-  items: MetricValueViewDTO[]
+  values: string[]
   trendDirection: TrendDirection | null
 }
 
 export type MetricRowViewDTO = {
-  title: string
-  items: MetricValueViewDTO[]
+  values: string[]
 }
 
 export type PropertyCardViewDTO = {
@@ -28,6 +22,8 @@ export type PropertyCardViewDTO = {
   ageGroups?: MetricRowViewDTO | null
   recentRating?: RecentRatingViewDTO | null
 }
+
+export type ReviewRowsViewDTO = Required<Pick<PropertyCardViewDTO, 'reviews' | 'ageGroups' | 'recentRating'>>
 
 export class PropertyCardLabels {
   public static readonly reviews: ReadonlyArray<string> = ['Male', 'Female', 'Other', 'Solo']
@@ -75,24 +71,16 @@ export class PropertyCardViewDTOFactory {
   public static loaded (property: Property): PropertyCardViewDTO {
     return {
       propertyId: property.getId(),
-      reviews: this.reviewsRow(property.getReviewMetrics()),
       availability: this.availabilityRow(property.getAvailabilityMetrics()),
-      ageGroups: this.ageGroupsRow(property.getReviewMetrics()),
-      recentRating: this.recentRatingRow(property.getReviewMetrics())
+      ...this.reviewRows(property.getReviewMetrics())
     }
   }
 
-  public static reviewsRow (metrics: ReviewMetrics | null): MetricRowViewDTO {
-    if (!metrics) return this.unavailableRow('reviews')
-
+  public static reviewRows (metrics: ReviewMetrics | null): ReviewRowsViewDTO {
     return {
-      title: 'Reviews',
-      items: [
-        { label: 'Male', value: `${metrics.getMale()}/${metrics.getTotal()} (${metrics.getMalePercentage()}%)` },
-        { label: 'Female', value: `${metrics.getFemale()}/${metrics.getTotal()} (${metrics.getFemalePercentage()}%)` },
-        { label: 'Other', value: `${metrics.getOther()}/${metrics.getTotal()} (${metrics.getOtherPercentage()}%)` },
-        { label: 'Solo', value: `${metrics.getSolo()}/${metrics.getTotal()} (${metrics.getSoloPercentage()}%)` }
-      ]
+      reviews: this.reviewsRow(metrics),
+      ageGroups: this.ageGroupsRow(metrics),
+      recentRating: this.recentRatingRow(metrics)
     }
   }
 
@@ -100,88 +88,81 @@ export class PropertyCardViewDTOFactory {
     if (!metrics) return this.unavailableRow('availability')
 
     return {
-      title: 'Availability',
-      items: [
-        {
-          label: 'Mixed',
-          value: `${metrics.getMixedBeds()}/${metrics.getMaxMixedBeds()} (${metrics.getMixedBedsPercentage()}%)`
-        },
-        {
-          label: 'Female',
-          value: `${metrics.getFemaleBeds()}/${metrics.getMaxFemaleBeds()} (${metrics.getFemaleBedsPercentage()}%)`
-        },
-        {
-          label: 'Private',
-          value:
-            `${metrics.getPrivateRooms()}/${metrics.getMaxPrivateRooms()} (${metrics.getPrivateRoomsPercentage()}%)`
-        },
-        {
-          label: 'Guests',
-          value: `${metrics.getGuests()}/${metrics.getMaxGuests()} (${metrics.getGuestsPercentage()}%)`
-        }
+      values: [
+        `${metrics.getMixedBeds()}/${metrics.getMaxMixedBeds()} (${metrics.getMixedBedsPercentage()}%)`,
+        `${metrics.getFemaleBeds()}/${metrics.getMaxFemaleBeds()} (${metrics.getFemaleBedsPercentage()}%)`,
+        `${metrics.getPrivateRooms()}/${metrics.getMaxPrivateRooms()} (${metrics.getPrivateRoomsPercentage()}%)`,
+        `${metrics.getGuests()}/${metrics.getMaxGuests()} (${metrics.getGuestsPercentage()}%)`
       ]
     }
   }
 
-  public static ageGroupsRow (metrics: ReviewMetrics | null): MetricRowViewDTO {
+  private static reviewsRow (metrics: ReviewMetrics | null): MetricRowViewDTO {
+    if (!metrics) return this.unavailableRow('reviews')
+
+    return {
+      values: [
+        `${metrics.getMale()}/${metrics.getTotal()} (${metrics.getMalePercentage()}%)`,
+        `${metrics.getFemale()}/${metrics.getTotal()} (${metrics.getFemalePercentage()}%)`,
+        `${metrics.getOther()}/${metrics.getTotal()} (${metrics.getOtherPercentage()}%)`,
+        `${metrics.getSolo()}/${metrics.getTotal()} (${metrics.getSoloPercentage()}%)`
+      ]
+    }
+  }
+
+  private static ageGroupsRow (metrics: ReviewMetrics | null): MetricRowViewDTO {
     if (!metrics) return this.unavailableRow('ageGroups')
 
     const ages: Record<string, number> = metrics.getAges()
     const total: number = metrics.getTotal()
 
     return {
-      title: 'Age Groups',
-      items: PropertyCardLabels.ageGroups.map(bracket => ({
-        label: bracket,
-        value: `${ages[bracket] ?? 0}/${total} (${metrics.getAgePercentage(bracket)}%)`
-      }))
+      values: PropertyCardLabels.ageGroups.map(
+        bracket => `${ages[bracket] ?? 0}/${total} (${metrics.getAgePercentage(bracket)}%)`
+      )
     }
   }
 
-  public static recentRatingRow (metrics: ReviewMetrics | null): RecentRatingViewDTO {
-    if (!metrics) return { items: this.unavailableItems('recentRating'), trendDirection: null }
+  private static recentRatingRow (metrics: ReviewMetrics | null): RecentRatingViewDTO {
+    if (!metrics) return { ...this.unavailableRow('recentRating'), trendDirection: null }
 
     const recent: number | null = metrics.getRecentOverallRating()
     const hasRating: boolean = recent !== null
+    const trend: number | null = this.trendDifference(recent, metrics.getOverallRating())
 
     return {
-      items: [
-        { label: 'Score', value: hasRating ? String(recent) : 'N/A' },
-        { label: 'Trend', value: this.trendLabel(recent, metrics.getOverallRating()) },
-        { label: 'Reviews', value: hasRating ? String(metrics.getRecentReviewCount()) : '0' },
-        { label: 'Period', value: '12 months' }
+      values: [
+        hasRating ? String(recent) : 'N/A',
+        this.trendLabel(trend),
+        hasRating ? String(metrics.getRecentReviewCount()) : '0',
+        '12 months'
       ],
-      trendDirection: this.trendDirection(recent, metrics.getOverallRating())
+      trendDirection: this.trendDirection(trend)
     }
   }
 
   private static unavailableRow (metricType: MetricType): MetricRowViewDTO {
     return {
-      title: PropertyCardLabels.titleForType(metricType),
-      items: this.unavailableItems(metricType)
+      values: PropertyCardLabels.forType(metricType).map(() => PropertyCardLabels.unavailable)
     }
   }
 
-  private static unavailableItems (metricType: MetricType): MetricValueViewDTO[] {
-    return PropertyCardLabels.forType(metricType).map(label => ({ label, value: PropertyCardLabels.unavailable }))
+  private static trendDifference (recent: number | null, allTime: number | null): number | null {
+    if (recent === null || allTime === null) return null
+
+    return Number((recent - allTime).toFixed(1))
   }
 
-  private static trendLabel (recent: number | null, allTime: number | null): string {
-    if (recent === null || allTime === null) return '—'
-
-    const difference: number = Number((recent - allTime).toFixed(1))
-
+  private static trendLabel (difference: number | null): string {
+    if (difference === null) return '—'
     if (difference > 0) return `+${difference}`
     if (difference < 0) return String(difference)
 
     return '0.0'
   }
 
-  private static trendDirection (recent: number | null, allTime: number | null): TrendDirection | null {
-    if (recent === null || allTime === null) return null
-
-    const difference: number = Number((recent - allTime).toFixed(1))
-
+  private static trendDirection (difference: number | null): TrendDirection | null {
+    if (difference === null) return null
     if (difference > 0) return 'up'
     if (difference < 0) return 'down'
 
