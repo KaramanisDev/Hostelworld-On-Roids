@@ -62,17 +62,17 @@ This section will be updated when additional browsers are supported.
 ## Development & Building
 
 Apart from the obvious [git](https://git-scm.com/) one :), you'll need [node.js](https://nodejs.org) and
-[yarn](https://yarnpkg.com/getting-started/install/) (utilize corepack magic, so you don't have to install that one).
+[pnpm](https://pnpm.io/installation) (utilize corepack magic, so you don't have to install that one).
 
-The required versions of nodejs & yarn needed can be found at the [engines section](/package.json#L4-L6) of the
+The required versions of nodejs & pnpm needed can be found at the [engines section](/package.json#L4-L5) of the
 `package.json`.
 
 Simply:
 * Use `git` to clone the project.
 * Navigate to project's root folder.
 * Run `corepack enable` in that folder.
-* Run `yarn` in that folder.
-* Once completed, run `yarn watch` to build it.
+* Run `pnpm install` in that folder.
+* Once completed, run `pnpm watch` to build it.
 
 Once build, head over to your Chrome browser and:
 * Navigate to `Menu → More tools → Extensions` and enable `Developer Mode`.
@@ -97,18 +97,18 @@ For packaging and deployment functionality, you'll need to set up environment va
 ### Available Commands
 
 Once environment is configured, you can use these packaging and deployment commands:
-* `yarn package:zip` - Creates a ZIP package for manual installation or Web Store upload.
-* `yarn package:crx` - Creates a signed CRX package for direct installation.
-* `yarn extension:upload` - Uploads the latest version to Chrome Web Store.
-* `yarn extension:publish` - Submits the current version for review and publication.
-* `yarn extension:deploy` - Uploads and publishes the latest version in one go.
+* `pnpm package:zip` - Creates a ZIP package for manual installation or Web Store upload.
+* `pnpm package:crx` - Creates a signed CRX package for direct installation.
+* `pnpm extension:upload` - Uploads the latest version to Chrome Web Store.
+* `pnpm extension:publish` - Submits the current version for review and publication.
+* `pnpm extension:deploy` - Uploads and publishes the latest version in one go.
 
 ## Contributing
 
 Contributions are more than welcome! Feel free to open a PR to introduce new features or fix any existing issues.
 
 Please adhere to the software practices & principles to the best of your knowledge, try to align with the coding
-style of the project to minimize cognitive load for reviewers/readers, and don't forget to run `yarn lint` before
+style of the project to minimize cognitive load for reviewers/readers, and don't forget to run `pnpm lint` before
 opening a PR. :)
 
 

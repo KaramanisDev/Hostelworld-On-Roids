@@ -1,11 +1,10 @@
 .env
 *.pem
-.yarn/
 dist/*
 !dist/.keep
 packages/*
 !packages/.keep
 node_modules/
-yarn-error.log
+pnpm-debug.log*
 package-lock.json
 *.tsbuildinfo

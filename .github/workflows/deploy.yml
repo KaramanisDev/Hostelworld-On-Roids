@@ -17,7 +17,7 @@ jobs:
         with:
           fetch-depth: 0
       - uses: ./.github/actions/setup
-      - run: yarn build:prod
+      - run: pnpm build:prod
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v6
@@ -41,7 +41,7 @@ jobs:
           name: extension-build
           path: dist/
 
-      - run: yarn package:zip
+      - run: pnpm package:zip
 
       - name: Upload package artifacts
         uses: actions/upload-artifact@v6
@@ -66,7 +66,7 @@ jobs:
           path: packages/
 
       - name: Deploy to Chrome Web Store
-        run: yarn extension:deploy
+        run: pnpm extension:deploy
         env:
           CHROME_WEB_STORE_CLIENT_ID: ${{ secrets.CHROME_WEB_STORE_CLIENT_ID }}
           CHROME_WEB_STORE_CLIENT_SECRET: ${{ secrets.CHROME_WEB_STORE_CLIENT_SECRET }}

@@ -1,20 +1,19 @@
 {
   "name": "hostelworld-on-roids-extension",
   "engines": {
-    "npm": "^11.4.2",
-    "yarn": "^4.12.0",
+    "pnpm": "^12.21.0",
     "node": "^24.11.0"
   },
-  "packageManager": "yarn@4.12.0",
+  "packageManager": "pnpm@12.21.0",
   "sideEffects": [
     "*.css",
     "*.scss"
   ],
   "scripts": {
-    "watch": "yarn build:dev --watch",
+    "watch": "pnpm build:dev --watch",
     "build:prod": "webpack --config webpack.config.mjs --mode=production",
     "build:dev": "webpack --config webpack.config.mjs --mode=development",
-    "lint": "yarn lint:tsc && yarn lint:eslint && yarn lint:scss && yarn lint:commit",
+    "lint": "pnpm lint:tsc && pnpm lint:eslint && pnpm lint:scss && pnpm lint:commit",
     "lint:tsc": "tsc --noEmit --incremental false",
     "lint:eslint": "eslint \"{src,scripts}/**/*.{ts,tsx,js,mjs}\" \"*.{js,mjs}\"",
     "lint:scss": "stylelint \"src/**/*.scss\"",

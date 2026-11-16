@@ -12,7 +12,7 @@ async function main () {
 
     logSuccess('All commits passed the linting rules.')
   } catch (error) {
-    if (error.message && error.message.includes('yarn commitlint')) {
+    if (error.message && error.message.includes('pnpm exec commitlint')) {
       logError('Commit linting has failed. Please address the issues above.')
     } else {
       logError(`Unexpected error: ${error.message}`)
@@ -56,7 +56,7 @@ function getCurrentBranch (providedBranch) {
 }
 
 function lintCommits (fromRevision) {
-  const command = `yarn commitlint --from="${fromRevision}" --to=HEAD`
+  const command = `pnpm exec commitlint --from="${fromRevision}" --to=HEAD`
 
   execSync(command, { stdio: 'inherit' })
 }

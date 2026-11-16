@@ -16,16 +16,16 @@ jobs:
         with:
           fetch-depth: 0
       - uses: ./.github/actions/setup
-      - run: yarn lint:tsc
-      - run: yarn lint:eslint
-      - run: yarn lint:scss
+      - run: pnpm lint:tsc
+      - run: pnpm lint:eslint
+      - run: pnpm lint:scss
       - run: |
           if [ "${{ github.event_name }}" = "pull_request" ]; then
-            yarn lint:commit --branch "${{ github.base_ref }}"
+            pnpm lint:commit --branch "${{ github.base_ref }}"
           elif git cat-file -e "${{ github.event.before }}^{commit}" 2>/dev/null; then
-            yarn lint:commit --from "${{ github.event.before }}"
+            pnpm lint:commit --from "${{ github.event.before }}"
           else
-            yarn lint:commit --branch master
+            pnpm lint:commit --branch master
           fi
 
   audit:
@@ -34,4 +34,4 @@ jobs:
     steps:
       - uses: actions/checkout@v6
       - uses: ./.github/actions/setup
-      - run: yarn npm audit --severity moderate
+      - run: pnpm audit --audit-level moderate
