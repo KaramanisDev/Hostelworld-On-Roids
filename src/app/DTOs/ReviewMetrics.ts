@@ -52,6 +52,10 @@ export class ReviewMetrics {
     return this.total
   }
 
+  public hasReviews (): boolean {
+    return this.total > 0
+  }
+
   public getAges (): Record<string, number> {
     return this.ages
   }

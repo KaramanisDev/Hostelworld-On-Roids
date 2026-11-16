@@ -118,9 +118,14 @@ export class PropertyBadgeService {
     const { reviews, availability }: PropertyMetrics = metrics
 
     switch (badge.basis) {
-      case 'reviews': return reviews !== null && badge.condition(reviews)
+      case 'reviews': return this.hasReviews(reviews) && badge.condition(reviews)
       case 'availability': return availability !== null && badge.condition(availability)
-      case 'combined': return reviews !== null && availability !== null && badge.condition(reviews, availability)
+      case 'combined':
+        return this.hasReviews(reviews) && availability !== null && badge.condition(reviews, availability)
     }
+  }
+
+  private static hasReviews (reviews: ReviewMetrics | null): reviews is ReviewMetrics {
+    return reviews !== null && reviews.hasReviews()
   }
 }
