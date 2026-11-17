@@ -1,4 +1,5 @@
 import type { Property } from 'DTOs/Property'
+import type { Stay } from 'DTOs/Stay'
 import type { ReviewMetrics } from 'DTOs/ReviewMetrics'
 import type { AvailabilityMetrics } from 'DTOs/AvailabilityMetrics'
 import { PropertyCardView } from 'UI/SolidJS/PropertyCard/PropertyCardView'
@@ -18,6 +19,12 @@ export class PropertyCardRenderer {
     (propertyIds: number[]): void => EventBus.emit('property:cards:visible', propertyIds)
   )
 
+  private static shownStay: Stay | null = null
+
+  public static showCardsFor (stay: Stay | null): void {
+    this.shownStay = stay
+  }
+
   public static async render (propertyId: number): Promise<void> {
     if (!await PropertyCardsArea.hasCards()) return
 
@@ -30,6 +37,7 @@ export class PropertyCardRenderer {
   }
 
   public static async renderWithData (property: Property): Promise<void> {
+    if (!this.isShownStay(property.getStay())) return
     if (!await PropertyCardsArea.hasCards()) return
 
     const card: HTMLElement | null = PropertyCardsArea.card(property.getId())
@@ -51,14 +59,22 @@ export class PropertyCardRenderer {
       case 'reviews':
         return this.updateReviewMetrics(collected.propertyId, collected.reviewMetrics)
       case 'availability':
+        if (!this.isShownStay(collected.stay)) return
+
         return this.updateAvailabilityMetrics(collected.propertyId, collected.availabilityMetrics)
       case 'countries':
+        if (!this.isShownStay(collected.stay)) return
+
         return this.updateCountries(collected.propertyId, collected.bookedCountries)
     }
   }
 
   public static showDisconnected (): void {
     this.view.showDisconnected()
+  }
+
+  private static isShownStay (stay: Stay): boolean {
+    return Boolean(this.shownStay?.isSameAs(stay))
   }
 
   private static updateReviewMetrics (propertyId: number, metrics: ReviewMetrics | null): void {

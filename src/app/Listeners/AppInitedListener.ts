@@ -16,6 +16,7 @@ import {
 import { PropertyMetricsService, type ScheduledProperty } from 'Services/PropertyMetrics'
 import type { Property } from 'Types/HostelworldSearch'
 import { FilterModalRenderer } from 'UI/Renderers/FilterModal'
+import { PropertyCardRenderer } from 'UI/Renderers/PropertyCard'
 
 @Subscribe('app:inited')
 export class AppInitedListener extends AbstractListener {
@@ -53,11 +54,13 @@ export class AppInitedListener extends AbstractListener {
   private onSearchStarted (search: Search): void {
     this.emit('worker:tasks:cancel')
     this.persistSearchInSession(search)
+    PropertyCardRenderer.showCardsFor(search.getStay())
   }
 
   private onSearchUnrecognized (): void {
     this.emit('worker:tasks:cancel')
     this.forgetSearchInSession()
+    PropertyCardRenderer.showCardsFor(null)
   }
 
   private onSearchResults (properties: Property[]): void {

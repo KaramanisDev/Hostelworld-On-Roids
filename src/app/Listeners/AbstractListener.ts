@@ -42,11 +42,4 @@ export abstract class AbstractListener implements ListenerInterface {
 
     return this.session.pullProperty(propertyId, stay)
   }
-
-  protected isLatestSearchStay (stay: Stay): boolean {
-    const search: Search | undefined = this.latestSearchInSession()
-    if (!search) return false
-
-    return search.getStay().isSameAs(stay)
-  }
 }
