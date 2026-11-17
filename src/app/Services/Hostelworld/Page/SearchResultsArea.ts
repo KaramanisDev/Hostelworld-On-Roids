@@ -1,5 +1,5 @@
 import type { Property } from 'Types/HostelworldSearch'
-import { pluck, promiseFallback, waitForElement, waitForProperty } from 'Utils'
+import { pluck, promiseFallback, waitFor } from 'Utils'
 import { NuxtApp } from './NuxtApp'
 import { PropertyCardsArea } from './PropertyCardsArea'
 import { ReactiveOverride } from './ReactiveOverride'
@@ -126,10 +126,18 @@ export class SearchResultsArea {
     return promiseFallback(this.propertyListComponent())
   }
 
-  private static async propertyListComponent (): Promise<VuePropertyListComponent> {
-    const element: HTMLElement = await waitForElement(this.propertyListSelector, this.propertyListTimeoutInMs)
+  private static propertyListComponent (): Promise<VuePropertyListComponent> {
+    return waitFor(
+      (): VuePropertyListComponent | undefined => this.mountedPropertyListComponent(),
+      this.propertyListTimeoutInMs,
+      'The property list is not available within the specified time.'
+    )
+  }
 
-    return waitForProperty(element, '__vue__', this.propertyListTimeoutInMs)
+  private static mountedPropertyListComponent (): VuePropertyListComponent | undefined {
+    const element: HTMLElement | null = document.querySelector(this.propertyListSelector)
+
+    return (element?.__vue__ ?? undefined) as VuePropertyListComponent | undefined
   }
 
   private static displayedProperties (properties: HostelworldDisplayedProperty[]): DisplayedProperty[] {
