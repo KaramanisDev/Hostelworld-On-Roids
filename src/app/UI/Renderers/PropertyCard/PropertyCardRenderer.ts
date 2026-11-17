@@ -39,6 +39,7 @@ export class PropertyCardRenderer {
   public static async renderWithData (property: Property): Promise<void> {
     if (!this.isShownStay(property.getStay())) return
     if (!await PropertyCardsArea.hasCards()) return
+    if (!this.isShownStay(property.getStay())) return
 
     const card: HTMLElement | null = PropertyCardsArea.card(property.getId())
     if (!card) return
@@ -51,7 +52,7 @@ export class PropertyCardRenderer {
       this.badgeTagsView.mount(tagsContainer, { propertyId: property.getId(), badges: property.getBadges() })
     }
 
-    await PropertyCardsArea.showBookedCountries(card, property.getBookedCountries())
+    await this.showBookedCountries(property.getId(), property.getStay(), property.getBookedCountries())
   }
 
   public static async updateMetric (collected: CollectedMetric): Promise<void> {
@@ -65,7 +66,7 @@ export class PropertyCardRenderer {
       case 'countries':
         if (!this.isShownStay(collected.stay)) return
 
-        return this.updateCountries(collected.propertyId, collected.bookedCountries)
+        return this.showBookedCountries(collected.propertyId, collected.stay, collected.bookedCountries)
     }
   }
 
@@ -88,10 +89,10 @@ export class PropertyCardRenderer {
     })
   }
 
-  private static async updateCountries (propertyId: number, bookedCountries: BookedCountry[]): Promise<void> {
-    const card: HTMLElement | null = PropertyCardsArea.card(propertyId)
-    if (!card) return
+  private static async showBookedCountries (propertyId: number, stay: Stay, countries: BookedCountry[]): Promise<void> {
+    if (!await PropertyCardsArea.hasCardComponent(propertyId)) return
+    if (!this.isShownStay(stay)) return
 
-    await PropertyCardsArea.showBookedCountries(card, bookedCountries)
+    PropertyCardsArea.showBookedCountries(propertyId, countries)
   }
 }

@@ -31,12 +31,17 @@ export class PropertyCardsArea {
     return card.querySelector(this.tagsSelector)
   }
 
-  public static async showBookedCountries (card: HTMLElement, countries: BookedCountry[]): Promise<void> {
-    const componentElement: HTMLElement | undefined = await promiseFallback(
+  public static async hasCardComponent (propertyId: number): Promise<boolean> {
+    const card: HTMLElement | null = this.card(propertyId)
+    if (!card) return false
+
+    return Boolean(await promiseFallback(
       waitForElement(this.cardComponentSelector, this.cardComponentTimeoutInMs, card)
-    )
-    const component: VuePropertyCardComponent | undefined = componentElement?.__vue__ as
-      VuePropertyCardComponent | undefined
+    ))
+  }
+
+  public static showBookedCountries (propertyId: number, countries: BookedCountry[]): void {
+    const component: VuePropertyCardComponent | undefined = this.cardComponent(propertyId)
     if (!component) return
 
     ReactiveOverride.release(component, 'stayingAvatars')
@@ -53,6 +58,12 @@ export class PropertyCardsArea {
 
     component.stayingAvatars = staying
     ReactiveOverride.pin(component, 'stayingAvatars', staying)
+  }
+
+  private static cardComponent (propertyId: number): VuePropertyCardComponent | undefined {
+    const element: HTMLElement | null | undefined = this.card(propertyId)?.querySelector(this.cardComponentSelector)
+
+    return (element?.__vue__ ?? undefined) as VuePropertyCardComponent | undefined
   }
 
   private static cardPropertyId (card: Element): number | null {
