@@ -123,4 +123,5 @@ export type StayingAvatars = {
 
 export type VuePropertyCardComponent = {
   stayingAvatars: StayingAvatars
+  $forceUpdate: () => void
 }

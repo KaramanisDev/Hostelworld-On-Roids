@@ -37,8 +37,15 @@ export class PropertyCardsArea {
     )
     const component: VuePropertyCardComponent | undefined = componentElement?.__vue__ as
       VuePropertyCardComponent | undefined
-    if (!component || !countries.length) return
+    if (!component) return
 
+    ReactiveOverride.release(component, 'stayingAvatars')
+    if (countries.length) this.pinStayingAvatars(component, countries)
+
+    component.$forceUpdate()
+  }
+
+  private static pinStayingAvatars (component: VuePropertyCardComponent, countries: BookedCountry[]): void {
     const staying: StayingAvatars = {
       avatarLimit: this.avatarLimit,
       avatarList: this.avatars(countries)
