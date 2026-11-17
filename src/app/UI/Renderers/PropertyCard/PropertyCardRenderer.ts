@@ -26,7 +26,10 @@ export class PropertyCardRenderer {
   }
 
   public static async render (propertyId: number): Promise<void> {
+    const stay: Stay | null = this.shownStay
+    if (!stay) return
     if (!await PropertyCardsArea.hasCards()) return
+    if (!this.isShownStay(stay)) return
 
     const card: HTMLElement | null = PropertyCardsArea.card(propertyId)
     if (!card) return
