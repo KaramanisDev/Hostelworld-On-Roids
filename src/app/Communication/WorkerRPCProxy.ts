@@ -18,9 +18,12 @@ export class WorkerRPCProxy {
   private static lastActivityAt: number = 0
   private static silenceCheck: ReturnType<typeof setInterval> | null = null
   private static isDisconnected: boolean = false
+  private static isRecoveryInstalled: boolean = false
 
   public static call<TTask extends WorkerTaskName> (task: TTask, ...args: WorkerTaskArgs<TTask>): void {
     if (this.isDisconnected) return
+
+    this.installRecovery()
 
     const request: RPCRequest<string> = { id: crypto.randomUUID(), task, args: RPCSerializer.serialize(args) }
 
@@ -54,18 +57,6 @@ export class WorkerRPCProxy {
     })
   }
 
-  public static resendOnPageRestore (): void {
-    window.addEventListener('pageshow', (event: PageTransitionEvent): void => {
-      if (!event.persisted) return
-
-      this.resendPending()
-    })
-  }
-
-  public static resendOnInterruption (): void {
-    window.addEventListener(RPCProtocol.interruptedEvent, (): void => this.resendPending())
-  }
-
   public static onDisconnect (callback: () => void): void {
     window.addEventListener(RPCProtocol.disconnectedEvent, (): void => {
       if (this.isDisconnected) return
@@ -74,6 +65,18 @@ export class WorkerRPCProxy {
       this.pendingCalls.clear()
       callback()
     })
+  }
+
+  private static installRecovery (): void {
+    if (this.isRecoveryInstalled) return
+    this.isRecoveryInstalled = true
+
+    window.addEventListener('pageshow', (event: PageTransitionEvent): void => {
+      if (!event.persisted) return
+
+      this.resendPending()
+    })
+    window.addEventListener(RPCProtocol.interruptedEvent, (): void => this.resendPending())
   }
 
   private static send (request: RPCRequest<string>): void {

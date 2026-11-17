@@ -15,9 +15,6 @@ export class AppInitializer {
       EventBus.emit('worker:result', { task, payload })
     })
 
-    WorkerRPCProxy.resendOnPageRestore()
-    WorkerRPCProxy.resendOnInterruption()
-
     WorkerRPCProxy.onDisconnect((): void => {
       EventBus.emit('worker:disconnected')
     })
