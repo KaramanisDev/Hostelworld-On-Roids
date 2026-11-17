@@ -2,7 +2,7 @@ import type { DisplayedProperty } from 'Types/DisplayedProperty'
 import type { Search } from 'DTOs/Search'
 import { Subscribe } from 'Core/EventBus'
 import { AbstractListener } from './AbstractListener'
-import { ScheduledPropertyFactory } from 'Factories/ScheduledPropertyFactory'
+import { MetricsPropertyFactory } from 'Factories/MetricsPropertyFactory'
 import { PropertyMetricsService } from 'Services/PropertyMetrics'
 
 @Subscribe('hostelworld:properties:displayed')
@@ -24,7 +24,7 @@ export class PropertiesDisplayedListener extends AbstractListener {
     PropertyMetricsService.schedule(
       properties
         .filter(property => !this.session.getProperty(property.id))
-        .map(property => ScheduledPropertyFactory.createFromDisplayed(property, search))
+        .map(property => MetricsPropertyFactory.createFromDisplayed(property, search))
     )
   }
 }

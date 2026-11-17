@@ -2,15 +2,11 @@ import type { Property } from 'DTOs/Property'
 import { ReviewMetrics } from 'DTOs/ReviewMetrics'
 import { AvailabilityMetrics } from 'DTOs/AvailabilityMetrics'
 import { BookedCountry } from 'DTOs/BookedCountry'
+import type { MetricsProperty } from 'Factories/MetricsPropertyFactory'
 import type { PropertyReviews } from 'Types/PropertyReviews'
 import type { PropertyAvailability } from 'Types/PropertyAvailability'
 import type { PropertyGuestsCountries } from 'Types/PropertyGuestsCountries'
-import {
-  PropertyMetricsScheduler,
-  type MetricsRequest,
-  type ScheduledProperty,
-  type StartListener
-} from './PropertyMetricsScheduler'
+import { PropertyMetricsScheduler, type MetricsRequest, type StartListener } from './PropertyMetricsScheduler'
 import { PropertyCompositionBuffer, type CollectedMetric } from './PropertyCompositionBuffer'
 
 export type FetchedMetric = {
@@ -26,11 +22,11 @@ export class PropertyMetricsService {
     PropertyMetricsScheduler.onStart(listener)
   }
 
-  public static schedule (properties: ScheduledProperty[]): void {
+  public static schedule (properties: MetricsProperty[]): void {
     PropertyMetricsScheduler.schedule(properties)
   }
 
-  public static requestFor (property: ScheduledProperty): MetricsRequest {
+  public static requestFor (property: MetricsProperty): MetricsRequest {
     return { property }
   }
 
@@ -43,7 +39,7 @@ export class PropertyMetricsService {
   }
 
   public static collectedMetric (fetched: FetchedMetric): CollectedMetric {
-    const { id: propertyId, stay, overallRating }: ScheduledProperty = fetched.request.property
+    const { id: propertyId, stay, overallRating }: MetricsProperty = fetched.request.property
 
     switch (fetched.metric) {
       case 'reviews':

@@ -1,16 +1,9 @@
-import type { Stay } from 'DTOs/Stay'
+import type { MetricsProperty } from 'Factories/MetricsPropertyFactory'
 import type { Metric } from './PropertyCompositionBuffer'
 import { emptyFunction } from 'Utils'
 
-export type ScheduledProperty = {
-  id: number
-  name: string
-  overallRating: number | null
-  stay: Stay
-}
-
 export type MetricsRequest = {
-  readonly property: ScheduledProperty
+  readonly property: MetricsProperty
 }
 
 export type StartListener = (request: MetricsRequest) => void
@@ -24,7 +17,7 @@ export class PropertyMetricsScheduler {
   private static readonly maxRunningProperties: number = 6
   private static readonly metricsPerProperty: number = 3
   private static readonly stalledAfterInMs: number = 2 * 60 * 1000
-  private static readonly queued: Map<number, ScheduledProperty> = new Map()
+  private static readonly queued: Map<number, MetricsProperty> = new Map()
   private static readonly running: Map<number, RunningRequest> = new Map()
   private static displayedIds: number[] = []
   private static visibleIds: number[] = []
@@ -34,7 +27,7 @@ export class PropertyMetricsScheduler {
     this.startListener = listener
   }
 
-  public static schedule (properties: ScheduledProperty[]): void {
+  public static schedule (properties: MetricsProperty[]): void {
     for (const property of properties) {
       if (this.queued.has(property.id) || this.running.has(property.id)) continue
 
@@ -69,14 +62,14 @@ export class PropertyMetricsScheduler {
 
   private static startNext (): void {
     while (this.running.size < this.maxRunningProperties) {
-      const property: ScheduledProperty | undefined = this.nextQueued()
+      const property: MetricsProperty | undefined = this.nextQueued()
       if (!property) return
 
       this.start(property)
     }
   }
 
-  private static start (property: ScheduledProperty): void {
+  private static start (property: MetricsProperty): void {
     const request: MetricsRequest = { property }
 
     this.queued.delete(property.id)
@@ -93,7 +86,7 @@ export class PropertyMetricsScheduler {
     this.startNext()
   }
 
-  private static nextQueued (): ScheduledProperty | undefined {
+  private static nextQueued (): MetricsProperty | undefined {
     const prioritizedId: number | undefined = [...this.visibleIds, ...this.displayedIds]
       .find(propertyId => this.queued.has(propertyId))
     if (prioritizedId === undefined) return this.queued.values().next().value

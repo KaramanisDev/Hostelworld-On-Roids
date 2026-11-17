@@ -1,3 +1,3 @@
 export { PropertyMetricsService, type FetchedMetric } from './PropertyMetricsService'
-export type { MetricsRequest, ScheduledProperty } from './PropertyMetricsScheduler'
+export type { MetricsRequest } from './PropertyMetricsScheduler'
 export type { CollectedMetric } from './PropertyCompositionBuffer'

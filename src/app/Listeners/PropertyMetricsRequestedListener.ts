@@ -1,12 +1,13 @@
 import { Subscribe } from 'Core/EventBus'
 import { AbstractListener } from './AbstractListener'
 import { WorkerRPCProxy } from 'Communication/WorkerRPCProxy'
-import type { FetchedMetric, MetricsRequest, ScheduledProperty } from 'Services/PropertyMetrics'
+import type { FetchedMetric, MetricsRequest } from 'Services/PropertyMetrics'
+import type { MetricsProperty } from 'Factories/MetricsPropertyFactory'
 
 @Subscribe('property:metrics:requested')
 export class PropertyMetricsRequestedListener extends AbstractListener {
   public handle (request: MetricsRequest): void {
-    const { id, stay }: ScheduledProperty = request.property
+    const { id, stay }: MetricsProperty = request.property
 
     void WorkerRPCProxy.call('fetch:reviews', id)
       .then(data => this.emitFetched({ request, metric: 'reviews', data }))

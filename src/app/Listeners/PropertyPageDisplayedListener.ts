@@ -3,7 +3,7 @@ import type { PropertyPage } from 'DTOs/PropertyPage'
 import { Subscribe } from 'Core/EventBus'
 import { AbstractListener } from './AbstractListener'
 import { PropertyInsightsRenderer } from 'UI/Renderers/PropertyInsights'
-import { ScheduledPropertyFactory } from 'Factories/ScheduledPropertyFactory'
+import { MetricsPropertyFactory } from 'Factories/MetricsPropertyFactory'
 import { PropertyMetricsService, type MetricsRequest } from 'Services/PropertyMetrics'
 
 @Subscribe('property:page:displayed')
@@ -18,7 +18,7 @@ export class PropertyPageDisplayedListener extends AbstractListener {
       return
     }
 
-    const request: MetricsRequest = PropertyMetricsService.requestFor(ScheduledPropertyFactory.createFromPage(page))
+    const request: MetricsRequest = PropertyMetricsService.requestFor(MetricsPropertyFactory.createFromPage(page))
 
     this.emit('property:metrics:requested', request)
   }

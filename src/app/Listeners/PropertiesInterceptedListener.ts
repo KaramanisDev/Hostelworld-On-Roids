@@ -3,7 +3,7 @@ import type { Search } from 'DTOs/Search'
 import { Subscribe } from 'Core/EventBus'
 import { AbstractListener } from './AbstractListener'
 import { PropertyCardRenderer } from 'UI/Renderers/PropertyCard'
-import { ScheduledPropertyFactory } from 'Factories/ScheduledPropertyFactory'
+import { MetricsPropertyFactory } from 'Factories/MetricsPropertyFactory'
 import { PropertyMetricsService } from 'Services/PropertyMetrics'
 
 @Subscribe('hostelworld:search:intercepted')
@@ -19,7 +19,7 @@ export class PropertiesInterceptedListener extends AbstractListener {
     if (!this.session.isLatestSearch(search)) return
 
     PropertyMetricsService.schedule(
-      properties.map(property => ScheduledPropertyFactory.create(property, search))
+      properties.map(property => MetricsPropertyFactory.createFromSearchResult(property, search))
     )
   }
 }

@@ -1,11 +1,18 @@
 import type { Property } from 'Types/HostelworldSearch'
-import type { Search } from 'DTOs/Search'
-import type { PropertyPage } from 'DTOs/PropertyPage'
-import type { ScheduledProperty } from 'Services/PropertyMetrics'
 import type { DisplayedProperty } from 'Types/DisplayedProperty'
+import type { Search } from 'DTOs/Search'
+import type { Stay } from 'DTOs/Stay'
+import type { PropertyPage } from 'DTOs/PropertyPage'
 
-export class ScheduledPropertyFactory {
-  public static create (property: Property, search: Search): ScheduledProperty {
+export type MetricsProperty = {
+  id: number
+  name: string
+  overallRating: number | null
+  stay: Stay
+}
+
+export class MetricsPropertyFactory {
+  public static createFromSearchResult (property: Property, search: Search): MetricsProperty {
     return {
       id: property.id,
       name: property.name,
@@ -14,7 +21,7 @@ export class ScheduledPropertyFactory {
     }
   }
 
-  public static createFromDisplayed (property: DisplayedProperty, search: Search): ScheduledProperty {
+  public static createFromDisplayed (property: DisplayedProperty, search: Search): MetricsProperty {
     return {
       id: property.id,
       name: property.name,
@@ -23,7 +30,7 @@ export class ScheduledPropertyFactory {
     }
   }
 
-  public static createFromPage (page: PropertyPage): ScheduledProperty {
+  public static createFromPage (page: PropertyPage): MetricsProperty {
     return {
       id: page.getId(),
       name: page.getName(),
