@@ -83,9 +83,8 @@ export class SearchResultsArea {
     const store: VuexStore | undefined = await promiseFallback(NuxtApp.store())
     if (!store) return null
 
-    const service: HostelworldSearchService = await store.$services.search()
-    const { properties } = await service.search(cityId, null, null, 1, {})
-    const cityProperties: Property[] = [...properties]
+    const cityProperties: Property[] | null = await promiseFallback(this.cityProperties(store, cityId), null)
+    if (!cityProperties) return null
 
     if (!await PropertyCardsArea.hasCards()) return null
     if (signal.aborted) return null
@@ -101,6 +100,13 @@ export class SearchResultsArea {
     await store.commit('search/setProperties', allProperties)
 
     return cityProperties
+  }
+
+  private static async cityProperties (store: VuexStore, cityId: string): Promise<Property[]> {
+    const service: HostelworldSearchService = await store.$services.search()
+    const { properties } = await service.search(cityId, null, null, 1, {})
+
+    return [...properties]
   }
 
   private static async refreshProperties (): Promise<void> {
