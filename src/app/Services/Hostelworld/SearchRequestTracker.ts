@@ -5,19 +5,19 @@ import { SearchDataAdapter } from 'Services/Hostelworld/SearchDataAdapter'
 import { SearchResultsArea } from 'Services/Hostelworld/Page'
 import { pluck } from 'Utils'
 
-export type SearchPageCallbacks = {
+type SearchRequestCallbacks = {
   onSearchStarted: (search: Search) => void
   onSearchUnrecognized: () => void
   onSearchResults: (properties: Property[]) => void
   onUnavailableProperties: (properties: Property[]) => void
 }
 
-export class SearchPageHook {
+export class SearchRequestTracker {
   private static latestCityId: string | null = null
   private static latestSearchUrl: string | null = null
   private static loadAllController: AbortController | null = null
 
-  public static onSearch (callbacks: SearchPageCallbacks): void {
+  public static onSearch (callbacks: SearchRequestCallbacks): void {
     SearchApiRequestsInterceptor
       .interceptSearch(
         (url: URL): URL => this.startSearch(url, callbacks),
@@ -28,7 +28,7 @@ export class SearchPageHook {
       )
   }
 
-  private static startSearch (url: URL, callbacks: SearchPageCallbacks): URL {
+  private static startSearch (url: URL, callbacks: SearchRequestCallbacks): URL {
     this.loadAllController?.abort()
     this.latestSearchUrl = url.toString()
 
@@ -48,7 +48,7 @@ export class SearchPageHook {
   private static receiveResults (
     search: HostelworldSearch,
     url: URL,
-    callbacks: SearchPageCallbacks
+    callbacks: SearchRequestCallbacks
   ): HostelworldSearch {
     const adapted: HostelworldSearch = SearchDataAdapter.withoutPromotions(search)
     const isReplacedSearch: boolean = url.toString() !== this.latestSearchUrl

@@ -3,7 +3,7 @@ import type { PropertyPage } from 'DTOs/PropertyPage'
 import { Subscribe } from 'Core/EventBus'
 import { AbstractListener } from './AbstractListener'
 import { ResizeObserverComponentPatcher } from 'Services/Hostelworld/Patchers/ResizeObserverComponentPatcher'
-import { SearchPageHook } from 'Services/Hostelworld/SearchPageHook'
+import { SearchRequestTracker } from 'Services/Hostelworld/SearchRequestTracker'
 import { AppDiscountInterceptor } from 'Services/Hostelworld/AppDiscountInterceptor'
 import { TrackerInterceptor } from 'Services/Hostelworld/TrackerInterceptor'
 import {
@@ -43,7 +43,7 @@ export class AppInitedListener extends AbstractListener {
   private applyRequestInterceptors (): void {
     AppDiscountInterceptor.enableAppDiscounts()
 
-    SearchPageHook.onSearch({
+    SearchRequestTracker.onSearch({
       onSearchStarted: this.onSearchStarted.bind(this),
       onSearchUnrecognized: this.onSearchUnrecognized.bind(this),
       onSearchResults: this.onSearchResults.bind(this),
