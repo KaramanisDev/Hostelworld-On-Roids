@@ -1,4 +1,4 @@
-import { waitForProperty } from 'Utils'
+import { promiseFallback, waitForProperty } from 'Utils'
 import type {
   NuxtAppInstance,
   NuxtDevice,
@@ -39,13 +39,17 @@ export class NuxtApp {
     return route.name === this.propertyRouteName
   }
 
-  public static async hasMounted (): Promise<void> {
-    const app: NuxtAppInstance = await this.app()
-    if (app._isMounted) return
+  public static async hasMounted (): Promise<boolean> {
+    const app: NuxtAppInstance | undefined = await promiseFallback(this.app())
+    if (!app) return false
+    if (app._isMounted) return true
 
-    const onNuxtReady: NuxtReadyHook = await waitForProperty(window, 'onNuxtReady', this.timeoutInMs)
+    const onNuxtReady: NuxtReadyHook | undefined = await promiseFallback(
+      waitForProperty<NuxtReadyHook>(window, 'onNuxtReady', this.timeoutInMs)
+    )
+    if (!onNuxtReady) return false
 
-    return new Promise(resolve => onNuxtReady(resolve))
+    return new Promise(resolve => onNuxtReady(() => resolve(true)))
   }
 
   private static async router (): Promise<VueRouter> {

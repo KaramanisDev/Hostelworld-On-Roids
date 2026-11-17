@@ -11,6 +11,10 @@ type SectionTab = {
   className: string
 }
 
+type RoutedPage = {
+  key: string
+}
+
 type SectionPlacement = {
   section: HTMLElement
   tab: SectionTab
@@ -21,7 +25,7 @@ export class PropertyPageArea {
   private static readonly anchorSelector: string = '.property-about'
   private static readonly tabListSelector: string = '.nav .tab-list'
   private static readonly previousTabIndex: number = 1
-  private static displayedPageKey: string | null = null
+  private static routedPage: RoutedPage | null = null
   private static placement: SectionPlacement | null = null
   private static tabElement: HTMLElement | null = null
   private static observer: MutationObserver | null = null
@@ -29,38 +33,7 @@ export class PropertyPageArea {
   public static async onPageChanged (listener: PropertyPageListener): Promise<void> {
     const app: NuxtAppInstance = await NuxtApp.app()
 
-    const onPropertyPageUpdate: () => Promise<void> = async (): Promise<void> => {
-      const route: VueRoute = app.$router.currentRoute
-      const propertyId: number = Number(route.params.id)
-
-      if (!NuxtApp.isPropertyRoute(route) || !Number.isInteger(propertyId)) {
-        if (!this.displayedPageKey) return
-
-        this.displayedPageKey = null
-        listener(null)
-
-        return
-      }
-
-      const stay: Stay = new Stay({ from: new Date(route.query.from), to: new Date(route.query.to) })
-      const pageKey: string = stay.getPropertyKey(propertyId)
-      if (pageKey === this.displayedPageKey) return
-      if (this.displayedPageKey) listener(null)
-      this.displayedPageKey = pageKey
-
-      const details: HostelworldPropertyDetails | undefined = await promiseFallback(this.propertyDetails(propertyId))
-      await NuxtApp.hasMounted()
-      if (!details || pageKey !== this.displayedPageKey) return
-
-      listener(new PropertyPage({
-        id: propertyId,
-        name: details.name,
-        overallRating: details.rating?.total || null,
-        stay
-      }))
-    }
-
-    return NuxtApp.onRouteChanged(onPropertyPageUpdate)
+    return NuxtApp.onRouteChanged(() => this.updatePage(app.$router.currentRoute, listener))
   }
 
   public static placeSection (section: HTMLElement, tab: SectionTab): void {
@@ -81,6 +54,42 @@ export class PropertyPageArea {
     this.observer = null
     this.placement = null
     this.tabElement = null
+  }
+
+  private static async updatePage (route: VueRoute, listener: PropertyPageListener): Promise<void> {
+    const propertyId: number = Number(route.params.id)
+    const isPropertyPage: boolean = NuxtApp.isPropertyRoute(route) && Number.isInteger(propertyId)
+    if (!isPropertyPage) return this.leavePage(listener)
+
+    const stay: Stay = new Stay({ from: new Date(route.query.from), to: new Date(route.query.to) })
+    const pageKey: string = stay.getPropertyKey(propertyId)
+    if (pageKey === this.routedPage?.key) return
+    if (this.routedPage) listener(null)
+
+    const page: RoutedPage = { key: pageKey }
+    this.routedPage = page
+
+    const details: HostelworldPropertyDetails | undefined = await promiseFallback(this.propertyDetails(propertyId))
+    const isMounted: boolean = await NuxtApp.hasMounted()
+    if (page !== this.routedPage) return
+    if (!details || !isMounted) {
+      this.routedPage = null
+      return
+    }
+
+    listener(new PropertyPage({
+      id: propertyId,
+      name: details.name,
+      overallRating: details.rating?.total || null,
+      stay
+    }))
+  }
+
+  private static leavePage (listener: PropertyPageListener): void {
+    if (!this.routedPage) return
+
+    this.routedPage = null
+    listener(null)
   }
 
   private static async propertyDetails (propertyId: number): Promise<HostelworldPropertyDetails> {
