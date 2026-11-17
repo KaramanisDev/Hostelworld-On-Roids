@@ -2,27 +2,19 @@ import { FilterModalView } from 'UI/SolidJS/FilterModal/FilterModalView'
 import type { FilterModalViewDTO } from './ViewDTOs'
 import type { FilterCriteria } from 'Services/PropertyFilterService'
 import { FilterModalViewDTOFactory } from './ViewDTOs'
-import { waitForElement } from 'Utils'
+import { SearchToolbarArea } from 'Services/Hostelworld/Page'
 import { EventBus } from 'Core/EventBus'
 
 export class FilterModalRenderer {
-  private static readonly wrapperClassName: string = 'hor-filter-modal-wrapper'
-  private static readonly shareButtonSelector: string = '.search .property-share.share-button-container'
+  private static readonly slotClassName: string = 'hor-filter-modal-wrapper'
 
-  private static wrapper: HTMLDivElement | null = null
-  private static observer: MutationObserver | null = null
   private static appliedCriteria: FilterCriteria = { badges: {}, ranges: {} }
   private static readonly view: FilterModalView = new FilterModalView()
 
   public static async render (): Promise<void> {
-    if (this.observer) return
-
     this.view.onFilter(this.applyFilter.bind(this))
 
-    await waitForElement(this.shareButtonSelector)
-
-    this.injectWrapper()
-    this.watchForRemoval()
+    await SearchToolbarArea.keepFilterSlot(this.slotClassName, this.mountView.bind(this))
   }
 
   private static applyFilter (criteria: FilterCriteria): void {
@@ -31,38 +23,8 @@ export class FilterModalRenderer {
     EventBus.emit('filter:applied', criteria)
   }
 
-  private static injectWrapper (): void {
-    const shareButton: HTMLElement | null = document.querySelector(this.shareButtonSelector)
-    if (!shareButton) return
-
-    const parent: HTMLElement | null = shareButton.parentElement
-    if (!parent) return
-
-    const existing: HTMLElement | null = parent.querySelector(`.${this.wrapperClassName}`)
-    if (existing) return
-
-    this.wrapper = document.createElement('div')
-    this.wrapper.className = this.wrapperClassName
-    parent.insertBefore(this.wrapper, shareButton)
-
+  private static mountView (slot: HTMLElement): void {
     const viewDto: FilterModalViewDTO = FilterModalViewDTOFactory.create(this.appliedCriteria)
-    this.view.mount(this.wrapper, viewDto)
-  }
-
-  private static watchForRemoval (): void {
-    const shareButton: HTMLElement | null = document.querySelector(this.shareButtonSelector)
-    if (!shareButton) return
-
-    const observeTarget: HTMLElement | null = shareButton.parentElement
-    if (!observeTarget) return
-
-    this.observer = new MutationObserver(() => {
-      const existing: HTMLElement | null = observeTarget.querySelector(`.${this.wrapperClassName}`)
-      if (existing) return
-
-      this.injectWrapper()
-    })
-
-    this.observer.observe(observeTarget, { childList: true, subtree: true })
+    this.view.mount(slot, viewDto)
   }
 }

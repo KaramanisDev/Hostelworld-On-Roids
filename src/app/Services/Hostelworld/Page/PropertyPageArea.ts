@@ -6,9 +6,25 @@ import type { HostelworldPropertyDetails, NuxtAppInstance, VueRoute, VuexStore }
 
 type PropertyPageListener = (page: PropertyPage | null) => void
 
+type SectionTab = {
+  label: string
+  className: string
+}
+
+type SectionPlacement = {
+  section: HTMLElement
+  tab: SectionTab
+}
+
 export class PropertyPageArea {
   private static readonly detailsTimeoutInMs: number = 30 * 1000
+  private static readonly anchorSelector: string = '.property-about'
+  private static readonly tabListSelector: string = '.nav .tab-list'
+  private static readonly previousTabIndex: number = 1
   private static displayedPageKey: string | null = null
+  private static placement: SectionPlacement | null = null
+  private static tabElement: HTMLElement | null = null
+  private static observer: MutationObserver | null = null
 
   public static async onPageChanged (listener: PropertyPageListener): Promise<void> {
     const app: NuxtAppInstance = await NuxtApp.app()
@@ -47,6 +63,26 @@ export class PropertyPageArea {
     return NuxtApp.onRouteChanged(onPropertyPageUpdate)
   }
 
+  public static placeSection (section: HTMLElement, tab: SectionTab): void {
+    const isOtherSection: boolean = this.placement !== null && this.placement.section !== section
+    if (isOtherSection) this.removeSection()
+
+    this.placement = { section, tab }
+
+    this.attachSection()
+    this.watchForRemoval()
+  }
+
+  public static removeSection (): void {
+    this.observer?.disconnect()
+    this.placement?.section.remove()
+    this.tabElement?.remove()
+
+    this.observer = null
+    this.placement = null
+    this.tabElement = null
+  }
+
   private static async propertyDetails (propertyId: number): Promise<HostelworldPropertyDetails> {
     const store: VuexStore = await NuxtApp.store()
 
@@ -59,5 +95,61 @@ export class PropertyPageArea {
       this.detailsTimeoutInMs,
       `Details of property ${propertyId} are not available within the specified time.`
     )
+  }
+
+  private static attachSection (): void {
+    const placement: SectionPlacement | null = this.placement
+    if (!placement) return
+
+    if (!placement.section.isConnected) {
+      document.querySelector(this.anchorSelector)?.after(placement.section)
+    }
+
+    if (!placement.section.isConnected || this.tabElement?.isConnected) return
+
+    this.attachTab(placement)
+  }
+
+  private static attachTab (placement: SectionPlacement): void {
+    const tabList: Element | null = document.querySelector(this.tabListSelector)
+    const nativeTab: Element | null | undefined = tabList?.firstElementChild
+    if (!tabList || !nativeTab) return
+
+    this.tabElement ??= this.createTab(nativeTab, placement)
+
+    const previousTab: Element | undefined = tabList.children[this.previousTabIndex]
+    if (!previousTab) {
+      tabList.append(this.tabElement)
+      return
+    }
+
+    previousTab.after(this.tabElement)
+  }
+
+  private static createTab (nativeTab: Element, placement: SectionPlacement): HTMLElement {
+    const tab: HTMLElement = nativeTab.cloneNode(true) as HTMLElement
+    tab.classList.add(placement.tab.className)
+    tab.addEventListener('click', () => placement.section.scrollIntoView({ behavior: 'smooth' }))
+
+    const label: Node | null = document.createTreeWalker(
+      tab,
+      NodeFilter.SHOW_TEXT,
+      (node: Node): number => node.textContent?.trim() ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_SKIP
+    ).nextNode()
+    if (!label) {
+      tab.prepend(placement.tab.label)
+      return tab
+    }
+
+    label.textContent = placement.tab.label
+
+    return tab
+  }
+
+  private static watchForRemoval (): void {
+    if (this.observer) return
+
+    this.observer = new MutationObserver(() => this.attachSection())
+    this.observer.observe(document.body, { childList: true, subtree: true })
   }
 }
