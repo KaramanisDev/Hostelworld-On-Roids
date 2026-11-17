@@ -1,6 +1,10 @@
 import type { PropertyReviews } from 'Services/Hostelworld/Api/ReviewsClient'
 import { toPercent } from 'Utils'
 
+type ReviewMetricsAttributes = PropertyReviews & {
+  overallRating: number | null
+}
+
 export class ReviewMetrics {
   private male!: number
   private female!: number
@@ -12,7 +16,7 @@ export class ReviewMetrics {
   private recentReviewCount!: number
   private overallRating!: number | null
 
-  constructor (attributes: PropertyReviews) {
+  constructor (attributes: ReviewMetricsAttributes) {
     Object.assign(this, attributes)
   }
 

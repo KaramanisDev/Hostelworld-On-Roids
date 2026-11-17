@@ -13,8 +13,8 @@ export class FetchReviewsTask extends AbstractQueuedTask<Args, Result> {
   }
 
   protected async execute (args: Args): Promise<Result> {
-    const [propertyId, overallRating]: Args = args
+    const [propertyId]: Args = args
 
-    return ReviewsClient.fetch(propertyId, overallRating)
+    return ReviewsClient.fetch(propertyId)
   }
 }

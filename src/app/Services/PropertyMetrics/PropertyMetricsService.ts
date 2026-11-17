@@ -43,14 +43,14 @@ export class PropertyMetricsService {
   }
 
   public static collectedMetric (fetched: FetchedMetric): CollectedMetric {
-    const { id: propertyId, stay }: ScheduledProperty = fetched.request.property
+    const { id: propertyId, stay, overallRating }: ScheduledProperty = fetched.request.property
 
     switch (fetched.metric) {
       case 'reviews':
         return {
           metric: 'reviews',
           propertyId,
-          reviewMetrics: fetched.data ? new ReviewMetrics(fetched.data) : null
+          reviewMetrics: fetched.data ? new ReviewMetrics({ ...fetched.data, overallRating }) : null
         }
       case 'availability':
         return {

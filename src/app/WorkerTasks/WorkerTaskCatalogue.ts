@@ -5,7 +5,7 @@ import type { PropertyGuestsCountries } from 'Services/Hostelworld/Api/VisitorsC
 
 type WorkerTaskCatalogue = {
   'fetch:reviews': {
-    args: [propertyId: number, overallRating: number | null]
+    args: [propertyId: number]
     payload: PropertyReviews | null
   }
   'fetch:availability': {

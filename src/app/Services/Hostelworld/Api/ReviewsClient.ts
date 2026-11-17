@@ -12,7 +12,6 @@ export type PropertyReviews = {
   ages: Record<string, number>
   recentOverallRating: number | null
   recentReviewCount: number
-  overallRating: number | null
 }
 
 export class ReviewsClient {
@@ -22,13 +21,13 @@ export class ReviewsClient {
   private static readonly concurrentPageRequests: number = 6
   private static readonly networkJitterInMs: number = 500
 
-  public static async fetch (propertyId: number, overallRating: number | null): Promise<PropertyReviews | null> {
-    return await promiseFallback(this.reviewMetrics(propertyId, overallRating), null)
+  public static async fetch (propertyId: number): Promise<PropertyReviews | null> {
+    return await promiseFallback(this.reviewMetrics(propertyId), null)
   }
 
-  private static async reviewMetrics (propertyId: number, overallRating: number | null): Promise<PropertyReviews> {
+  private static async reviewMetrics (propertyId: number): Promise<PropertyReviews> {
     const firstPage: HostelworldPropertyReviews | null = await this.firstPage(propertyId)
-    if (!firstPage) return PropertyReviewsFactory.empty(overallRating)
+    if (!firstPage) return PropertyReviewsFactory.empty()
 
     const { reviews, reviewStatistics, pagination } = firstPage
     const remainingReviews: Review[] = await this.fetchRemainingPages(propertyId, pagination.numberOfPages)
@@ -36,8 +35,7 @@ export class ReviewsClient {
     return PropertyReviewsFactory.create({
       reviews: [...reviews, ...remainingReviews],
       total: pagination.totalNumberOfItems,
-      soloPercentage: reviewStatistics?.soloPercentage ?? 0,
-      overallRating
+      soloPercentage: reviewStatistics?.soloPercentage ?? 0
     })
   }
 

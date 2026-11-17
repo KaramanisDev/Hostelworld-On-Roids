@@ -5,7 +5,6 @@ type ReviewsSummary = {
   reviews: Review[]
   total: number
   soloPercentage: number
-  overallRating: number | null
 }
 
 export class PropertyReviewsFactory {
@@ -14,7 +13,7 @@ export class PropertyReviewsFactory {
   private static readonly recentReviewsLimit: number = 25
 
   public static create (summary: ReviewsSummary): PropertyReviews {
-    const metrics: PropertyReviews = this.empty(summary.overallRating)
+    const metrics: PropertyReviews = this.empty()
     metrics.total = summary.total
     metrics.solo = Math.round(metrics.total * (summary.soloPercentage / 100))
 
@@ -24,7 +23,7 @@ export class PropertyReviewsFactory {
     return metrics
   }
 
-  public static empty (overallRating: number | null): PropertyReviews {
+  public static empty (): PropertyReviews {
     return {
       male: 0,
       female: 0,
@@ -33,8 +32,7 @@ export class PropertyReviewsFactory {
       total: 0,
       ages: Object.fromEntries(this.ageBrackets.map(bracket => [bracket, 0])),
       recentOverallRating: null,
-      recentReviewCount: 0,
-      overallRating
+      recentReviewCount: 0
     }
   }
 

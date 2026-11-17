@@ -6,9 +6,9 @@ import type { FetchedMetric, MetricsRequest, ScheduledProperty } from 'Services/
 @Subscribe('property:metrics:requested')
 export class PropertyMetricsRequestedListener extends AbstractListener {
   public handle (request: MetricsRequest): void {
-    const { id, overallRating, stay }: ScheduledProperty = request.property
+    const { id, stay }: ScheduledProperty = request.property
 
-    void WorkerRPCProxy.call('fetch:reviews', id, overallRating)
+    void WorkerRPCProxy.call('fetch:reviews', id)
       .then(data => this.emitFetched({ request, metric: 'reviews', data }))
     void WorkerRPCProxy.call('fetch:availability', id, stay)
       .then(data => this.emitFetched({ request, metric: 'availability', data }))
