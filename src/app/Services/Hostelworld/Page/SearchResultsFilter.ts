@@ -30,7 +30,7 @@ export class SearchResultsFilter {
       this.filterState ??= this.reactiveFilterState(viewModel)
 
       for (const getterName of this.filteredPropertiesGetters) {
-        this.hijackStoreGetter(viewModel, getterName)
+        this.filterStoreGetter(viewModel, getterName)
       }
     })
   }
@@ -38,17 +38,17 @@ export class SearchResultsFilter {
   public static filterBy (predicate: PropertyFilterPredicate): void {
     this.predicate = predicate
 
-    void this.triggerFilterChange()
+    void this.applyFilterChange()
   }
 
   public static clear (): void {
     this.predicate = null
 
-    void this.triggerFilterChange()
+    void this.applyFilterChange()
   }
 
   public static isFiltering (): boolean {
-    return Boolean(this.filterState?.version) && this.predicate !== null
+    return this.filterState !== null && this.predicate !== null
   }
 
   public static refresh (): void {
@@ -64,7 +64,7 @@ export class SearchResultsFilter {
     return state
   }
 
-  private static hijackStoreGetter (viewModel: VuexStoreViewModel, getterName: string): void {
+  private static filterStoreGetter (viewModel: VuexStoreViewModel, getterName: string): void {
     const descriptor: PropertyDescriptor | undefined = Object.getOwnPropertyDescriptor(viewModel, getterName)
     if (!descriptor?.get) return
 
@@ -73,8 +73,9 @@ export class SearchResultsFilter {
       enumerable: true,
       get: (): Property[] => {
         const original: Property[] = descriptor.get!.call(viewModel) ?? []
+        const filterVersion: number = this.filterState?.version ?? 0
 
-        if (!this.isFiltering()) return original
+        if (!filterVersion || !this.isFiltering()) return original
 
         return original.filter(
           (entry: Property) => this.predicate!(entry.id)
@@ -86,7 +87,7 @@ export class SearchResultsFilter {
     })
   }
 
-  private static async triggerFilterChange (): Promise<void> {
+  private static async applyFilterChange (): Promise<void> {
     if (!this.storeViewModel) return
 
     const store: VuexStore | undefined = await promiseFallback(NuxtApp.store())
