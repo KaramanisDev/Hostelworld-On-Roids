@@ -1,52 +1,44 @@
-import type { ListenerInterface, ListenerHandler } from 'Listeners/ListenerInterface'
+import type { ListenerInterface } from './ListenerInterface'
+import type { EventArgs, EventName } from './EventCatalogue'
 
-type Listeners = Record<string, ListenerHandler[]>
+type ListenerHandler = (...args: unknown[]) => void | Promise<void>
+
 type ListenerAttributes = Record<string, unknown>
-type ListenerClass = new (attributes: ListenerAttributes) => ListenerInterface
+type ListenerClass<TEvent extends EventName> = new (attributes: ListenerAttributes) => ListenerInterface<TEvent>
+type EventHandler<TEvent extends EventName> = (...args: EventArgs<TEvent>) => void | Promise<void>
 
 export class EventBus {
-  private static listeners: Listeners = {}
+  private static readonly listeners: Map<EventName, ListenerHandler[]> = new Map()
   private static listenerInitWithAttributes: ListenerAttributes = {}
 
   public static initWith (attributes: ListenerAttributes): void {
     this.listenerInitWithAttributes = attributes
   }
 
-  public static subscribe (events: string, ListenerClass: ListenerClass): void {
-    const listener: ListenerInterface = new ListenerClass(
+  public static subscribe<TEvent extends EventName> (event: TEvent, ListenerClass: ListenerClass<TEvent>): void {
+    const listener: ListenerInterface<TEvent> = new ListenerClass(
       this.listenerInitWithAttributes
     )
 
-    return this.listen(events, listener.handle.bind(listener))
+    return this.listen(event, listener.handle.bind(listener))
   }
 
-  public static listen (events: string, callback: ListenerHandler): void {
-    const splitEvents: string[] = events.split(' ')
+  public static listen<TEvent extends EventName> (event: TEvent, callback: EventHandler<TEvent>): void {
+    const handlers: ListenerHandler[] = this.listeners.get(event) ?? []
+    handlers.push(callback as ListenerHandler)
 
-    for (const event of splitEvents) {
-      (this.listeners[event] = this.listeners[event] || []).push(callback)
-    }
+    this.listeners.set(event, handlers)
   }
 
-  public static emit (events: string, ...args: unknown[]): void {
-    const splitEvents: string[] = events.split(' ')
-
-    for (const event of splitEvents) {
-      this.execute(this.listeners[event] || [], args)
-    }
-  }
-
-  private static execute (listeners: ListenerHandler[], args: unknown[]): void {
-    if (!listeners) return
-
-    for (const listener of listeners) {
+  public static emit<TEvent extends EventName> (event: TEvent, ...args: EventArgs<TEvent>): void {
+    for (const listener of this.listeners.get(event) ?? []) {
       listener.call(this, ...args)
     }
   }
 }
 
-export function Subscribe (events: string): <T extends ListenerClass>(listenerClass: T) => void {
-  return <T extends ListenerClass>(listenerClass: T): void => {
-    EventBus.subscribe(events, listenerClass)
+export function Subscribe<TEvent extends EventName> (event: TEvent): (listenerClass: ListenerClass<TEvent>) => void {
+  return (listenerClass: ListenerClass<TEvent>): void => {
+    EventBus.subscribe(event, listenerClass)
   }
 }

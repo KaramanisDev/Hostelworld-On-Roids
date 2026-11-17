@@ -1,11 +1,12 @@
-import type { ListenerInterface } from './ListenerInterface'
+import type { ListenerInterface } from 'Core/ListenerInterface'
+import type { EventArgs, EventName } from 'Core/EventCatalogue'
 import type { Search } from 'DTOs/Search'
 import type { Session } from 'DTOs/Session'
 import type { Property } from 'DTOs/Property'
 import type { Stay } from 'DTOs/Stay'
 import { EventBus } from 'Core/EventBus'
 
-export abstract class AbstractListener implements ListenerInterface {
+export abstract class AbstractListener implements ListenerInterface<EventName> {
   private session!: Session
 
   constructor (attributes: Record<string, unknown>) {
@@ -14,7 +15,7 @@ export abstract class AbstractListener implements ListenerInterface {
 
   public abstract handle (...args: unknown[]): Promise<void> | void
 
-  protected emit (event: string, ...args: unknown[]): void {
+  protected emit<TEvent extends EventName> (event: TEvent, ...args: EventArgs<TEvent>): void {
     return EventBus.emit(event, ...args)
   }
 
