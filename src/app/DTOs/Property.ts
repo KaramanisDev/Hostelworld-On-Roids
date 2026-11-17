@@ -1,7 +1,7 @@
 import type { AvailabilityMetrics } from 'DTOs/AvailabilityMetrics'
 import type { ReviewMetrics } from 'DTOs/ReviewMetrics'
 import type { BookedCountry } from 'DTOs/BookedCountry'
-import type { PropertyBadge } from 'Services/PropertyBadgeService'
+import type { PropertyBadge } from 'Types/PropertyBadge'
 import type { Stay } from 'DTOs/Stay'
 
 type PropertyAttributes = {

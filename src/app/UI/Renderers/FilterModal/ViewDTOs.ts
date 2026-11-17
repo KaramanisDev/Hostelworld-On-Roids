@@ -1,4 +1,4 @@
-import type { BadgeColor, BadgeId } from 'Services/PropertyBadgeService'
+import type { BadgeColor, BadgeId } from 'Types/PropertyBadge'
 import { PropertyFilterService } from 'Services/PropertyFilterService'
 import type { FilterCriteria, RangeDimension, RangeKey, RangeSection } from 'Services/PropertyFilterService'
 import { ExtensionConfig } from 'Utils/ExtensionConfig'

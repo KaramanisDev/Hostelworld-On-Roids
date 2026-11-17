@@ -3,14 +3,7 @@ import type { HttpClientOptions } from 'Utils/HttpClient'
 import { dateFormat, promiseFallback } from 'Utils'
 import type { Data, HostelworldPropertyGuests } from 'Types/HostelworldPropertyGuests'
 import type { Stay } from 'DTOs/Stay'
-
-export type GuestCountry = {
-  code: string
-  name: string
-  count: number
-}
-
-export type PropertyGuestsCountries = GuestCountry[]
+import type { GuestCountry, PropertyGuestsCountries } from 'Types/PropertyGuestsCountries'
 
 export class VisitorsCountryClient {
   private static readonly apiKey: string = 'cvFkm2A4AAefXoupLsChH4jL2mA2VGSyEA0MkRUrqz8Z8x5H'

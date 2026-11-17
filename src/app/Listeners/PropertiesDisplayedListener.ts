@@ -1,4 +1,4 @@
-import type { DisplayedProperty } from 'Services/Hostelworld/Page'
+import type { DisplayedProperty } from 'Types/DisplayedProperty'
 import type { Search } from 'DTOs/Search'
 import { Subscribe } from 'Core/EventBus'
 import { AbstractListener } from './AbstractListener'

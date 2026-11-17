@@ -1,6 +1,6 @@
 import type { Property } from 'DTOs/Property'
 import type { BookedCountry } from 'DTOs/BookedCountry'
-import type { PropertyBadge } from 'Services/PropertyBadgeService'
+import type { PropertyBadge } from 'Types/PropertyBadge'
 import type { PropertyCardViewDTO } from 'UI/Renderers/PropertyCard/ViewDTOs'
 import { PropertyCardViewDTOFactory } from 'UI/Renderers/PropertyCard/ViewDTOs'
 

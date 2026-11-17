@@ -1,4 +1,4 @@
-import type { PropertyReviews } from 'Services/Hostelworld/Api/ReviewsClient'
+import type { PropertyReviews } from 'Types/PropertyReviews'
 import { toPercent } from 'Utils'
 
 type ReviewMetricsAttributes = PropertyReviews & {

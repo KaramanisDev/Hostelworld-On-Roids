@@ -1,5 +1,5 @@
 import type { Dorm, HostelworldPropertyAvailability } from 'Types/HostelworldPropertyAvailability'
-import type { Metrics, PropertyAvailability } from 'Services/Hostelworld/Api/AvailabilityClient'
+import type { BedCounts, PropertyAvailability } from 'Types/PropertyAvailability'
 
 type DormBeds = (dorm: Dorm) => number
 
@@ -8,38 +8,38 @@ export class PropertyAvailabilityFactory {
     current: HostelworldPropertyAvailability,
     capacitySamples: HostelworldPropertyAvailability[]
   ): PropertyAvailability {
-    const currentMetrics: Metrics = this.metrics(current, dorm => dorm.totalBedsAvailable)
-    const sampledMetrics: Metrics[] = capacitySamples.map(
-      sample => this.metrics(sample, dorm => this.bedsAtFullCapacity(dorm))
+    const currentCounts: BedCounts = this.bedCounts(current, dorm => dorm.totalBedsAvailable)
+    const sampledCounts: BedCounts[] = capacitySamples.map(
+      sample => this.bedCounts(sample, dorm => this.bedsAtFullCapacity(dorm))
     )
 
-    return { current: currentMetrics, max: this.highestMetrics(currentMetrics, ...sampledMetrics) }
+    return { current: currentCounts, max: this.highestBedCounts(currentCounts, ...sampledCounts) }
   }
 
-  private static emptyMetrics (): Metrics {
+  private static emptyBedCounts (): BedCounts {
     return { mixed: 0, female: 0, private: 0, total: 0 }
   }
 
-  private static metrics (availability: HostelworldPropertyAvailability, dormBeds: DormBeds): Metrics {
-    const metrics: Metrics = this.emptyMetrics()
+  private static bedCounts (availability: HostelworldPropertyAvailability, dormBeds: DormBeds): BedCounts {
+    const counts: BedCounts = this.emptyBedCounts()
 
     const { dorms, privates } = availability.rooms
 
     for (const dorm of dorms) {
       const beds: number = dormBeds(dorm)
 
-      if (!dorm.basicType.toLowerCase().includes('female')) metrics.mixed += beds
-      if (dorm.basicType.toLowerCase().includes('female')) metrics.female += beds
+      if (!dorm.basicType.toLowerCase().includes('female')) counts.mixed += beds
+      if (dorm.basicType.toLowerCase().includes('female')) counts.female += beds
 
-      metrics.total += beds
+      counts.total += beds
     }
 
     for (const room of privates) {
-      metrics.private += room.totalRoomsAvailable || 1
-      metrics.total += room.totalBedsAvailable || 1
+      counts.private += room.totalRoomsAvailable || 1
+      counts.total += room.totalBedsAvailable || 1
     }
 
-    return metrics
+    return counts
   }
 
   private static bedsAtFullCapacity (dorm: Dorm): number {
@@ -49,15 +49,15 @@ export class PropertyAvailabilityFactory {
     return Math.ceil(dorm.totalBedsAvailable / capacity) * capacity
   }
 
-  private static highestMetrics (...sources: Metrics[]): Metrics {
-    const result: Metrics = this.emptyMetrics()
+  private static highestBedCounts (...sources: BedCounts[]): BedCounts {
+    const result: BedCounts = this.emptyBedCounts()
 
     for (const source of sources) {
       for (const key in result) {
-        const metricsKey: keyof Metrics = key as keyof Metrics
+        const countKey: keyof BedCounts = key as keyof BedCounts
 
-        if (source[metricsKey] <= result[metricsKey]) continue
-        result[metricsKey] = source[metricsKey]
+        if (source[countKey] <= result[countKey]) continue
+        result[countKey] = source[countKey]
       }
     }
 

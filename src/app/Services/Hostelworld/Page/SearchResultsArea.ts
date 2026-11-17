@@ -1,4 +1,5 @@
 import type { Property } from 'Types/HostelworldSearch'
+import type { DisplayedProperty } from 'Types/DisplayedProperty'
 import { pluck, promiseFallback, waitFor } from 'Utils'
 import { NuxtApp } from './NuxtApp'
 import { PropertyCardsArea } from './PropertyCardsArea'
@@ -12,12 +13,6 @@ import type {
   VueSearchPageComponent,
   VuexStore
 } from './HostelworldVueTypes'
-
-export type DisplayedProperty = {
-  id: number
-  name: string
-  overallRating: number | null
-}
 
 type DisplayedPropertiesListener = (properties: DisplayedProperty[]) => void
 

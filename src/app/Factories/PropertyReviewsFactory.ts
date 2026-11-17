@@ -1,5 +1,5 @@
 import type { Review } from 'Types/HostelworldPropertyReviews'
-import type { PropertyReviews } from 'Services/Hostelworld/Api/ReviewsClient'
+import type { PropertyReviews } from 'Types/PropertyReviews'
 
 type ReviewsSummary = {
   reviews: Review[]

@@ -10,9 +10,9 @@ import {
   DeviceProfile,
   PropertyPageArea,
   SearchResultsArea,
-  SearchResultsFilter,
-  type DisplayedProperty
+  SearchResultsFilter
 } from 'Services/Hostelworld/Page'
+import type { DisplayedProperty } from 'Types/DisplayedProperty'
 import { PropertyMetricsService, type MetricsRequest } from 'Services/PropertyMetrics'
 import type { Property } from 'Types/HostelworldSearch'
 import { FilterModalRenderer } from 'UI/Renderers/FilterModal'

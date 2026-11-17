@@ -1,7 +1,7 @@
 import type { Stay } from 'DTOs/Stay'
-import type { PropertyReviews } from 'Services/Hostelworld/Api/ReviewsClient'
-import type { PropertyAvailability } from 'Services/Hostelworld/Api/AvailabilityClient'
-import type { PropertyGuestsCountries } from 'Services/Hostelworld/Api/VisitorsCountryClient'
+import type { PropertyReviews } from 'Types/PropertyReviews'
+import type { PropertyAvailability } from 'Types/PropertyAvailability'
+import type { PropertyGuestsCountries } from 'Types/PropertyGuestsCountries'
 
 type WorkerTaskCatalogue = {
   'fetch:reviews': {

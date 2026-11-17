@@ -1,6 +1,6 @@
 import type { JSX } from 'solid-js'
 import type { BadgeFilterViewDTO } from 'UI/Renderers/FilterModal/ViewDTOs'
-import type { BadgeColor } from 'Services/PropertyBadgeService'
+import type { BadgeColor } from 'Types/PropertyBadge'
 
 type Properties = {
   filter: BadgeFilterViewDTO

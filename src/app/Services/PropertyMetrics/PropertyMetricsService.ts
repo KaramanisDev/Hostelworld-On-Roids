@@ -2,9 +2,9 @@ import type { Property } from 'DTOs/Property'
 import { ReviewMetrics } from 'DTOs/ReviewMetrics'
 import { AvailabilityMetrics } from 'DTOs/AvailabilityMetrics'
 import { BookedCountry } from 'DTOs/BookedCountry'
-import type { PropertyReviews } from 'Services/Hostelworld/Api/ReviewsClient'
-import type { PropertyAvailability } from 'Services/Hostelworld/Api/AvailabilityClient'
-import type { PropertyGuestsCountries } from 'Services/Hostelworld/Api/VisitorsCountryClient'
+import type { PropertyReviews } from 'Types/PropertyReviews'
+import type { PropertyAvailability } from 'Types/PropertyAvailability'
+import type { PropertyGuestsCountries } from 'Types/PropertyGuestsCountries'
 import {
   PropertyMetricsScheduler,
   type MetricsRequest,

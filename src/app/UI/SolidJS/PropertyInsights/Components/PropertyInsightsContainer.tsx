@@ -1,5 +1,5 @@
 import { createSignal, type Setter, type JSX } from 'solid-js'
-import type { PropertyBadge } from 'Services/PropertyBadgeService'
+import type { PropertyBadge } from 'Types/PropertyBadge'
 import type { GuestCountryViewDTO, PropertyInsightsViewDTO } from 'UI/Renderers/PropertyInsights/ViewDTOs'
 import { PropertyInsightsLabels } from 'UI/Renderers/PropertyInsights/ViewDTOs'
 import { PropertyCardContainer, type CardStateSetters } from 'UI/SolidJS/PropertyCard/Components/PropertyCardContainer'

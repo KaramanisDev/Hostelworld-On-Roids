@@ -1,20 +1,9 @@
 import type { HostelworldPropertyAvailability } from 'Types/HostelworldPropertyAvailability'
+import type { PropertyAvailability } from 'Types/PropertyAvailability'
 import { Stay } from 'DTOs/Stay'
 import { PropertyAvailabilityFactory } from 'Factories/PropertyAvailabilityFactory'
 import { HttpClient, type HttpClientOptions } from 'Utils/HttpClient'
 import { dateAddDays, dateFormat, promiseFallback, randomNumber } from 'Utils'
-
-export type Metrics = {
-  mixed: number
-  female: number
-  private: number
-  total: number
-}
-
-export type PropertyAvailability = {
-  max: Metrics
-  current: Metrics
-}
 
 export class AvailabilityClient {
   private static readonly endpoint: string = 'https://prod.apigee.hostelworld.com/legacy-hwapi-service/2.2/' +

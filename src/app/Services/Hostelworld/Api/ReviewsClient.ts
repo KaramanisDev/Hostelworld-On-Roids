@@ -1,18 +1,8 @@
 import type { HostelworldPropertyReviews, Review } from 'Types/HostelworldPropertyReviews'
+import type { PropertyReviews } from 'Types/PropertyReviews'
 import { mapWithConcurrency, promiseFallback } from 'Utils'
 import { HttpClient } from 'Utils/HttpClient'
 import { PropertyReviewsFactory } from 'Factories/PropertyReviewsFactory'
-
-export type PropertyReviews = {
-  male: number
-  female: number
-  other: number
-  solo: number
-  total: number
-  ages: Record<string, number>
-  recentOverallRating: number | null
-  recentReviewCount: number
-}
 
 export class ReviewsClient {
   private static readonly endpoint: string = 'https://prod.apigee.hostelworld.com/legacy-hwapi-service/2.2/' +

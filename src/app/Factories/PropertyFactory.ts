@@ -1,6 +1,7 @@
 import { Property } from 'DTOs/Property'
 import type { CompletedProperty } from 'Services/PropertyMetrics'
-import { PropertyBadgeService, type PropertyBadge, type PropertyMetrics } from 'Services/PropertyBadgeService'
+import { PropertyBadgeService, type PropertyMetrics } from 'Services/PropertyBadgeService'
+import type { PropertyBadge } from 'Types/PropertyBadge'
 
 export class PropertyFactory {
   public static create (composition: CompletedProperty): Property {

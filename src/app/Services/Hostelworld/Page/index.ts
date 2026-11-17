@@ -1,6 +1,6 @@
 export { DeviceProfile } from './DeviceProfile'
 export { PropertyCardsArea } from './PropertyCardsArea'
 export { PropertyPageArea } from './PropertyPageArea'
-export { SearchResultsArea, type DisplayedProperty } from './SearchResultsArea'
+export { SearchResultsArea } from './SearchResultsArea'
 export { SearchResultsFilter } from './SearchResultsFilter'
 export { SearchToolbarArea } from './SearchToolbarArea'

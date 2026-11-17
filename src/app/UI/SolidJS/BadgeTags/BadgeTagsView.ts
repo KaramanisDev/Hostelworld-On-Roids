@@ -1,5 +1,5 @@
 import { render } from 'solid-js/web'
-import type { PropertyBadge } from 'Services/PropertyBadgeService'
+import type { PropertyBadge } from 'Types/PropertyBadge'
 import type { ViewAdapterInterface } from 'UI/ViewAdapterInterface'
 import { BadgeTagsContainer } from './Components/BadgeTagsContainer'
 

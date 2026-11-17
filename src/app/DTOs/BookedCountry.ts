@@ -1,4 +1,4 @@
-import type { GuestCountry } from 'Services/Hostelworld/Api/VisitorsCountryClient'
+import type { GuestCountry } from 'Types/PropertyGuestsCountries'
 
 export class BookedCountry {
   private static readonly flagsUrl: string = 'https://a.hwstatic.com/hw/flags'

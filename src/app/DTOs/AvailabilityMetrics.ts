@@ -1,11 +1,11 @@
-import type { Metrics } from 'Services/Hostelworld/Api/AvailabilityClient'
+import type { BedCounts, PropertyAvailability } from 'Types/PropertyAvailability'
 import { toPercent } from 'Utils'
 
 export class AvailabilityMetrics {
-  private max!: Metrics
-  private current!: Metrics
+  private max!: BedCounts
+  private current!: BedCounts
 
-  constructor (attributes: { max: Metrics; current: Metrics }) {
+  constructor (attributes: PropertyAvailability) {
     Object.assign(this, attributes)
   }
 

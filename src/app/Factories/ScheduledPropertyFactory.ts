@@ -2,7 +2,7 @@ import type { Property } from 'Types/HostelworldSearch'
 import type { Search } from 'DTOs/Search'
 import type { PropertyPage } from 'DTOs/PropertyPage'
 import type { ScheduledProperty } from 'Services/PropertyMetrics'
-import type { DisplayedProperty } from 'Services/Hostelworld/Page'
+import type { DisplayedProperty } from 'Types/DisplayedProperty'
 
 export class ScheduledPropertyFactory {
   public static create (property: Property, search: Search): ScheduledProperty {

@@ -1,7 +1,7 @@
 import type { Property } from 'DTOs/Property'
 import type { PropertyPage } from 'DTOs/PropertyPage'
 import type { Property as SearchProperty } from 'Types/HostelworldSearch'
-import type { DisplayedProperty } from 'Services/Hostelworld/Page'
+import type { DisplayedProperty } from 'Types/DisplayedProperty'
 import type { FetchedMetric, MetricsRequest } from 'Services/PropertyMetrics'
 import type { FilterCriteria } from 'Services/PropertyFilterService'
 

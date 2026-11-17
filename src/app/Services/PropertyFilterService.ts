@@ -1,6 +1,7 @@
 import type { Property } from 'DTOs/Property'
 import type { ReviewMetrics } from 'DTOs/ReviewMetrics'
-import { PropertyBadgeService, type BadgeId, type BadgeMetadata } from 'Services/PropertyBadgeService'
+import { PropertyBadgeService, type BadgeMetadata } from 'Services/PropertyBadgeService'
+import type { BadgeId } from 'Types/PropertyBadge'
 
 export type FilterCriteria = {
   badges: Partial<Record<BadgeId, boolean>>

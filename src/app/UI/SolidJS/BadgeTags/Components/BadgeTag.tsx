@@ -1,5 +1,5 @@
 import type { JSX } from 'solid-js'
-import type { PropertyBadge } from 'Services/PropertyBadgeService'
+import type { PropertyBadge } from 'Types/PropertyBadge'
 
 type Properties = {
   badge: PropertyBadge
