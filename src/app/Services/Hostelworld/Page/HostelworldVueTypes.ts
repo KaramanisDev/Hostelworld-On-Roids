@@ -123,5 +123,6 @@ export type StayingAvatars = {
 
 export type VuePropertyCardComponent = {
   stayingAvatars: StayingAvatars
+  _computedWatchers?: Record<string, VueComputedWatcher>
   $forceUpdate: () => void
 }

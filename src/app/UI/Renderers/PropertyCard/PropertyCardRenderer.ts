@@ -22,7 +22,11 @@ export class PropertyCardRenderer {
   private static shownStay: Stay | null = null
 
   public static showCardsFor (stay: Stay | null): void {
+    const isSameStay: boolean = stay !== null && Boolean(this.shownStay?.isSameAs(stay))
     this.shownStay = stay
+    if (isSameStay) return
+
+    this.clearStayData()
   }
 
   public static async render (propertyId: number): Promise<void> {
@@ -75,6 +79,12 @@ export class PropertyCardRenderer {
 
   public static showDisconnected (): void {
     this.view.showDisconnected()
+  }
+
+  private static clearStayData (): void {
+    this.view.dispose()
+    this.badgeTagsView.dispose()
+    PropertyCardsArea.clearBookedCountries()
   }
 
   private static isShownStay (stay: Stay): boolean {

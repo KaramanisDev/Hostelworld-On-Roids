@@ -12,6 +12,7 @@ export class PropertyCardsArea {
   private static readonly cardComponentSelector: string = '.nuxt-link >a'
   private static readonly cardComponentTimeoutInMs: number = 10 * 1000
   private static readonly avatarLimit: number = 999
+  private static readonly shownCountries: WeakMap<VuePropertyCardComponent, BookedCountry[]> = new WeakMap()
 
   public static async hasCards (): Promise<boolean> {
     return Boolean(await promiseFallback(waitForElement(this.cardContainerSelector)))
@@ -41,13 +42,32 @@ export class PropertyCardsArea {
   }
 
   public static showBookedCountries (propertyId: number, countries: BookedCountry[]): void {
-    const component: VuePropertyCardComponent | undefined = this.cardComponent(propertyId)
+    const card: HTMLElement | null = this.card(propertyId)
+    const component: VuePropertyCardComponent | undefined = card ? this.cardComponent(card) : undefined
     if (!component) return
 
+    this.applyBookedCountries(component, countries)
+  }
+
+  public static clearBookedCountries (): void {
+    const cards: NodeListOf<HTMLElement> = document.querySelectorAll(this.cardSelector)
+
+    for (const card of cards) {
+      const component: VuePropertyCardComponent | undefined = this.cardComponent(card)
+      if (component) this.applyBookedCountries(component, [])
+    }
+  }
+
+  private static applyBookedCountries (component: VuePropertyCardComponent, countries: BookedCountry[]): void {
+    const shownCountries: BookedCountry[] | undefined = this.shownCountries.get(component)
+    const isUnchanged: boolean = shownCountries === countries || (!shownCountries && !countries.length)
+    if (isUnchanged) return
+
     ReactiveOverride.release(component, 'stayingAvatars')
+    this.shownCountries.delete(component)
     if (countries.length) this.pinStayingAvatars(component, countries)
 
-    component.$forceUpdate()
+    this.repaint(component)
   }
 
   private static pinStayingAvatars (component: VuePropertyCardComponent, countries: BookedCountry[]): void {
@@ -56,12 +76,20 @@ export class PropertyCardsArea {
       avatarList: this.avatars(countries)
     }
 
-    component.stayingAvatars = staying
     ReactiveOverride.pin(component, 'stayingAvatars', staying)
+    this.shownCountries.set(component, countries)
   }
 
-  private static cardComponent (propertyId: number): VuePropertyCardComponent | undefined {
-    const element: HTMLElement | null | undefined = this.card(propertyId)?.querySelector(this.cardComponentSelector)
+  private static repaint (component: VuePropertyCardComponent): void {
+    for (const watcher of Object.values(component._computedWatchers ?? {})) {
+      watcher.dirty = true
+    }
+
+    component.$forceUpdate()
+  }
+
+  private static cardComponent (card: HTMLElement): VuePropertyCardComponent | undefined {
+    const element: HTMLElement | null = card.querySelector(this.cardComponentSelector)
 
     return (element?.__vue__ ?? undefined) as VuePropertyCardComponent | undefined
   }
