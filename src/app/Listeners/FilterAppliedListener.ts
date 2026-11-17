@@ -16,7 +16,7 @@ export class FilterAppliedListener extends AbstractListener {
 
     SearchResultsFilter.filterBy(
       (propertyId: number): boolean => {
-        const property: Property | undefined = this.propertyInSession(propertyId)
+        const property: Property | undefined = this.session.getProperty(propertyId)
         if (!property) return true
 
         return PropertyFilterService.matchesCriteria(property, criteria)

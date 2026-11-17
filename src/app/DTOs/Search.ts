@@ -22,6 +22,10 @@ export class Search {
     return this.cityId
   }
 
+  public isSameAs (search: Search): boolean {
+    return this.cityId === search.getCityId() && this.stay.isSameAs(search.getStay())
+  }
+
   public static createFromHostelworldSearchUrl (url: URL): Search | null {
     const parameters: URLSearchParams = url.searchParams
     if (!parameters.has('date-start') || !parameters.has('num-nights')) return null

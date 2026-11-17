@@ -9,11 +9,12 @@ import { PropertyMetricsService, type MetricsRequest } from 'Services/PropertyMe
 @Subscribe('property:page:displayed')
 export class PropertyPageDisplayedListener extends AbstractListener {
   public handle (page: PropertyPage): void {
+    this.session.updateDisplayedPage(page)
     PropertyInsightsRenderer.render(page)
 
-    const property: Property | undefined = this.propertyInSession(page.getId(), page.getStay())
+    const property: Property | undefined = this.session.getProperty(page.getId(), page.getStay())
     if (property) {
-      PropertyInsightsRenderer.renderWithData(property)
+      PropertyInsightsRenderer.renderWithData(property, this.session)
       return
     }
 

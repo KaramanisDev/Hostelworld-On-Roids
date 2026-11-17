@@ -1,6 +1,6 @@
 import type { Property } from 'DTOs/Property'
 import type { PropertyPage } from 'DTOs/PropertyPage'
-import type { Stay } from 'DTOs/Stay'
+import type { Session } from 'DTOs/Session'
 import type { ReviewMetrics } from 'DTOs/ReviewMetrics'
 import type { AvailabilityMetrics } from 'DTOs/AvailabilityMetrics'
 import type { BookedCountry } from 'DTOs/BookedCountry'
@@ -14,14 +14,10 @@ export class PropertyInsightsRenderer {
   private static readonly sectionClassName: string = 'hor-property-insights'
   private static readonly tabClassName: string = 'hor-insights-tab'
 
-  private static propertyId: number | null = null
-  private static displayedStay: Stay | null = null
   private static section: HTMLElement | null = null
   private static readonly view: PropertyInsightsView = new PropertyInsightsView()
 
   public static render (page: PropertyPage): void {
-    this.propertyId = page.getId()
-    this.displayedStay = page.getStay()
     this.section ??= this.createSection()
 
     this.view.mount(this.section, PropertyInsightsViewDTOFactory.loading(page.getId()))
@@ -29,20 +25,26 @@ export class PropertyInsightsRenderer {
     PropertyPageArea.placeSection(this.section, { label: PropertyInsightsLabels.tab, className: this.tabClassName })
   }
 
-  public static renderWithData (property: Property): void {
-    if (!this.isDisplayedStay(property.getId(), property.getStay())) return
+  public static renderWithData (property: Property, session: Session): void {
+    if (!session.isDisplayedStay(property.getId(), property.getStay())) return
 
     this.view.update(PropertyInsightsViewDTOFactory.loaded(property))
   }
 
-  public static updateMetric (collected: CollectedMetric): void {
+  public static updateMetric (collected: CollectedMetric, session: Session): void {
     switch (collected.metric) {
       case 'reviews':
-        return this.updateReviewMetrics(collected.propertyId, collected.reviewMetrics)
+        if (!session.isDisplayedProperty(collected.propertyId)) return
+
+        return this.updateReviewMetrics(collected.reviewMetrics)
       case 'availability':
-        return this.updateAvailabilityMetrics(collected.propertyId, collected.stay, collected.availabilityMetrics)
+        if (!session.isDisplayedStay(collected.propertyId, collected.stay)) return
+
+        return this.updateAvailabilityMetrics(collected.availabilityMetrics)
       case 'countries':
-        return this.updateCountries(collected.propertyId, collected.stay, collected.bookedCountries)
+        if (!session.isDisplayedStay(collected.propertyId, collected.stay)) return
+
+        return this.updateCountries(collected.bookedCountries)
     }
   }
 
@@ -55,34 +57,22 @@ export class PropertyInsightsRenderer {
     PropertyPageArea.removeSection()
 
     this.section = null
-    this.propertyId = null
-    this.displayedStay = null
   }
 
-  private static updateReviewMetrics (propertyId: number, metrics: ReviewMetrics | null): void {
-    if (propertyId !== this.propertyId) return
-
+  private static updateReviewMetrics (metrics: ReviewMetrics | null): void {
     this.view.update(PropertyCardViewDTOFactory.reviewRows(metrics))
   }
 
-  private static updateAvailabilityMetrics (propertyId: number, stay: Stay, metrics: AvailabilityMetrics | null): void {
-    if (!this.isDisplayedStay(propertyId, stay)) return
-
+  private static updateAvailabilityMetrics (metrics: AvailabilityMetrics | null): void {
     this.view.update({
       availability: PropertyCardViewDTOFactory.availabilityRow(metrics)
     })
   }
 
-  private static updateCountries (propertyId: number, stay: Stay, bookedCountries: BookedCountry[]): void {
-    if (!this.isDisplayedStay(propertyId, stay)) return
-
+  private static updateCountries (bookedCountries: BookedCountry[]): void {
     this.view.update({
       countries: PropertyInsightsViewDTOFactory.countries(bookedCountries)
     })
-  }
-
-  private static isDisplayedStay (propertyId: number, stay: Stay): boolean {
-    return propertyId === this.propertyId && Boolean(this.displayedStay?.isSameAs(stay))
   }
 
   private static createSection (): HTMLElement {

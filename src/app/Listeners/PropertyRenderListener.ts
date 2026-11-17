@@ -8,18 +8,18 @@ import { PropertyInsightsRenderer } from 'UI/Renderers/PropertyInsights'
 export class PropertyRenderListener extends AbstractListener {
   public async handle (propertyOrId: Property | number): Promise<void> {
     const propertyToRender: Property | undefined = typeof propertyOrId === 'number'
-      ? this.propertyInSession(propertyOrId)
+      ? this.session.getProperty(propertyOrId)
       : propertyOrId
 
     if (!propertyToRender && typeof propertyOrId === 'number') {
-      await PropertyCardRenderer.render(propertyOrId)
+      await PropertyCardRenderer.render(propertyOrId, this.session)
 
       return
     }
 
     if (!propertyToRender) return
 
-    PropertyInsightsRenderer.renderWithData(propertyToRender)
-    await PropertyCardRenderer.renderWithData(propertyToRender)
+    PropertyInsightsRenderer.renderWithData(propertyToRender, this.session)
+    await PropertyCardRenderer.renderWithData(propertyToRender, this.session)
   }
 }

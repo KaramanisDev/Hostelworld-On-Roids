@@ -18,12 +18,12 @@ export class PropertiesDisplayedListener extends AbstractListener {
   }
 
   private scheduleMissingMetrics (properties: DisplayedProperty[]): void {
-    const search: Search | undefined = this.latestSearchInSession()
+    const search: Search | undefined = this.session.getLatestSearch()
     if (!search) return
 
     PropertyMetricsService.schedule(
       properties
-        .filter(property => !this.propertyInSession(property.id))
+        .filter(property => !this.session.getProperty(property.id))
         .map(property => ScheduledPropertyFactory.createFromDisplayed(property, search))
     )
   }

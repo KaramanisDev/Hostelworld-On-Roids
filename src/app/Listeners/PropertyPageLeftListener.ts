@@ -5,6 +5,7 @@ import { PropertyInsightsRenderer } from 'UI/Renderers/PropertyInsights'
 @Subscribe('property:page:left')
 export class PropertyPageLeftListener extends AbstractListener {
   public handle (): void {
+    this.session.forgetDisplayedPage()
     PropertyInsightsRenderer.dispose()
   }
 }

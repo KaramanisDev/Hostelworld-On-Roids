@@ -53,14 +53,18 @@ export class AppInitedListener extends AbstractListener {
 
   private onSearchStarted (search: Search): void {
     this.emit('worker:tasks:cancel')
-    this.persistSearchInSession(search)
-    PropertyCardRenderer.showCardsFor(search.getStay())
+
+    const isSameSearch: boolean = this.session.isLatestSearch(search)
+    this.session.updateLatestSearch(search)
+    if (isSameSearch) return
+
+    PropertyCardRenderer.clear()
   }
 
   private onSearchUnrecognized (): void {
     this.emit('worker:tasks:cancel')
-    this.forgetSearchInSession()
-    PropertyCardRenderer.showCardsFor(null)
+    this.session.forgetLatestSearch()
+    PropertyCardRenderer.clear()
   }
 
   private onSearchResults (properties: Property[]): void {

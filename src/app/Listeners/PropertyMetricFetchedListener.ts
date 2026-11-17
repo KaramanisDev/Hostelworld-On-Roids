@@ -16,12 +16,12 @@ export class PropertyMetricFetchedListener extends AbstractListener {
     const collected: CollectedMetric = PropertyMetricsService.collectedMetric(fetched)
     PropertyMetricsService.collect(fetched.request, collected)
 
-    void PropertyCardRenderer.updateMetric(collected)
-    PropertyInsightsRenderer.updateMetric(collected)
+    void PropertyCardRenderer.updateMetric(collected, this.session)
+    PropertyInsightsRenderer.updateMetric(collected, this.session)
 
     const composed: Property[] = PropertyMetricsService.takeComposed(collected.propertyId)
     for (const property of composed) {
-      this.persistPropertyInSession(property)
+      this.session.persistProperty(property)
       this.emit('property:render', property)
     }
 

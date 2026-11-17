@@ -1,5 +1,7 @@
 import type { Property } from 'DTOs/Property'
 import type { Stay } from 'DTOs/Stay'
+import type { Search } from 'DTOs/Search'
+import type { Session } from 'DTOs/Session'
 import type { ReviewMetrics } from 'DTOs/ReviewMetrics'
 import type { AvailabilityMetrics } from 'DTOs/AvailabilityMetrics'
 import { PropertyCardView } from 'UI/SolidJS/PropertyCard/PropertyCardView'
@@ -19,21 +21,11 @@ export class PropertyCardRenderer {
     (propertyIds: number[]): void => EventBus.emit('property:cards:visible', propertyIds)
   )
 
-  private static shownStay: Stay | null = null
-
-  public static showCardsFor (stay: Stay | null): void {
-    const isSameStay: boolean = stay !== null && Boolean(this.shownStay?.isSameAs(stay))
-    this.shownStay = stay
-    if (isSameStay) return
-
-    this.clearStayData()
-  }
-
-  public static async render (propertyId: number): Promise<void> {
-    const stay: Stay | null = this.shownStay
-    if (!stay) return
+  public static async render (propertyId: number, session: Session): Promise<void> {
+    const search: Search | undefined = session.getLatestSearch()
+    if (!search) return
     if (!await PropertyCardsArea.hasCards()) return
-    if (!this.isShownStay(stay)) return
+    if (!session.isLatestSearch(search)) return
 
     const card: HTMLElement | null = PropertyCardsArea.card(propertyId)
     if (!card) return
@@ -43,10 +35,11 @@ export class PropertyCardRenderer {
     this.visibilityTracker.track(card, propertyId)
   }
 
-  public static async renderWithData (property: Property): Promise<void> {
-    if (!this.isShownStay(property.getStay())) return
+  public static async renderWithData (property: Property, session: Session): Promise<void> {
+    const search: Search | undefined = session.getLatestSearch()
+    if (!search || !session.isLatestStay(property.getStay())) return
     if (!await PropertyCardsArea.hasCards()) return
-    if (!this.isShownStay(property.getStay())) return
+    if (!session.isLatestSearch(search)) return
 
     const card: HTMLElement | null = PropertyCardsArea.card(property.getId())
     if (!card) return
@@ -59,36 +52,30 @@ export class PropertyCardRenderer {
       this.badgeTagsView.mount(tagsContainer, { propertyId: property.getId(), badges: property.getBadges() })
     }
 
-    await this.showBookedCountries(property.getId(), property.getStay(), property.getBookedCountries())
+    await this.showBookedCountries(property.getId(), property.getStay(), property.getBookedCountries(), session)
   }
 
-  public static async updateMetric (collected: CollectedMetric): Promise<void> {
+  public static async updateMetric (collected: CollectedMetric, session: Session): Promise<void> {
     switch (collected.metric) {
       case 'reviews':
         return this.updateReviewMetrics(collected.propertyId, collected.reviewMetrics)
       case 'availability':
-        if (!this.isShownStay(collected.stay)) return
+        if (!session.isLatestStay(collected.stay)) return
 
         return this.updateAvailabilityMetrics(collected.propertyId, collected.availabilityMetrics)
       case 'countries':
-        if (!this.isShownStay(collected.stay)) return
-
-        return this.showBookedCountries(collected.propertyId, collected.stay, collected.bookedCountries)
+        return this.showBookedCountries(collected.propertyId, collected.stay, collected.bookedCountries, session)
     }
   }
 
-  public static showDisconnected (): void {
-    this.view.showDisconnected()
-  }
-
-  private static clearStayData (): void {
+  public static clear (): void {
     this.view.dispose()
     this.badgeTagsView.dispose()
     PropertyCardsArea.clearBookedCountries()
   }
 
-  private static isShownStay (stay: Stay): boolean {
-    return Boolean(this.shownStay?.isSameAs(stay))
+  public static showDisconnected (): void {
+    this.view.showDisconnected()
   }
 
   private static updateReviewMetrics (propertyId: number, metrics: ReviewMetrics | null): void {
@@ -102,9 +89,16 @@ export class PropertyCardRenderer {
     })
   }
 
-  private static async showBookedCountries (propertyId: number, stay: Stay, countries: BookedCountry[]): Promise<void> {
+  private static async showBookedCountries (
+    propertyId: number,
+    stay: Stay,
+    countries: BookedCountry[],
+    session: Session
+  ): Promise<void> {
+    const search: Search | undefined = session.getLatestSearch()
+    if (!search || !session.isLatestStay(stay)) return
     if (!await PropertyCardsArea.hasCardComponent(propertyId)) return
-    if (!this.isShownStay(stay)) return
+    if (!session.isLatestSearch(search)) return
 
     PropertyCardsArea.showBookedCountries(propertyId, countries)
   }
