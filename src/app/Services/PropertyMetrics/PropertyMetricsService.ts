@@ -76,9 +76,6 @@ export class PropertyMetricsService {
 
   public static cancel (): void {
     PropertyMetricsScheduler.clear()
-  }
-
-  public static discardCollected (): void {
     PropertyCompositionBuffer.clear()
   }
 }

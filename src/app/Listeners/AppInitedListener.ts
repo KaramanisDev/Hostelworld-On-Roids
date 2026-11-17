@@ -68,7 +68,6 @@ export class AppInitedListener extends AbstractListener {
   }
 
   private onSearchResults (properties: Property[]): void {
-    PropertyMetricsService.discardCollected()
     this.emit('hostelworld:search:intercepted', properties)
   }
 
