@@ -1,4 +1,4 @@
-import type { DisplayedProperty } from 'Types/HostelworldSearch'
+import type { DisplayedProperty } from 'Services/Hostelworld/Page'
 import type { Search } from 'DTOs/Search'
 import { Subscribe } from 'Core/EventBus'
 import { AbstractListener } from './AbstractListener'
@@ -24,7 +24,7 @@ export class PropertiesDisplayedListener extends AbstractListener {
     PropertyMetricsService.schedule(
       properties
         .filter(property => !this.propertyInSession(property.id))
-        .map(property => ScheduledPropertyFactory.create(property, search))
+        .map(property => ScheduledPropertyFactory.createFromDisplayed(property, search))
     )
   }
 }

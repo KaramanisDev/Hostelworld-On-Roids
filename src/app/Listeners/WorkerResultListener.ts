@@ -2,7 +2,7 @@ import { Subscribe } from 'Core/EventBus'
 import { AbstractListener } from './AbstractListener'
 import { PropertyCardRenderer } from 'UI/Renderers/PropertyCard'
 import { PropertyInsightsRenderer } from 'UI/Renderers/PropertyInsights'
-import { SearchPropertyListComponentPatcher } from 'Services/Hostelworld/Patchers/SearchPropertyListComponentPatcher'
+import { SearchResultsArea } from 'Services/Hostelworld/Page'
 import { PropertyMetricsService, type CollectedMetric, type MetricsProgress } from 'Services/PropertyMetrics'
 import type { WorkerResult } from 'WorkerTasks/WorkerTaskCatalogue'
 
@@ -18,7 +18,7 @@ export class WorkerResultListener extends AbstractListener {
       this.emit('property:render', property)
     }
 
-    if (progress.composed.length) SearchPropertyListComponentPatcher.scheduleRefresh()
+    if (progress.composed.length) SearchResultsArea.scheduleRefresh()
   }
 
   private showCollectedMetric (collected: CollectedMetric): void {

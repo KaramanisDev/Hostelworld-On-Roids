@@ -58,10 +58,6 @@ type OverallRating = {
   numberOfRatings: string
 }
 
-export type DisplayedRating = {
-  total: number
-}
-
 type PromotionType = 'LOS' | 'CUSTOM'
 
 type PromotionCampaign = {
@@ -186,8 +182,4 @@ export type HostelworldSearch = {
   filterData: FilterData
   sortOrder: null
   pagination: SearchPagination
-}
-
-export type DisplayedProperty = Omit<Property, 'overallRating'> & {
-  rating: DisplayedRating | null
 }

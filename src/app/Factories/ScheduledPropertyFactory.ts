@@ -1,14 +1,24 @@
-import type { DisplayedProperty, Property } from 'Types/HostelworldSearch'
+import type { Property } from 'Types/HostelworldSearch'
 import type { Search } from 'DTOs/Search'
 import type { PropertyPage } from 'DTOs/PropertyPage'
 import type { ScheduledProperty } from 'Services/PropertyMetrics'
+import type { DisplayedProperty } from 'Services/Hostelworld/Page'
 
 export class ScheduledPropertyFactory {
-  public static create (property: Property | DisplayedProperty, search: Search): ScheduledProperty {
+  public static create (property: Property, search: Search): ScheduledProperty {
     return {
       id: property.id,
       name: property.name,
       overallRating: this.overallRating(property),
+      stay: search.getStay()
+    }
+  }
+
+  public static createFromDisplayed (property: DisplayedProperty, search: Search): ScheduledProperty {
+    return {
+      id: property.id,
+      name: property.name,
+      overallRating: property.overallRating,
       stay: search.getStay()
     }
   }
@@ -22,8 +32,7 @@ export class ScheduledPropertyFactory {
     }
   }
 
-  private static overallRating (property: Property | DisplayedProperty): number | null {
-    if ('rating' in property) return property.rating?.total || null
+  private static overallRating (property: Property): number | null {
     if (!property.overallRating?.overall) return null
 
     return Number((property.overallRating.overall / 10).toFixed(1))

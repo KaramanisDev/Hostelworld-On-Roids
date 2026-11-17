@@ -2,15 +2,19 @@ import type { Search } from 'DTOs/Search'
 import type { PropertyPage } from 'DTOs/PropertyPage'
 import { Subscribe } from 'Core/EventBus'
 import { AbstractListener } from './AbstractListener'
-import { SearchPropertyListComponentPatcher } from 'Services/Hostelworld/Patchers/SearchPropertyListComponentPatcher'
-import { DevicePatcher } from 'Services/Hostelworld/Patchers/DevicePatcher'
 import { ResizeObserverComponentPatcher } from 'Services/Hostelworld/Patchers/ResizeObserverComponentPatcher'
 import { SearchPageHook } from 'Services/Hostelworld/SearchPageHook'
 import { AppDiscountInterceptor } from 'Services/Hostelworld/AppDiscountInterceptor'
 import { TrackerInterceptor } from 'Services/Hostelworld/TrackerInterceptor'
-import { VuexDataHook } from 'Services/Hostelworld/VuexDataHook'
+import {
+  DeviceProfile,
+  PropertyPageArea,
+  SearchResultsArea,
+  SearchResultsFilter,
+  type DisplayedProperty
+} from 'Services/Hostelworld/Page'
 import { PropertyMetricsService, type ScheduledProperty } from 'Services/PropertyMetrics'
-import type { DisplayedProperty, Property } from 'Types/HostelworldSearch'
+import type { Property } from 'Types/HostelworldSearch'
 import { FilterModalRenderer } from 'UI/Renderers/FilterModal'
 
 @Subscribe('app:inited')
@@ -23,14 +27,14 @@ export class AppInitedListener extends AbstractListener {
 
     await Promise.allSettled([
       FilterModalRenderer.render(),
-      DevicePatcher.enforceMobile(),
-      SearchPropertyListComponentPatcher.disableFeatured(),
-      SearchPropertyListComponentPatcher.disableThirdPartyProperties(),
-      SearchPropertyListComponentPatcher.installPropertiesFilter(),
-      VuexDataHook.onPropertyPageChanged(this.onPropertyPageChanged.bind(this))
+      DeviceProfile.enforceMobile(),
+      SearchResultsArea.hideFeatured(),
+      SearchResultsArea.hideThirdPartyListings(),
+      SearchResultsFilter.install(),
+      PropertyPageArea.onPageChanged(this.onPropertyPageChanged.bind(this))
     ])
 
-    await VuexDataHook.onPropertiesDisplayed(
+    await SearchResultsArea.onPropertiesDisplayed(
       this.onPropertiesDisplayed.bind(this)
     )
   }

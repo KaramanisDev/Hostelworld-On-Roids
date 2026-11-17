@@ -1,5 +1,12 @@
-import type { DisplayedProperty, DisplayedRating, Property } from 'Types/HostelworldSearch'
-import { waitFor, waitForElement, waitForProperty } from 'Utils'
+import type { Property } from 'Types/HostelworldSearch'
+
+type DisplayedRating = {
+  total: number
+}
+
+export type HostelworldDisplayedProperty = Omit<Property, 'overallRating'> & {
+  rating: DisplayedRating | null
+}
 
 type VueConstructor = {
   util: {
@@ -21,14 +28,14 @@ type HostelworldSearchServiceResult = {
   location: unknown
 }
 
-interface HostelworldSearchService {
-  search (
+export type HostelworldSearchService = {
+  search: (
     cityId: string,
     fromDate: string | null,
     toDate: string | null,
     guests: number,
     options: Record<string, unknown>
-  ): Promise<HostelworldSearchServiceResult>
+  ) => Promise<HostelworldSearchServiceResult>
 }
 
 export type HostelworldPropertyDetails = {
@@ -39,7 +46,6 @@ export type HostelworldPropertyDetails = {
 
 type HostelworldState = {
   search: {
-    city: number | null
     properties: Property[]
   }
   property: {
@@ -53,11 +59,8 @@ export type VueSearchPageComponent = {
 }
 
 export type VuePropertyListComponent = {
-  properties: Property[]
-  filteredProperties: Property[]
-  filteredHWProperties: Property[]
   displayFeaturedProperties: boolean
-  displayedProperties: DisplayedProperty[]
+  displayedProperties: HostelworldDisplayedProperty[]
   _computedWatchers?: Record<string, VueComputedWatcher>
   isDisplayedPropertiesWatched?: boolean
   $watch: <T>(property: string, callback: (value: T) => void) => void
@@ -83,28 +86,26 @@ export type VuexStore = {
   _vm: VuexStoreViewModel
 }
 
-export class VueComponentAccessor {
-  public static async propertyListComponent (): Promise<VuePropertyListComponent> {
-    const propertyListElement: HTMLElement = await waitForElement('.search .property-list >div', 60 * 1000)
+export type VueRoute = {
+  name: string | null
+  params: Record<string, string | number>
+  query: Record<string, string>
+}
 
-    return waitForProperty(propertyListElement, '__vue__', 60 * 1000)
-  }
+export type VueRouter = {
+  currentRoute: VueRoute
+  onReady: (callback: () => void) => void
+  afterEach: (callback: () => void) => void
+}
 
-  public static async hostelworldStore (): Promise<VuexStore> {
-    return await waitForProperty(window, '$nuxt.$store', 60 * 1000)
-  }
+export type NuxtAppInstance = {
+  _isMounted: boolean
+  $router: VueRouter
+}
 
-  public static async propertyDetails (propertyId: number): Promise<HostelworldPropertyDetails> {
-    const store: VuexStore = await this.hostelworldStore()
+export type NuxtReadyHook = (callback: () => void) => void
 
-    return waitFor(
-      (): HostelworldPropertyDetails | undefined => {
-        const details: HostelworldPropertyDetails | null = store.state.property.property
-
-        return details && Number(details.id) === propertyId ? details : undefined
-      },
-      30 * 1000,
-      `Details of property ${propertyId} are not available within the specified time.`
-    )
-  }
+export type NuxtDevice = {
+  isMobile: boolean
+  isMobileOrTablet: boolean
 }

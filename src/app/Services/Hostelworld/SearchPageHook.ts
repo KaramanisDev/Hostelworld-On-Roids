@@ -2,7 +2,7 @@ import { Search } from 'DTOs/Search'
 import type { HostelworldSearch, Property } from 'Types/HostelworldSearch'
 import { SearchApiRequestsInterceptor } from 'Services/Hostelworld/SearchApiRequestsInterceptor'
 import { SearchDataAdapter } from 'Services/Hostelworld/SearchDataAdapter'
-import { SearchPropertyListComponentPatcher } from 'Services/Hostelworld/Patchers/SearchPropertyListComponentPatcher'
+import { SearchResultsArea } from 'Services/Hostelworld/Page'
 import { pluck } from 'Utils'
 
 export type SearchPageCallbacks = {
@@ -50,13 +50,27 @@ export class SearchPageHook {
     callbacks.onSearchResults(adapted.properties)
 
     this.loadAllController = new AbortController()
-    void SearchPropertyListComponentPatcher.loadAllForCity(
+    void this.loadUnavailableProperties(
       this.latestCityId,
       pluck(adapted.properties, 'id'),
-      callbacks.onUnavailableProperties,
+      callbacks,
       this.loadAllController.signal
     )
 
     return adapted
+  }
+
+  private static async loadUnavailableProperties (
+    cityId: string,
+    availablePropertyIds: number[],
+    callbacks: SearchPageCallbacks,
+    signal: AbortSignal
+  ): Promise<void> {
+    const cityProperties: Property[] | null = await SearchResultsArea.loadAllForCity(cityId, signal)
+    if (!cityProperties) return
+
+    callbacks.onUnavailableProperties(
+      cityProperties.filter(property => !availablePropertyIds.includes(property.id))
+    )
   }
 }
