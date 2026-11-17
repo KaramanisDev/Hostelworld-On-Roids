@@ -14,13 +14,14 @@ export type SearchPageCallbacks = {
 
 export class SearchPageHook {
   private static latestCityId: string | null = null
+  private static latestSearchUrl: string | null = null
   private static loadAllController: AbortController | null = null
 
   public static onSearch (callbacks: SearchPageCallbacks): void {
     SearchApiRequestsInterceptor
       .interceptSearch(
         (url: URL): URL => this.startSearch(url, callbacks),
-        (search: HostelworldSearch): HostelworldSearch => this.receiveResults(search, callbacks)
+        (search: HostelworldSearch, url: URL): HostelworldSearch => this.receiveResults(search, url, callbacks)
       )
       .interceptSearchAll(
         SearchDataAdapter.withoutPromotions.bind(SearchDataAdapter)
@@ -29,6 +30,7 @@ export class SearchPageHook {
 
   private static startSearch (url: URL, callbacks: SearchPageCallbacks): URL {
     this.loadAllController?.abort()
+    this.latestSearchUrl = url.toString()
 
     const search: Search | null = Search.createFromHostelworldSearchUrl(url)
     this.latestCityId = search?.getCityId() ?? null
@@ -43,9 +45,14 @@ export class SearchPageHook {
     return url
   }
 
-  private static receiveResults (search: HostelworldSearch, callbacks: SearchPageCallbacks): HostelworldSearch {
+  private static receiveResults (
+    search: HostelworldSearch,
+    url: URL,
+    callbacks: SearchPageCallbacks
+  ): HostelworldSearch {
     const adapted: HostelworldSearch = SearchDataAdapter.withoutPromotions(search)
-    if (!this.latestCityId) return adapted
+    const isReplacedSearch: boolean = url.toString() !== this.latestSearchUrl
+    if (!this.latestCityId || isReplacedSearch) return adapted
 
     callbacks.onSearchResults(adapted.properties)
 

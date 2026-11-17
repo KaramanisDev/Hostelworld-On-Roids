@@ -3,6 +3,8 @@ import { emptyFunction, objectPick } from '..'
 
 type Modifier = (request: CustomXMLHttpRequest) => void
 
+export type ResponseCallback = (response: string, url: string) => string
+
 type ModifierName = 'withUrl' | 'withResponse'
 type Stages = {
   open: ModifierName[]
@@ -37,11 +39,11 @@ export class RequestModifier {
     return this
   }
 
-  public withResponse (responseOrCallback: string | Callback<string>): this {
+  public withResponse (responseOrCallback: string | ResponseCallback): this {
     this.modifiers.withResponse = (request: CustomXMLHttpRequest): void => {
       const response: string = request.responseText
       const newResponse: string = typeof responseOrCallback === 'function'
-        ? responseOrCallback(response)
+        ? responseOrCallback(response, request.url)
         : responseOrCallback
 
       this.onPropertyEnforce(request, 'responseText', newResponse)

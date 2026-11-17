@@ -1,5 +1,7 @@
 import type { HostelworldSearch } from 'Types/HostelworldSearch'
-import { XHRRequestInterceptor } from 'Utils/XHRRequestInterceptor'
+import { XHRRequestInterceptor, type ResponseCallback } from 'Utils/XHRRequestInterceptor'
+
+type SearchResponseCallback = (search: HostelworldSearch, url: URL) => HostelworldSearch
 
 export class SearchApiRequestsInterceptor {
   private static searchPropertiesRegex: RegExp = /cities\/\d+\/properties\/\?.*date-start=/
@@ -7,7 +9,7 @@ export class SearchApiRequestsInterceptor {
 
   public static interceptSearch (
     UrlCallback: Callback<URL>,
-    responseCallback: Callback<HostelworldSearch>
+    responseCallback: SearchResponseCallback
   ): typeof this {
     const parseUrlWithCallback: Callback<string> = (url: string): string => {
       const parsed: URL = new URL(url)
@@ -15,10 +17,10 @@ export class SearchApiRequestsInterceptor {
       return UrlCallback(parsed).toString()
     }
 
-    const parseResponseWithCallback: Callback<string> = (response: string): string => {
+    const parseResponseWithCallback: ResponseCallback = (response: string, url: string): string => {
       const parsed: HostelworldSearch = JSON.parse(response)
 
-      return JSON.stringify(responseCallback(parsed))
+      return JSON.stringify(responseCallback(parsed, new URL(url)))
     }
 
     XHRRequestInterceptor
