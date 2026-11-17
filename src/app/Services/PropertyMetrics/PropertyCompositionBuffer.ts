@@ -1,9 +1,10 @@
-import type { Property } from 'DTOs/Property'
 import type { Stay } from 'DTOs/Stay'
 import type { ReviewMetrics } from 'DTOs/ReviewMetrics'
 import type { AvailabilityMetrics } from 'DTOs/AvailabilityMetrics'
 import type { BookedCountry } from 'DTOs/BookedCountry'
-import { PropertyFactory } from 'Factories/PropertyFactory'
+import type { PropertyBadge } from 'Types/PropertyBadge'
+import { Property } from 'DTOs/Property'
+import { PropertyBadgeService } from 'Services/PropertyBadgeService'
 
 type CollectedReviews = {
   metric: 'reviews'
@@ -38,11 +39,13 @@ type PendingStay = StayMetrics & {
   stay: Stay
 }
 
+type CompletedStay = PendingStay & Required<StayMetrics>
+
 export type CollectedMetric = CollectedReviews | CollectedStayMetric
 
 export type Metric = CollectedMetric['metric']
 
-export type CompletedProperty = {
+type CompletedProperty = {
   id: number
   name: string
   stay: Stay
@@ -74,7 +77,7 @@ export class PropertyCompositionBuffer {
       this.stays.delete(entry.stay.getPropertyKey(entry.id))
     }
 
-    return completed.map(entry => PropertyFactory.create(entry))
+    return completed.map(entry => this.property(entry))
   }
 
   public static clear (): void {
@@ -93,22 +96,30 @@ export class PropertyCompositionBuffer {
     this.stays.set(key, { ...pendingStay, ...metrics })
   }
 
-  private static completedEntries (id: number): CompletedProperty[] {
-    const reviewMetrics: ReviewMetrics | null | undefined = this.reviews.get(id)
+  private static completedEntries (propertyId: number): CompletedProperty[] {
+    const reviewMetrics: ReviewMetrics | null | undefined = this.reviews.get(propertyId)
     if (reviewMetrics === undefined) return []
 
     const completed: CompletedProperty[] = []
     for (const stay of this.stays.values()) {
-      if (stay.id !== id || stay.availabilityMetrics === undefined || stay.bookedCountries === undefined) continue
+      if (stay.id !== propertyId || !this.isCompleted(stay)) continue
 
-      completed.push({
-        ...stay,
-        reviewMetrics,
-        availabilityMetrics: stay.availabilityMetrics,
-        bookedCountries: stay.bookedCountries
-      })
+      completed.push({ ...stay, reviewMetrics })
     }
 
     return completed
+  }
+
+  private static isCompleted (stay: PendingStay): stay is CompletedStay {
+    return stay.availabilityMetrics !== undefined && stay.bookedCountries !== undefined
+  }
+
+  private static property (completed: CompletedProperty): Property {
+    const badges: PropertyBadge[] = PropertyBadgeService.badgesFor({
+      reviews: completed.reviewMetrics,
+      availability: completed.availabilityMetrics
+    })
+
+    return new Property({ ...completed, badges })
   }
 }
