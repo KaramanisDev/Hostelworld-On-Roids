@@ -1,5 +1,6 @@
 import type { RPCCancelPayload, RPCRequest, RPCResult } from './RPCTypesContract'
 import { RPCSerializer } from './RPCSerializer'
+import { RPCProtocol } from './RPCProtocol'
 import type { WorkerTaskArgs, WorkerTaskName } from 'WorkerTasks/WorkerTaskCatalogue'
 
 type RPCResultHandler<T = unknown> = (event: string, response: T) => void
@@ -36,12 +37,12 @@ export class WorkerRPCProxy {
     this.pendingCalls.clear()
 
     window.dispatchEvent(
-      new CustomEvent('rpc:cancel', { detail: payload })
+      new CustomEvent(RPCProtocol.cancelEvent, { detail: payload })
     )
   }
 
   public static onResult<TResult = unknown> (callback: RPCResultHandler<TResult>): void {
-    window.addEventListener('rpc:result', (eventInit: CustomEventInit<RPCResult<string>>): void => {
+    window.addEventListener(RPCProtocol.resultEvent, (eventInit: CustomEventInit<RPCResult<string>>): void => {
       if (!eventInit.detail) return
 
       const { id, task, result } = eventInit.detail
@@ -62,11 +63,11 @@ export class WorkerRPCProxy {
   }
 
   public static resendOnInterruption (): void {
-    window.addEventListener('rpc:interrupted', (): void => this.resendPending())
+    window.addEventListener(RPCProtocol.interruptedEvent, (): void => this.resendPending())
   }
 
   public static onDisconnect (callback: () => void): void {
-    window.addEventListener('rpc:disconnected', (): void => {
+    window.addEventListener(RPCProtocol.disconnectedEvent, (): void => {
       if (this.isDisconnected) return
 
       this.isDisconnected = true
@@ -77,7 +78,7 @@ export class WorkerRPCProxy {
 
   private static send (request: RPCRequest<string>): void {
     window.dispatchEvent(
-      new CustomEvent('rpc:call', { detail: request })
+      new CustomEvent(RPCProtocol.callEvent, { detail: request })
     )
   }
 

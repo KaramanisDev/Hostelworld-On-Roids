@@ -1,4 +1,4 @@
-import { WorkerRPCEndpoint } from 'Communication/WorkerRPCEndpoint'
+import { WorkerRPCServer } from 'Communication/WorkerRPCServer'
 import { WorkerTaskDispatcher } from 'WorkerTasks/WorkerTaskDispatcher'
 import type { WorkerTaskResult } from 'WorkerTasks/WorkerTaskDispatcher'
 import { FetchReviewsTask } from 'WorkerTasks/Tasks/FetchReviewsTask'
@@ -10,8 +10,8 @@ export class WorkerInitializer {
   public static init (): void {
     this.registerTasks()
 
-    WorkerRPCEndpoint.onRequest<unknown[], WorkerTaskResult>((method: string, args: unknown[], signal: AbortSignal) => {
-      return WorkerTaskDispatcher.dispatch(method, args, signal)
+    WorkerRPCServer.onRequest<unknown[], WorkerTaskResult>((task: string, args: unknown[], signal: AbortSignal) => {
+      return WorkerTaskDispatcher.dispatch(task, args, signal)
     })
 
     void HttpClient.purgeExpiredCache()

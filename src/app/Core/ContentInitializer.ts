@@ -1,10 +1,10 @@
 import { ExtensionRuntime } from 'Utils/ExtensionRuntime'
 import { ExtensionConfig } from 'Utils/ExtensionConfig'
-import { WorkerRPCEndpoint } from 'Communication/WorkerRPCEndpoint'
+import { WorkerRPCRelay } from 'Communication/WorkerRPCRelay'
 
 export class ContentInitializer {
   public static async init (): Promise<void> {
-    WorkerRPCEndpoint.listen()
+    WorkerRPCRelay.listen()
 
     ExtensionConfig.init(
       {
