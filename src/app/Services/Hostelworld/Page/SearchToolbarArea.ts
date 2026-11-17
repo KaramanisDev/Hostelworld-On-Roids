@@ -1,4 +1,4 @@
-import { waitForElement } from 'Utils'
+import { NuxtApp } from './NuxtApp'
 
 type SlotListener = (slot: HTMLElement) => void
 
@@ -9,10 +9,13 @@ export class SearchToolbarArea {
   public static async keepFilterSlot (className: string, onSlot: SlotListener): Promise<void> {
     if (this.observer) return
 
-    await waitForElement(this.shareButtonSelector)
+    const isMounted: boolean = await NuxtApp.hasMounted()
+    if (!isMounted || this.observer) return
 
     this.insertSlot(className, onSlot)
-    this.watchForRemoval(className, onSlot)
+
+    this.observer = new MutationObserver(() => this.insertSlot(className, onSlot))
+    this.observer.observe(document.body, { childList: true, subtree: true })
   }
 
   private static insertSlot (className: string, onSlot: SlotListener): void {
@@ -28,21 +31,5 @@ export class SearchToolbarArea {
     parent.insertBefore(slot, shareButton)
 
     onSlot(slot)
-  }
-
-  private static watchForRemoval (className: string, onSlot: SlotListener): void {
-    const observeTarget: HTMLElement | null | undefined = document
-      .querySelector(this.shareButtonSelector)
-      ?.parentElement
-    if (!observeTarget) return
-
-    this.observer = new MutationObserver(() => {
-      const existing: HTMLElement | null = observeTarget.querySelector(`.${className}`)
-      if (existing) return
-
-      this.insertSlot(className, onSlot)
-    })
-
-    this.observer.observe(observeTarget, { childList: true, subtree: true })
   }
 }
