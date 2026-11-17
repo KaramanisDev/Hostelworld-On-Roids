@@ -49,13 +49,15 @@ export class SearchPageHook {
 
     callbacks.onSearchResults(adapted.properties)
 
+    this.loadAllController?.abort()
     this.loadAllController = new AbortController()
     void this.loadUnavailableProperties(
       this.latestCityId,
       pluck(adapted.properties, 'id'),
-      callbacks,
       this.loadAllController.signal
-    )
+    ).then(properties => {
+      if (properties) callbacks.onUnavailableProperties(properties)
+    })
 
     return adapted
   }
@@ -63,14 +65,11 @@ export class SearchPageHook {
   private static async loadUnavailableProperties (
     cityId: string,
     availablePropertyIds: number[],
-    callbacks: SearchPageCallbacks,
     signal: AbortSignal
-  ): Promise<void> {
+  ): Promise<Property[] | null> {
     const cityProperties: Property[] | null = await SearchResultsArea.loadAllForCity(cityId, signal)
-    if (!cityProperties) return
+    if (!cityProperties || signal.aborted) return null
 
-    callbacks.onUnavailableProperties(
-      cityProperties.filter(property => !availablePropertyIds.includes(property.id))
-    )
+    return cityProperties.filter(property => !availablePropertyIds.includes(property.id))
   }
 }
