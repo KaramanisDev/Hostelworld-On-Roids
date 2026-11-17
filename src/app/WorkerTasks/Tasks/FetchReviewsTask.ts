@@ -1,5 +1,5 @@
 import { AbstractQueuedTask } from './AbstractQueuedTask'
-import { ReviewsClient, type PropertyReviews } from 'Services/Hostelworld/Api/ReviewsClient'
+import { ReviewsClient } from 'Services/Hostelworld/Api/ReviewsClient'
 import type { WorkerTaskArgs, WorkerTaskPayload } from 'WorkerTasks/WorkerTaskCatalogue'
 
 type Args = WorkerTaskArgs<'fetch:reviews'>
@@ -13,9 +13,8 @@ export class FetchReviewsTask extends AbstractQueuedTask<Args, Result> {
   }
 
   protected async execute (args: Args): Promise<Result> {
-    const [propertyId, propertyName, overallRating]: Args = args
-    const data: PropertyReviews | null = await ReviewsClient.fetch(propertyId, overallRating)
+    const [propertyId, overallRating]: Args = args
 
-    return { propertyId, propertyName, data }
+    return ReviewsClient.fetch(propertyId, overallRating)
   }
 }

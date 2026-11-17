@@ -1,13 +1,12 @@
 import type { RPCCancelPayload, RPCRequest, RPCResult } from './RPCTypesContract'
 import { RPCSerializer } from './RPCSerializer'
 import { RPCProtocol } from './RPCProtocol'
-import type { WorkerTaskArgs, WorkerTaskName } from 'WorkerTasks/WorkerTaskCatalogue'
-
-type RPCResultHandler<T = unknown> = (event: string, response: T) => void
+import type { WorkerTaskArgs, WorkerTaskName, WorkerTaskPayload } from 'WorkerTasks/WorkerTaskCatalogue'
 
 type PendingCall = {
   request: RPCRequest<string>
   attempts: number
+  resolve: (result: unknown) => void
 }
 
 export class WorkerRPCProxy {
@@ -18,19 +17,24 @@ export class WorkerRPCProxy {
   private static lastActivityAt: number = 0
   private static silenceCheck: ReturnType<typeof setInterval> | null = null
   private static isDisconnected: boolean = false
-  private static isRecoveryInstalled: boolean = false
+  private static areListenersInstalled: boolean = false
 
-  public static call<TTask extends WorkerTaskName> (task: TTask, ...args: WorkerTaskArgs<TTask>): void {
-    if (this.isDisconnected) return
+  public static call<TTask extends WorkerTaskName> (
+    task: TTask,
+    ...args: WorkerTaskArgs<TTask>
+  ): Promise<WorkerTaskPayload<TTask>> {
+    return new Promise((resolve: (result: WorkerTaskPayload<TTask>) => void): void => {
+      if (this.isDisconnected) return
 
-    this.installRecovery()
+      this.installListeners()
 
-    const request: RPCRequest<string> = { id: crypto.randomUUID(), task, args: RPCSerializer.serialize(args) }
+      const request: RPCRequest<string> = { id: crypto.randomUUID(), task, args: RPCSerializer.serialize(args) }
 
-    this.pendingCalls.set(request.id, { request, attempts: 1 })
-    this.lastActivityAt = Date.now()
-    this.send(request)
-    this.watchForSilence()
+      this.pendingCalls.set(request.id, { request, attempts: 1, resolve: resolve as (result: unknown) => void })
+      this.lastActivityAt = Date.now()
+      this.send(request)
+      this.watchForSilence()
+    })
   }
 
   public static cancelPending (): void {
@@ -44,19 +48,6 @@ export class WorkerRPCProxy {
     )
   }
 
-  public static onResult<TResult = unknown> (callback: RPCResultHandler<TResult>): void {
-    window.addEventListener(RPCProtocol.resultEvent, (eventInit: CustomEventInit<RPCResult<string>>): void => {
-      if (!eventInit.detail) return
-
-      const { id, task, result } = eventInit.detail
-      if (this.pendingCalls.get(id)?.request.task !== task) return
-
-      this.pendingCalls.delete(id)
-      this.lastActivityAt = Date.now()
-      callback(task, RPCSerializer.deserialize<TResult>(result))
-    })
-  }
-
   public static onDisconnect (callback: () => void): void {
     window.addEventListener(RPCProtocol.disconnectedEvent, (): void => {
       if (this.isDisconnected) return
@@ -67,16 +58,28 @@ export class WorkerRPCProxy {
     })
   }
 
-  private static installRecovery (): void {
-    if (this.isRecoveryInstalled) return
-    this.isRecoveryInstalled = true
+  private static installListeners (): void {
+    if (this.areListenersInstalled) return
+    this.areListenersInstalled = true
 
+    window.addEventListener(RPCProtocol.resultEvent, (eventInit: CustomEventInit<RPCResult<string>>): void => {
+      if (eventInit.detail) this.deliver(eventInit.detail)
+    })
     window.addEventListener('pageshow', (event: PageTransitionEvent): void => {
       if (!event.persisted) return
 
       this.resendPending()
     })
     window.addEventListener(RPCProtocol.interruptedEvent, (): void => this.resendPending())
+  }
+
+  private static deliver (result: RPCResult<string>): void {
+    const pendingCall: PendingCall | undefined = this.pendingCalls.get(result.id)
+    if (pendingCall?.request.task !== result.task) return
+
+    this.pendingCalls.delete(result.id)
+    this.lastActivityAt = Date.now()
+    pendingCall.resolve(RPCSerializer.deserialize(result.result))
   }
 
   private static send (request: RPCRequest<string>): void {

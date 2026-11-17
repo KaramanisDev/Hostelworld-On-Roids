@@ -11,10 +11,6 @@ export class AppInitializer {
 
     XHRRequestInterceptor.init()
 
-    WorkerRPCProxy.onResult((task: string, payload: unknown): void => {
-      EventBus.emit('worker:result', { task, payload })
-    })
-
     WorkerRPCProxy.onDisconnect((): void => {
       EventBus.emit('worker:disconnected')
     })

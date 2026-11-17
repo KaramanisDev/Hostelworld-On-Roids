@@ -2,9 +2,19 @@ import type { Property } from 'DTOs/Property'
 import { ReviewMetrics } from 'DTOs/ReviewMetrics'
 import { AvailabilityMetrics } from 'DTOs/AvailabilityMetrics'
 import { BookedCountry } from 'DTOs/BookedCountry'
-import type { WorkerResult } from 'WorkerTasks/WorkerTaskCatalogue'
+import type { PropertyReviews } from 'Services/Hostelworld/Api/ReviewsClient'
+import type { PropertyAvailability } from 'Services/Hostelworld/Api/AvailabilityClient'
+import type { PropertyGuestsCountries } from 'Services/Hostelworld/Api/VisitorsCountryClient'
 import { PropertyMetricsScheduler, type ScheduledProperty } from './PropertyMetricsScheduler'
 import { PropertyCompositionBuffer, type CollectedMetric } from './PropertyCompositionBuffer'
+
+export type FetchedMetric = {
+  property: ScheduledProperty
+} & (
+  | { metric: 'reviews', data: PropertyReviews | null }
+  | { metric: 'availability', data: PropertyAvailability | null }
+  | { metric: 'countries', data: PropertyGuestsCountries }
+)
 
 export type MetricsProgress = {
   collected: CollectedMetric
@@ -30,9 +40,9 @@ export class PropertyMetricsService {
     PropertyMetricsScheduler.prioritizeVisible(propertyIds)
   }
 
-  public static collect (result: WorkerResult): MetricsProgress {
-    const collected: CollectedMetric = this.collectedMetric(result)
-    const composed: Property[] = PropertyCompositionBuffer.collect(collected, result.payload.propertyName)
+  public static collect (fetched: FetchedMetric): MetricsProgress {
+    const collected: CollectedMetric = this.collectedMetric(fetched)
+    const composed: Property[] = PropertyCompositionBuffer.collect(collected, fetched.property.name)
 
     PropertyMetricsScheduler.complete(collected.propertyId, collected.metric)
 
@@ -47,27 +57,29 @@ export class PropertyMetricsService {
     PropertyCompositionBuffer.clear()
   }
 
-  private static collectedMetric (result: WorkerResult): CollectedMetric {
-    switch (result.task) {
-      case 'fetch:reviews':
+  private static collectedMetric (fetched: FetchedMetric): CollectedMetric {
+    const { id: propertyId, stay }: ScheduledProperty = fetched.property
+
+    switch (fetched.metric) {
+      case 'reviews':
         return {
           metric: 'reviews',
-          propertyId: result.payload.propertyId,
-          reviewMetrics: result.payload.data ? new ReviewMetrics(result.payload.data) : null
+          propertyId,
+          reviewMetrics: fetched.data ? new ReviewMetrics(fetched.data) : null
         }
-      case 'fetch:availability':
+      case 'availability':
         return {
           metric: 'availability',
-          propertyId: result.payload.propertyId,
-          stay: result.payload.stay,
-          availabilityMetrics: result.payload.data ? new AvailabilityMetrics(result.payload.data) : null
+          propertyId,
+          stay,
+          availabilityMetrics: fetched.data ? new AvailabilityMetrics(fetched.data) : null
         }
-      case 'fetch:countries':
+      case 'countries':
         return {
           metric: 'countries',
-          propertyId: result.payload.propertyId,
-          stay: result.payload.stay,
-          bookedCountries: result.payload.data.map(country => new BookedCountry(country))
+          propertyId,
+          stay,
+          bookedCountries: fetched.data.map(country => new BookedCountry(country))
         }
     }
   }

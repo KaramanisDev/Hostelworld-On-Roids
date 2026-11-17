@@ -3,13 +3,12 @@ import { AbstractListener } from './AbstractListener'
 import { PropertyCardRenderer } from 'UI/Renderers/PropertyCard'
 import { PropertyInsightsRenderer } from 'UI/Renderers/PropertyInsights'
 import { SearchResultsArea } from 'Services/Hostelworld/Page'
-import { PropertyMetricsService, type MetricsProgress } from 'Services/PropertyMetrics'
-import type { WorkerResult } from 'WorkerTasks/WorkerTaskCatalogue'
+import { PropertyMetricsService, type FetchedMetric, type MetricsProgress } from 'Services/PropertyMetrics'
 
-@Subscribe('worker:result')
-export class WorkerResultListener extends AbstractListener {
-  public handle (result: WorkerResult): void {
-    const progress: MetricsProgress = PropertyMetricsService.collect(result)
+@Subscribe('property:metric:fetched')
+export class PropertyMetricFetchedListener extends AbstractListener {
+  public handle (fetched: FetchedMetric): void {
+    const progress: MetricsProgress = PropertyMetricsService.collect(fetched)
 
     void PropertyCardRenderer.updateMetric(progress.collected)
     PropertyInsightsRenderer.updateMetric(progress.collected)
