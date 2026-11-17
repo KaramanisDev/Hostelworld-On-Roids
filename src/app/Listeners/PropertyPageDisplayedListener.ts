@@ -4,6 +4,7 @@ import { Subscribe } from 'Core/EventBus'
 import { AbstractListener } from './AbstractListener'
 import { PropertyInsightsRenderer } from 'UI/Renderers/PropertyInsights'
 import { ScheduledPropertyFactory } from 'Factories/ScheduledPropertyFactory'
+import { PropertyMetricsService, type MetricsRequest } from 'Services/PropertyMetrics'
 
 @Subscribe('property:page:displayed')
 export class PropertyPageDisplayedListener extends AbstractListener {
@@ -16,6 +17,8 @@ export class PropertyPageDisplayedListener extends AbstractListener {
       return
     }
 
-    this.emit('property:metrics:requested', ScheduledPropertyFactory.createFromPage(page))
+    const request: MetricsRequest = PropertyMetricsService.requestFor(ScheduledPropertyFactory.createFromPage(page))
+
+    this.emit('property:metrics:requested', request)
   }
 }

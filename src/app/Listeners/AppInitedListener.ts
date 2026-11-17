@@ -13,7 +13,7 @@ import {
   SearchResultsFilter,
   type DisplayedProperty
 } from 'Services/Hostelworld/Page'
-import { PropertyMetricsService, type ScheduledProperty } from 'Services/PropertyMetrics'
+import { PropertyMetricsService, type MetricsRequest } from 'Services/PropertyMetrics'
 import type { Property } from 'Types/HostelworldSearch'
 import { FilterModalRenderer } from 'UI/Renderers/FilterModal'
 import { PropertyCardRenderer } from 'UI/Renderers/PropertyCard'
@@ -24,7 +24,7 @@ export class AppInitedListener extends AbstractListener {
     TrackerInterceptor.blockTrackers()
     ResizeObserverComponentPatcher.useNativeObserver()
     this.applyRequestInterceptors()
-    PropertyMetricsService.onStart(this.onScheduledPropertyStart.bind(this))
+    PropertyMetricsService.onStart(this.onMetricsRequestStarted.bind(this))
 
     await Promise.allSettled([
       FilterModalRenderer.render(),
@@ -87,7 +87,7 @@ export class AppInitedListener extends AbstractListener {
     this.emit('property:page:displayed', page)
   }
 
-  private onScheduledPropertyStart (property: ScheduledProperty): void {
-    this.emit('property:metrics:requested', property)
+  private onMetricsRequestStarted (request: MetricsRequest): void {
+    this.emit('property:metrics:requested', request)
   }
 }

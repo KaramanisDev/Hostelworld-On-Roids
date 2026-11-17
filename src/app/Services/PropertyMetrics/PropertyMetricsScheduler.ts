@@ -9,14 +9,23 @@ export type ScheduledProperty = {
   stay: Stay
 }
 
-type StartListener = (property: ScheduledProperty) => void
+export type MetricsRequest = {
+  readonly property: ScheduledProperty
+}
+
+export type StartListener = (request: MetricsRequest) => void
+
+type RunningRequest = {
+  request: MetricsRequest
+  collectedMetrics: Set<Metric>
+}
 
 export class PropertyMetricsScheduler {
   private static readonly maxRunningProperties: number = 6
   private static readonly metricsPerProperty: number = 3
   private static readonly stalledAfterInMs: number = 2 * 60 * 1000
   private static readonly queued: Map<number, ScheduledProperty> = new Map()
-  private static readonly running: Map<number, Set<Metric>> = new Map()
+  private static readonly running: Map<number, RunningRequest> = new Map()
   private static displayedIds: number[] = []
   private static visibleIds: number[] = []
   private static startListener: StartListener = emptyFunction
@@ -35,14 +44,14 @@ export class PropertyMetricsScheduler {
     this.startNext()
   }
 
-  public static complete (propertyId: number, metric: Metric): void {
-    const collectedMetrics: Set<Metric> | undefined = this.running.get(propertyId)
-    if (!collectedMetrics) return
+  public static complete (request: MetricsRequest, metric: Metric): void {
+    const running: RunningRequest | undefined = this.running.get(request.property.id)
+    if (running?.request !== request) return
 
-    collectedMetrics.add(metric)
-    if (collectedMetrics.size < this.metricsPerProperty) return
+    running.collectedMetrics.add(metric)
+    if (running.collectedMetrics.size < this.metricsPerProperty) return
 
-    this.release(propertyId, collectedMetrics)
+    this.release(request)
   }
 
   public static prioritizeDisplayed (propertyIds: number[]): void {
@@ -68,19 +77,19 @@ export class PropertyMetricsScheduler {
   }
 
   private static start (property: ScheduledProperty): void {
-    const collectedMetrics: Set<Metric> = new Set()
+    const request: MetricsRequest = { property }
 
     this.queued.delete(property.id)
-    this.running.set(property.id, collectedMetrics)
-    setTimeout(() => this.release(property.id, collectedMetrics), this.stalledAfterInMs)
+    this.running.set(property.id, { request, collectedMetrics: new Set() })
+    setTimeout(() => this.release(request), this.stalledAfterInMs)
 
-    this.startListener(property)
+    this.startListener(request)
   }
 
-  private static release (propertyId: number, collectedMetrics: Set<Metric>): void {
-    if (this.running.get(propertyId) !== collectedMetrics) return
+  private static release (request: MetricsRequest): void {
+    if (this.running.get(request.property.id)?.request !== request) return
 
-    this.running.delete(propertyId)
+    this.running.delete(request.property.id)
     this.startNext()
   }
 

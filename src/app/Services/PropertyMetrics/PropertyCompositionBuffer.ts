@@ -55,23 +55,7 @@ export class PropertyCompositionBuffer {
   private static reviews: Map<number, ReviewMetrics | null> = new Map()
   private static stays: Map<string, PendingStay> = new Map()
 
-  public static collect (collected: CollectedMetric, propertyName: string): Property[] {
-    this.store(collected, propertyName)
-
-    const completed: CompletedProperty[] = this.completedEntries(collected.propertyId)
-    for (const entry of completed) {
-      this.stays.delete(entry.stay.getPropertyKey(entry.id))
-    }
-
-    return completed.map(entry => PropertyFactory.create(entry))
-  }
-
-  public static clear (): void {
-    this.reviews.clear()
-    this.stays.clear()
-  }
-
-  private static store (collected: CollectedMetric, propertyName: string): void {
+  public static store (collected: CollectedMetric, propertyName: string): void {
     switch (collected.metric) {
       case 'reviews':
         this.reviews.set(collected.propertyId, collected.reviewMetrics)
@@ -82,6 +66,20 @@ export class PropertyCompositionBuffer {
       case 'countries':
         this.updateStay(collected, propertyName, { bookedCountries: collected.bookedCountries })
     }
+  }
+
+  public static takeCompleted (propertyId: number): Property[] {
+    const completed: CompletedProperty[] = this.completedEntries(propertyId)
+    for (const entry of completed) {
+      this.stays.delete(entry.stay.getPropertyKey(entry.id))
+    }
+
+    return completed.map(entry => PropertyFactory.create(entry))
+  }
+
+  public static clear (): void {
+    this.reviews.clear()
+    this.stays.clear()
   }
 
   private static updateStay (collected: CollectedStayMetric, propertyName: string, metrics: StayMetrics): void {

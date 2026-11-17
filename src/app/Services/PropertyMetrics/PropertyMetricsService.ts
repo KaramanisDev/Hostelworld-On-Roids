@@ -5,23 +5,21 @@ import { BookedCountry } from 'DTOs/BookedCountry'
 import type { PropertyReviews } from 'Services/Hostelworld/Api/ReviewsClient'
 import type { PropertyAvailability } from 'Services/Hostelworld/Api/AvailabilityClient'
 import type { PropertyGuestsCountries } from 'Services/Hostelworld/Api/VisitorsCountryClient'
-import { PropertyMetricsScheduler, type ScheduledProperty } from './PropertyMetricsScheduler'
+import {
+  PropertyMetricsScheduler,
+  type MetricsRequest,
+  type ScheduledProperty,
+  type StartListener
+} from './PropertyMetricsScheduler'
 import { PropertyCompositionBuffer, type CollectedMetric } from './PropertyCompositionBuffer'
 
 export type FetchedMetric = {
-  property: ScheduledProperty
+  request: MetricsRequest
 } & (
   | { metric: 'reviews', data: PropertyReviews | null }
   | { metric: 'availability', data: PropertyAvailability | null }
   | { metric: 'countries', data: PropertyGuestsCountries }
 )
-
-export type MetricsProgress = {
-  collected: CollectedMetric
-  composed: Property[]
-}
-
-type StartListener = (property: ScheduledProperty) => void
 
 export class PropertyMetricsService {
   public static onStart (listener: StartListener): void {
@@ -32,6 +30,10 @@ export class PropertyMetricsService {
     PropertyMetricsScheduler.schedule(properties)
   }
 
+  public static requestFor (property: ScheduledProperty): MetricsRequest {
+    return { property }
+  }
+
   public static prioritizeDisplayed (propertyIds: number[]): void {
     PropertyMetricsScheduler.prioritizeDisplayed(propertyIds)
   }
@@ -40,25 +42,8 @@ export class PropertyMetricsService {
     PropertyMetricsScheduler.prioritizeVisible(propertyIds)
   }
 
-  public static collect (fetched: FetchedMetric): MetricsProgress {
-    const collected: CollectedMetric = this.collectedMetric(fetched)
-    const composed: Property[] = PropertyCompositionBuffer.collect(collected, fetched.property.name)
-
-    PropertyMetricsScheduler.complete(collected.propertyId, collected.metric)
-
-    return { collected, composed }
-  }
-
-  public static cancel (): void {
-    PropertyMetricsScheduler.clear()
-  }
-
-  public static discardCollected (): void {
-    PropertyCompositionBuffer.clear()
-  }
-
-  private static collectedMetric (fetched: FetchedMetric): CollectedMetric {
-    const { id: propertyId, stay }: ScheduledProperty = fetched.property
+  public static collectedMetric (fetched: FetchedMetric): CollectedMetric {
+    const { id: propertyId, stay }: ScheduledProperty = fetched.request.property
 
     switch (fetched.metric) {
       case 'reviews':
@@ -82,5 +67,22 @@ export class PropertyMetricsService {
           bookedCountries: fetched.data.map(country => new BookedCountry(country))
         }
     }
+  }
+
+  public static collect (request: MetricsRequest, collected: CollectedMetric): void {
+    PropertyCompositionBuffer.store(collected, request.property.name)
+    PropertyMetricsScheduler.complete(request, collected.metric)
+  }
+
+  public static takeComposed (propertyId: number): Property[] {
+    return PropertyCompositionBuffer.takeCompleted(propertyId)
+  }
+
+  public static cancel (): void {
+    PropertyMetricsScheduler.clear()
+  }
+
+  public static discardCollected (): void {
+    PropertyCompositionBuffer.clear()
   }
 }
