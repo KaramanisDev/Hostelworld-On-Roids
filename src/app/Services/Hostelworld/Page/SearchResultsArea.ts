@@ -1,6 +1,7 @@
 import type { Property } from 'Types/HostelworldSearch'
 import { pluck, promiseFallback, waitForElement, waitForProperty } from 'Utils'
 import { NuxtApp } from './NuxtApp'
+import { PropertyCardsArea } from './PropertyCardsArea'
 import { ReactiveOverride } from './ReactiveOverride'
 import { SearchResultsFilter } from './SearchResultsFilter'
 import type {
@@ -22,7 +23,6 @@ type DisplayedPropertiesListener = (properties: DisplayedProperty[]) => void
 
 export class SearchResultsArea {
   private static readonly propertyListSelector: string = '.search .property-list >div'
-  private static readonly propertyCardsSelector: string = '.property-card .property-card-container'
   private static readonly propertyListTimeoutInMs: number = 60 * 1000
   private static readonly refreshDelayInMs: number = 250
   private static scheduledRefresh: ReturnType<typeof setTimeout> | null = null
@@ -87,7 +87,7 @@ export class SearchResultsArea {
     const { properties } = await service.search(cityId, null, null, 1, {})
     const cityProperties: Property[] = [...properties]
 
-    if (!await promiseFallback(waitForElement(this.propertyCardsSelector))) return null
+    if (!await PropertyCardsArea.hasCards()) return null
     if (signal.aborted) return null
 
     const loaded: Property[] = store.state.search.properties

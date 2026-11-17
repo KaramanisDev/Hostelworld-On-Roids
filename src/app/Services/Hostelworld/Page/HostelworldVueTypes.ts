@@ -109,3 +109,18 @@ export type NuxtDevice = {
   isMobile: boolean
   isMobileOrTablet: boolean
 }
+
+export type Avatar = {
+  flag: string
+  name: string
+  picture: string
+}
+
+export type StayingAvatars = {
+  avatarLimit: number
+  avatarList: Avatar[]
+}
+
+export type VuePropertyCardComponent = {
+  stayingAvatars: StayingAvatars
+}

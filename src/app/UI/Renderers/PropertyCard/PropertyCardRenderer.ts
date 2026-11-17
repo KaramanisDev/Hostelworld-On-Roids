@@ -4,8 +4,7 @@ import type { AvailabilityMetrics } from 'DTOs/AvailabilityMetrics'
 import { PropertyCardView } from 'UI/SolidJS/PropertyCard/PropertyCardView'
 import type { PropertyCardViewDTO } from './ViewDTOs'
 import { PropertyCardViewDTOFactory } from './ViewDTOs'
-import { promiseFallback, waitForElement } from 'Utils'
-import { PropertyCardComponentPatcher } from 'Services/Hostelworld/Patchers/PropertyCardComponentPatcher'
+import { PropertyCardsArea } from 'Services/Hostelworld/Page'
 import { BadgeTagsView } from 'UI/SolidJS/BadgeTags/BadgeTagsView'
 import type { BookedCountry } from 'DTOs/BookedCountry'
 import type { CollectedMetric } from 'Services/PropertyMetrics'
@@ -15,36 +14,36 @@ import { EventBus } from 'Core/EventBus'
 export class PropertyCardRenderer {
   private static readonly view: PropertyCardView = new PropertyCardView()
   private static readonly badgeTagsView: BadgeTagsView = new BadgeTagsView()
-  private static readonly propertyLinkRegex: RegExp = /hosteldetails\.php\/[^/]+\/[^/]+\/(\d+)/
   private static readonly visibilityTracker: PropertyCardVisibilityTracker = new PropertyCardVisibilityTracker(
     (propertyIds: number[]): void => EventBus.emit('property:cards:visible', propertyIds)
   )
 
   public static async render (propertyId: number): Promise<void> {
-    if (!await this.hasPropertyCards()) return
+    if (!await PropertyCardsArea.hasCards()) return
 
-    const container: HTMLElement | null = this.findContainer(propertyId)
-    if (!container) return
+    const card: HTMLElement | null = PropertyCardsArea.card(propertyId)
+    if (!card) return
 
     const viewDto: PropertyCardViewDTO = PropertyCardViewDTOFactory.loading(propertyId)
-    this.view.mount(container, viewDto)
-    this.visibilityTracker.track(container, propertyId)
+    this.view.mount(card, viewDto)
+    this.visibilityTracker.track(card, propertyId)
   }
 
   public static async renderWithData (property: Property): Promise<void> {
-    if (!await this.hasPropertyCards()) return
+    if (!await PropertyCardsArea.hasCards()) return
 
-    const container: HTMLElement | null = this.findContainer(property.getId())
-    if (!container) return
+    const card: HTMLElement | null = PropertyCardsArea.card(property.getId())
+    if (!card) return
 
     const viewDto: PropertyCardViewDTO = PropertyCardViewDTOFactory.loaded(property)
-    this.view.mount(container, viewDto)
-    this.badgeTagsView.mount(container, { propertyId: property.getId(), badges: property.getBadges() })
+    this.view.mount(card, viewDto)
 
-    await PropertyCardComponentPatcher.injectBookedCountries(
-      container,
-      property.getBookedCountries()
-    )
+    const tagsContainer: HTMLElement | null = PropertyCardsArea.tagsContainer(card)
+    if (tagsContainer) {
+      this.badgeTagsView.mount(tagsContainer, { propertyId: property.getId(), badges: property.getBadges() })
+    }
+
+    await PropertyCardsArea.showBookedCountries(card, property.getBookedCountries())
   }
 
   public static async updateMetric (collected: CollectedMetric): Promise<void> {
@@ -74,32 +73,9 @@ export class PropertyCardRenderer {
   }
 
   private static async updateCountries (propertyId: number, bookedCountries: BookedCountry[]): Promise<void> {
-    const container: HTMLElement | null = this.findContainer(propertyId)
-    if (!container) return
+    const card: HTMLElement | null = PropertyCardsArea.card(propertyId)
+    if (!card) return
 
-    await PropertyCardComponentPatcher.injectBookedCountries(container, bookedCountries)
-  }
-
-  private static async hasPropertyCards (): Promise<boolean> {
-    return Boolean(await promiseFallback(waitForElement('.property-card .property-card-container')))
-  }
-
-  private static findContainer (propertyId: number): HTMLElement | null {
-    const propertyCards: NodeListOf<Element> = document.querySelectorAll('.property-card')
-
-    for (const card of propertyCards) {
-      if (this.cardPropertyId(card) === propertyId) return card as HTMLElement
-    }
-
-    return null
-  }
-
-  private static cardPropertyId (card: Element): number | null {
-    const match: RegExpMatchArray | null | undefined = card
-      .querySelector('a[href*="hosteldetails.php"]')
-      ?.getAttribute('href')
-      ?.match(this.propertyLinkRegex)
-
-    return match ? Number(match[1]) : null
+    await PropertyCardsArea.showBookedCountries(card, bookedCountries)
   }
 }
